@@ -1,17 +1,17 @@
 
 R : Copyright 2003, The R Development Core Team
-Version 1.6.2  (2003-01-10)
+Version 1.8.0 Under development (unstable) (2003-07-23)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
-Type `license()' or `licence()' for distribution details.
+Type 'license()' or 'licence()' for distribution details.
 
 R is a collaborative project with many contributors.
-Type `contributors()' for more information.
+Type 'contributors()' for more information.
 
-Type `demo()' for some demos, `help()' for on-line help, or
-`help.start()' for a HTML browser interface to help.
-Type `q()' to quit R.
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
 
 > library(ipred)
 Loading required package: rpart 
@@ -20,14 +20,15 @@ Loading required package: mlbench
 Loading required package: survival 
 Loading required package: class 
 Loading required package: nnet 
+Loading required package: mvtnorm 
 > data(BreastCancer)
 > 
 > actversion <- paste(R.version$major, R.version$minor, sep=".")
 > thisversion <- "1.7.0"
 > 
-> if (compareVersion(actversion, thisversion) >= 0) {
-+   RNGversion("1.6.2")
-+ }
+> #if (compareVersion(actversion, thisversion) >= 0) {
+> #  RNGversion("1.6.2")
+> #}
 > set.seed(29081975)
 > 
 > 
@@ -49,7 +50,7 @@ Out-of-bag estimate of misclassification error:  0.0425
 
 > 
 > print(a <- predict(mod, newdata=BreastCancer))
-  [1] benign    benign    benign    benign    benign    malignant benign   
+  [1] benign    benign    benign    malignant benign    malignant benign   
   [8] benign    benign    benign    benign    benign    malignant benign   
  [15] malignant malignant benign    benign    malignant benign    malignant
  [22] malignant benign    malignant benign    malignant benign    benign   
@@ -180,7 +181,7 @@ Levels: benign malignant
 > booterr <- errorest(y ~., data=learn, model=lm,
 +                     estimator="boot",est.para=control.errorest(nboot=50))$error
 > print(trueerr/mean(cverr))
-[1] 1.288265
+[1] 0.9789321
 > print(trueerr/booterr)
-[1] 1.216717
+[1] 0.9136014
 > 

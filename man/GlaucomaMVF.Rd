@@ -80,7 +80,7 @@ measurement of the intra occular pressure.
     \item{clv}{corrected loss variance, variability of the visual field.}
     \item{cs}{contrast sensitivity of the visual field.}
     \item{lora}{loss of rim area, measured by fundus photography.}
-    \item{Class}{a factor with levels \code{glaucoma} and \code{normal} }
+    \item{Class}{a factor with levels \code{glaucoma} and \code{normal}.}
   }
 }
 \details{
@@ -114,7 +114,7 @@ to prevent for possible confounding.
 data(GlaucomaMVF)
 
 response <- function (data) {
-  attach(data) 
+  attach(data)
   res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >= 
         49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) & 
         clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) & 
@@ -124,14 +124,8 @@ response <- function (data) {
   factor (res, labels = c("glaucoma", "normal"))
 }
 
-mypredict.inclass <- function(object, newdata){
-  res <- predict.inclass(object = object, cFUN = response, newdata = newdata)
-  return(res)
-}
-
-errorest(clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
-         predict=mypredict.inclass, iclass="Class", estimator="cv", 
-         pFUN = rpart)
+errorest(Class~clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
+       estimator="cv", pFUN = list(list(model = rpart)), cFUN = response)
 
 }
 \keyword{datasets}

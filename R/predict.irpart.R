@@ -18,10 +18,10 @@ function(object, newdata = list(),
 	    if (is.null(act)) act<- na.rpart
 	    newdata <- model.frame(Terms, newdata, na.action = act,
                                       xlev=attr(object, "xlevels"))
-            newdata <- rpart.matrix(newdata)
+            newdata <- getFromNamespace("rpart.matrix", ns = "rpart")(newdata)
         } 
-	where <- pred.rpart(object, newdata)
-    }
+	where <- getFromNamespace("pred.rpart", ns = "rpart")(object, newdata)
+      }
     frame <- object$frame
     method <- object$method
     ylevels <- attr(object, "ylevels")

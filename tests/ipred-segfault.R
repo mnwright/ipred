@@ -3,9 +3,9 @@ library('ipred')
 actversion <- paste(R.version$major, R.version$minor, sep=".")
 thisversion <- "1.7.0"
 
-if (compareVersion(actversion, thisversion) >= 0) {
-  RNGversion("1.6.2")
-}
+#if (compareVersion(actversion, thisversion) >= 0) {
+#  RNGversion("1.6.2")
+#}
 set.seed(29081975)
 
 
@@ -40,6 +40,8 @@ mypredict.lda <- function(object, newdata)
 errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda)
 errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
 est.para=list(k=5, random=FALSE))
+lapply(errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
+est.para=list(k=5, random=FALSE, getmodels=TRUE))$models, class)
 errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
 nbagg=10)
 errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
@@ -65,6 +67,8 @@ predict(mod, newdata=test[1:10,], agg="aver")
 predict(mod, newdata=test[1:10,], agg="wei")  
 errorest(y ~ ., data=learn, model=lm)
 errorest(y ~ ., data=learn, model=lm, est.para=list(k=5, random=FALSE))
+lapply(errorest(y ~ ., data=learn, model=lm, est.para=list(k=5,
+random=FALSE, getmodels=TRUE))$models, class)
 errorest(y ~ ., data=learn, model=lm, estimator="boot")
 
 # survival
@@ -80,6 +84,9 @@ errorest(Surv(time, cens) ~ ., data=learn, model=bagging,
          est.para=list(k=2, random=FALSE), nbagg=5)
 errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
          estimator="boot", nbagg=5, est.para=list(nboot=5))
+lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+         estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
+         getmodels=TRUE))$models, class)
 
 # bundling for regression
 

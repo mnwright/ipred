@@ -139,14 +139,9 @@ response <- function (data) {
   factor (res, labels = c("glaucoma", "normal"))
 }
 
-mypredict.inclass <- function(object, newdata){
-  res <- predict.inclass(object = object, cFUN = response, newdata = newdata)
-  return(res)
-}
-
-errorest(clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
-         predict=mypredict.inclass, iclass="Class", estimator="cv", 
-         pFUN = rpart)
+errorest(Class~clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
+         estimator="cv", 
+         pFUN = list(list(model = rpart)), cFUN = response)
 
 
 ## Keywords: 'datasets'.
@@ -309,6 +304,7 @@ data(Smoking)
 # 3) response (resp) is defined by:
 
 resp <- function(data){
+  data <- data[,c("TVPS", "BPNL", "COHB")]
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
@@ -317,20 +313,15 @@ resp <- function(data){
 response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
 smoking <- cbind(Smoking, response)
 
-formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
-
-mypredict.inclass <- function(object, newdata){
-  res <- predict.inclass(object = object, cFUN = resp, newdata = newdata)
-  return(res)
-}
+formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
 # Estimation per leave-one-out estimate for the misclassification is 
 # 36.36% (Hand et al., 2001), using indirect classification with 
 # linear models
 
-errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
-         estimator = "cv", iclass = "response", pFUN = lm,
-         est.para=control.errorest(k=nrow(smoking)))
+errorest(formula, data = smoking, model = inclass,
+         estimator = "cv", pFUN = list(list(model = lm)),
+         est.para=control.errorest(k=nrow(smoking)), cFUN = resp)
 
 # Regression
 
@@ -382,17 +373,18 @@ data(Smoking)
 # 3) response (resp) is defined by:
 
 resp <- function(data){
+  data <- data[, c("TVPS", "BPNL", "COHB")]
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
 }
 
 response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
-smoking <- cbind(Smoking, response)
+smoking <- data.frame(Smoking, response)
 
-formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
-inclass(formula, pFUN = lm, data = smoking)
+inclass(formula, pFUN = list(list(model = lm)), cFUN = resp, data = smoking)
 
 
 ## Keywords: 'misc'.
@@ -487,16 +479,21 @@ dataset <- as.data.frame(cbind(theta90$explanatory, theta90$intermediate))
 names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
 
 classify <- function(Y, threshold = 0) {
+  Y <- as.data.frame(Y)
+  Y <- Y[,c("y1", "y2")]
   z <- (Y > threshold)
   resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
   return(resp)
 }
 
-formula <- flist(y1+y2~x1+x2)
+response <- classify(dataset)
+dataset <- data.frame(dataset)
 
-fit <- inclass(formula, pFUN = lm, data = dataset)
+formula <- response~y1+y2~x1+x2
 
-predict.inclass(object = fit, cFUN = classify, newdata = dataset)
+fit <- inclass(formula, pFUN = list(list(model = lm)), cFUN = classify, data = dataset)
+
+predict(object = fit, newdata = dataset)
 
 data(Smoking)
 
@@ -505,22 +502,23 @@ data(Smoking)
 # reponse is defined by:
 
 classify <- function(data){
+  data <- data[, c("TVPS", "BPNL", "COHB")]
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
 }
 
 response <- classify(Smoking[ ,c("TVPS", "BPNL", "COHB")])
-smoking <- cbind(Smoking, response)
+smoking <- data.frame(Smoking, response)
 
-formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
-fit <- inclass(formula, pFUN = lm, data = smoking)
+fit <- inclass(formula, pFUN = list(list(model = lm)), cFUN = classify, data = smoking)
 
-predict.inclass(object = fit, cFUN = classify, newdata = smoking)
+predict(object = fit, newdata = smoking)
 
 data(GlaucomaMVF)
-glaucoma <- GlaucomaMVF[,-67]
+glaucoma <- GlaucomaMVF
 # explanatory variables are derived by laser scanning image and intra occular pressure
 # intermediate variables are: clv, cs, lora
 # response is defined by
@@ -536,8 +534,9 @@ classify <- function (data) {
   factor (res, labels = c("glaucoma", "normal"))
 }
 
-fit <- inclass(clv+lora+cs~., data = glaucoma, pFUN = bagging)
-predict.inclass(object = fit, cFUN = classify, newdata = glaucoma)
+fit <- inbagg(Class~clv+lora+cs~., data = glaucoma, pFUN = list(list(model
+= rpart)), cFUN = classify, ns = 1, replace = TRUE)
+predict(object = fit, newdata = glaucoma)
 
 
 ## Keywords: 'misc'.

@@ -6,7 +6,7 @@
 }
 \usage{
 control.errorest(k = 10, nboot = 25, strat = FALSE, random = TRUE, 
-                 predictions = FALSE)
+                 predictions = FALSE, getmodels=FALSE)
 }
 \arguments{
   \item{k}{integer, specify $k$ for $k$-fold cross-validation.}
@@ -18,6 +18,8 @@ control.errorest(k = 10, nboot = 25, strat = FALSE, random = TRUE,
   \item{predictions}{logical, indicates whether the prediction
                      for each observation should be returned or not
                      (classification and regression only). }
+  \item{getmodels}{logical, indicates a list of all models should be
+                   returned. For cross-validation only.}
 }
 \value{
   A list with the same components as arguments. 

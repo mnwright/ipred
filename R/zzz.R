@@ -1,6 +1,6 @@
-# $Id: zzz.R,v 1.8 2002/09/12 08:59:13 hothorn Exp $
+# $Id: zzz.R,v 1.12 2003/07/22 14:56:31 peters Exp $
 
-.First.lib <- function(lib, pkg) {
+.onLoad <- function(lib, pkg) {
     if(!require(rpart))
         warning("Could not load package rpart")
     if(!require(MASS))
@@ -13,4 +13,7 @@
         warning("Could not load package class")
     if(!require(nnet))
         warning("Could not load package nnet")
+    if(!require(mvtnorm))
+        warning("Could not load package mvtnorm")
+    library.dynam("ipred", pkg, lib)
 }

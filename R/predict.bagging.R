@@ -1,4 +1,4 @@
-# $Id: predict.bagging.R,v 1.13 2003/02/13 16:37:48 hothorn Exp $
+# $Id: predict.bagging.R,v 1.16 2003/08/08 12:13:42 hothorn Exp $
 
 uwhich.max <- function(x) {
   # need to determine all maxima in order to sample from them
@@ -32,7 +32,7 @@ predict.classbagg <- function(object, newdata=NULL, type=c("class", "prob"),
     if (is.null(act)) act<- na.rpart
     newdata <- model.frame(Terms, newdata, na.action = act,
                            xlev=attr(tree, "xlevels"))
-    newdata <- rpart.matrix(newdata)
+    newdata <- getFromNamespace("rpart.matrix", ns = "rpart")(newdata)
   }
   classes <- levels(object$y)
   switch(agg, "majority" = {
@@ -146,7 +146,7 @@ predict.regbagg <- function(object, newdata=NULL, aggregation=c("average",
     if (is.null(act)) act<- na.rpart
     newdata <- model.frame(Terms, newdata, na.action = act,
                            xlev=attr(tree, "xlevels"))
-    newdata <- rpart.matrix(newdata)
+    newdata <- getFromNamespace("rpart.matrix", ns = "rpart")(newdata)
   }
   switch(agg, "average" = {
     cprob <- rep(0, N)
@@ -220,7 +220,7 @@ predict.survbagg <- function(object, newdata=NULL, ...) {
     if (is.null(act)) act<- na.rpart
     newdata <- model.frame(Terms, newdata, na.action = act,
                            xlev=attr(tree, "xlevels"))
-    newdata <- rpart.matrix(newdata)
+    newdata <- getFromNamespace("rpart.matrix", ns = "rpart")(newdata)
   }
   agglsample <- list()
   aggcens <- list()
@@ -260,8 +260,8 @@ getpartition <- function(object, newdata=NULL) {
     if (is.null(act)) act<- na.rpart
     newdata <- model.frame(Terms, newdata, na.action = act,
                              xlev=attr(object$btree, "xlevels"))
-    newdata <- rpart.matrix(newdata)
+    newdata <- getFromNamespace("rpart.matrix", ns = "rpart")(newdata)
   }
-  pred.rpart(object$btree, newdata)
+  getFromNamespace("pred.rpart", ns = "rpart")(object$btree, newdata)
 }
 

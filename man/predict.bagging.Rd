@@ -30,7 +30,7 @@ bagging classification trees. Most famous is class majority voting
 (\code{aggregation="majority"}) where the most frequent class is returned. The
 second way is choosing the class with maximal averaged class probability
 (\code{aggregation="average"}). The third method is based on the "aggregated learning
-sample", introduced by Hothorn et al. (2002) for survival trees.
+sample", introduced by Hothorn et al. (2003) for survival trees.
 The prediction of a new observation is the majority class, mean or
 Kaplan-Meier curve of all observations from the learning sample 
 identified by the \code{nbagg} leaves containing the new observation.  
@@ -59,9 +59,11 @@ Leo Breiman (1996), Bagging Predictors. \emph{Machine Learning}
 \bold{24}(2), 123--140.
 
 Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
-Radespiel-Troeger (2002), Bagging Survival Trees. \emph{submitted},
-preprint available from
+Radespiel-Troeger (2003), Bagging Survival Trees. \emph{Statistics in
+Medicine} (accepted).
+Preprint available from
 \url{http://www.mathpreprints.com/math/Preprint/blausen/20020518/2}.
+ 
 
 
 }

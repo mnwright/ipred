@@ -1,4 +1,4 @@
-#$Id: ipredbagg.R,v 1.11 2003/03/12 17:06:40 hothorn Exp $
+#$Id: ipredbagg.R,v 1.13 2003/06/11 10:40:17 peters Exp $
 
 workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
   # This is double-bagging (comb is lda) or bundling (any arbritrary
@@ -86,7 +86,8 @@ workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
 ipredbagg <- function(y, ...) {
   if(is.null(class(y))) 
     class(y) <- data.class(y)
-  UseMethod("ipredbagg", y, ...)
+#  UseMethod("ipredbagg", y, ...)
+  UseMethod("ipredbagg", y)
 }
 
 ipredbagg.default <- function(y, ...) {

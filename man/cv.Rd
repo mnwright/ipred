@@ -12,7 +12,7 @@ are normally not called by users.
 }
 \usage{
 \method{cv}{factor}(y, formula, data, model, predict, k=10, random=TRUE, strat=TRUE,
-            predictions=FALSE,  \dots) 
+            predictions=NULL, getmodels=NULL, \dots) 
 }
 \arguments{
   \item{y}{response variable, either of class \code{factor}
@@ -33,6 +33,7 @@ on the fitted model in \code{object}.}
 order of the data should be used for sample splitting or not.}
   \item{strat}{logical, stratified sampling or not.}
   \item{predictions}{logical, return the prediction of each observation.}
+  \item{getmodels}{logical, return a list of models for each fold.}
   \item{\dots}{additional arguments to \code{model}.}
 }
 \details{

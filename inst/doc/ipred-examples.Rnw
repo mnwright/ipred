@@ -8,12 +8,12 @@
 
 %%\VignetteIndexEntry{Some more or less useful examples for illustration.}
 %%\VignetteDepends{ipred}
-
+%\textwidth=6.2in 
 
 \begin{document}
 \title{\ipred: Improved Predictors}
 \date{}
-\SweaveOpts{engine=R,eps=TRUE}
+\SweaveOpts{engine=R,eps=TRUE,pdf=TRUE}
 
 <<preliminaries,echo=FALSE>>=
 options(prompt=">", width=50)
@@ -198,14 +198,26 @@ sample \texttt{GlaucomaMVF}. We assign the given variables to explanatory
 and intermediate by specifying the input formula.
 <<indirect.formula, echo=TRUE>>=
 data(GlaucomaMVF)
-formula.indirect <- clv + lora + cs ~ .
+GlaucomaMVF <- GlaucomaMVF[,-63]
+formula.indirect <- Class~clv + lora + cs ~ .
 @
 The variables on the left-hand side represent the intermediate variables, 
 modeled by the explanatory variables on the right-hand side. Almost each 
 modeling technique can be used to predict the intermediate variables. We 
-chose a linear model by \texttt{pFUN = lm}.
+chose a linear model by \texttt{pFUN = list(list(model = lm))}.
 <<indirect.fit, echo=TRUE>>=
-fit <- inclass(formula.indirect, pFUN = lm, data = GlaucomaMVF)
+classify <- function (data) {
+  attach(data)
+  res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >=
+        49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) &
+        clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) &
+        !is.na(lora) & !is.na(cs) & lora >= 58.55409 & cs < 1.405) |
+        (!is.na(clv) & is.na(lora) & cs < 1.405), 0, 1)
+  detach(data)
+  factor (res, labels = c("glaucoma", "normal"))
+}
+fit <- inclass(formula.indirect, pFUN = list(list(model = lm)), 
+  cFUN = classify, data = GlaucomaMVF)
 @
 \texttt{print} displays the subdivision of variables and the chosen 
 modeling technique
@@ -217,22 +229,10 @@ variables based on the explanatory variables and classifies them
 according to a fixed classifying function in a second step, that means 
 a deterministically known function for the class membership has to be 
 specified. In our example this function is given in 
-Figure \ref{diag} and implemented in the function \texttt{classify}.
-<<classify, echo=TRUE>>=
-classify <- function (data) {
-  attach(data)
-  res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >=
-        49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) &
-        clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) &
-        !is.na(lora) & !is.na(cs) & lora >= 58.55409 & cs < 1.405) |
-        (!is.na(clv) & is.na(lora) & cs < 1.405), 0, 1)
-  detach(data)
-  factor (res, labels = c("glaucoma", "normal"))
-}
-@
+Figure \ref{diag} and implemented in the function \texttt{classify}.\\
 Prediction of future observations is now performed by
 <<predict.indirect, echo=TRUE>>=
-predict(object = fit, cFUN = classify, newdata = GlaucomaMVF[c(1:3, 86:88),])
+predict(object = fit, newdata = GlaucomaMVF[c(1:3, 86:88),])
 @
 We perform a bootstrap aggregated indirect classification approach by 
 choosing \texttt{pFUN = bagging} and specifying the number of 
@@ -240,9 +240,15 @@ bootstrap samples \citep{ifcs:2001}. Regression or classification
 trees are fitted for each bootstrap sample, with respect to the 
 measurement scale of the specified intermediate variables 
 <<bagging.indirect, echo=TRUE>>=
-fit <- inclass(formula.indirect, pFUN = bagging, nbagg = 25, 
-data = GlaucomaMVF)
-fit
+mypredict.rpart <- function(object, newdata) {
+  RES <- predict(object, newdata)
+  RET <- rep(NA, nrow(newdata))
+  NAMES <- rownames(newdata)
+  RET[NAMES %in% names(RES)] <- RES[NAMES[NAMES %in% names(RES)]]
+  RET
+}
+fit <- inbagg(formula.indirect, pFUN = list(list(model = rpart, predict =
+mypredict.rpart)), cFUN = classify, nbagg = 25,  data = GlaucomaMVF)
 @
 The call for the prediction of values remains unchanged.
 
@@ -281,21 +287,15 @@ errorest(Class ~ ., data= GlaucomaM,
   model=lda, estimator = "cv", predict= mypredict.lda)
 @
 For the indirect approach the specification of the call becomes 
-slightly more complicated. Again for a unified interface a wrapper 
-function has to be used, which incorporates the fixed classification rule
-<<pinclass, echo=TRUE>>=
-mypredict.inclass <- function(object, newdata){
-  res <- predict.inclass(object = object, cFUN = classify, newdata = newdata)
-  return(res)
-}
-@
+slightly more complicated. 
+%Again for a unified interface a wrapper 
+%function has to be used, which incorporates the fixed classification rule
 The bias corrected estimator {\sl .632+} is computed by 
 <<cvindirect, echo=TRUE>>=
 errorest(formula.indirect, 
   data = GlaucomaMVF, model = inclass, 
-  predict = mypredict.inclass,
   estimator = "632plus", 
-  iclass = "Class", pFUN = lm)
+  pFUN = list(list(model = lm)), cFUN = classify)
 @
 Because of the subdivision of variables and a formula describing the 
 modeling between explanatory and intermediate variables only, 

@@ -5,7 +5,8 @@
   Simulation Setup for Survival Data.
 }
 \usage{
-rsurv(N, model=c("A", "B", "C", "tree"), gamma=1, fact=1, pnon=10)
+rsurv(N, model=c("A", "B", "C", "tree"), gamma=1, fact=1, pnon=10,
+      gethaz=FALSE)
 }
 \arguments{
   \item{N}{ number of observations. }
@@ -14,16 +15,19 @@ rsurv(N, model=c("A", "B", "C", "tree"), gamma=1, fact=1, pnon=10)
   \item{fact}{scale parameter for \code{model=tree}.}
   \item{pnon}{number of additional non-informative variables for the tree
               model.}
+  \item{gethaz}{logical, indicating wheather the hazard rate for each 
+                observation should be returned.}
 }
 \details{
   Simulation setup similar to configurations used in LeBlanc and Crowley
 (1992) or Keles and Segal (2002) as well as a tree model used in Hothorn et
-al. (2002). See Hothorn et al. (2002) for the details. 
+al. (2002). See Hothorn et al. (2003) for the details. 
 }
 \value{
   A data  frame with elements \code{time}, \code{cens}, \code{X1} ...
 \code{X5}. If \code{pnon} > 0, additional noninformative covariables are
-added.
+added. If \code{gethaz=TRUE}, the \code{hazard} attribute returns the hazard
+rates.
 }
 \references{ 
 
@@ -33,9 +37,11 @@ added.
  S. Keles and M. R. Segal (2002), Residual-based tree-structured 
  survival analysis. \emph{Statistics in Medicine}, \bold{21}, 313--326.
 
- T. Hothorn, B. Lausen, A. Benner and M. Radespiel-Troeger (2002), 
- Bagging Survival Trees. \emph{submitted}. Preprint available from
+ Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
+ Radespiel-Troeger (2003), Bagging Survival Trees. \emph{Statistics in
+ Medicine} (accepted). Preprint available from
  \url{http://www.mathpreprints.com/math/Preprint/blausen/20020518/2}.
+ 
 
 }
 \examples{

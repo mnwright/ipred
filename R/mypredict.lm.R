@@ -1,11 +1,11 @@
-# $Id: mypredict.lm.R,v 1.6 2002/03/26 16:29:15 hothorn Exp $
+# $Id: mypredict.lm.R,v 1.7 2003/04/02 11:22:49 peters Exp $
 
 mypredict.lm <- function(object, newdata) {
 
   xn <- as.data.frame(newdata)
 
-  test <- attr(terms(object), "variables")
-  xn <- xn[,paste(test)[-1]]
+  test <- attr(terms(object), "term.labels")
+  xn <- xn[,test]
 
   if (!is.null(nrow(xn))) {
     pred <- rep(NA, nrow(xn))

@@ -1,17 +1,17 @@
 
 R : Copyright 2003, The R Development Core Team
-Version 1.6.2  (2003-01-10)
+Version 1.8.0 Under development (unstable) (2003-07-23)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
-Type `license()' or `licence()' for distribution details.
+Type 'license()' or 'licence()' for distribution details.
 
 R is a collaborative project with many contributors.
-Type `contributors()' for more information.
+Type 'contributors()' for more information.
 
-Type `demo()' for some demos, `help()' for on-line help, or
-`help.start()' for a HTML browser interface to help.
-Type `q()' to quit R.
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
 
 > library('ipred')
 Loading required package: rpart 
@@ -20,13 +20,14 @@ Loading required package: mlbench
 Loading required package: survival 
 Loading required package: class 
 Loading required package: nnet 
+Loading required package: mvtnorm 
 > 
 > actversion <- paste(R.version$major, R.version$minor, sep=".")
 > thisversion <- "1.7.0"
 > 
-> if (compareVersion(actversion, thisversion) >= 0) {
-+   RNGversion("1.6.2")
-+ }
+> #if (compareVersion(actversion, thisversion) >= 0) {
+> #  RNGversion("1.6.2")
+> #}
 > set.seed(29081975)
 > 
 > 
@@ -45,10 +46,10 @@ Bagging classification trees with 10 bootstrap replications
 Call: bagging.data.frame(formula = classes ~ ., data = learn, coob = TRUE, 
     nbagg = 10)
 
-Out-of-bag estimate of misclassification error:  0.17 
+Out-of-bag estimate of misclassification error:  0.195 
 
 > predict(mod)[1:10]
- [1] 1 1 1 2 2 1 1 1 1 1
+ [1] 1 1 1 2 2 2 1 1 1 1
 Levels: 1 2
 > 
 > # Double-Bagging
@@ -66,50 +67,50 @@ Call: bagging.data.frame(formula = classes ~ ., data = learn, comb = comb.lda,
 
 
 > predict(mod, newdata=test[1:10,])
- [1] 1 2 1 2 2 2 2 2 1 2
+ [1] 1 1 1 1 1 2 1 2 1 2
 Levels: 1 2
 > predict(mod, newdata=test[1:10,], agg="aver")
- [1] 1 2 1 2 2 2 2 2 1 2
+ [1] 1 1 1 1 2 2 1 2 1 2
 Levels: 1 2
 > predict(mod, newdata=test[1:10,], agg="wei")
- [1] 1 2 1 2 2 2 2 2 1 2
+ [1] 1 1 1 1 2 2 1 2 1 2
 Levels: 1 2
 > predict(mod, newdata=test[1:10,], type="prob")
         1   2
- [1,] 0.8 0.2
- [2,] 0.0 1.0
+ [1,] 1.0 0.0
+ [2,] 0.9 0.1
  [3,] 1.0 0.0
- [4,] 0.0 1.0
- [5,] 0.0 1.0
+ [4,] 1.0 0.0
+ [5,] 0.5 0.5
  [6,] 0.0 1.0
- [7,] 0.1 0.9
- [8,] 0.3 0.7
+ [7,] 1.0 0.0
+ [8,] 0.1 0.9
  [9,] 1.0 0.0
 [10,] 0.0 1.0
 > predict(mod, newdata=test[1:10,], type="prob", agg="aver")
         1   2
- [1,] 0.8 0.2
- [2,] 0.0 1.0
+ [1,] 1.0 0.0
+ [2,] 0.9 0.1
  [3,] 1.0 0.0
- [4,] 0.0 1.0
- [5,] 0.0 1.0
+ [4,] 1.0 0.0
+ [5,] 0.5 0.5
  [6,] 0.0 1.0
- [7,] 0.1 0.9
- [8,] 0.3 0.7
+ [7,] 1.0 0.0
+ [8,] 0.1 0.9
  [9,] 1.0 0.0
 [10,] 0.0 1.0
 > predict(mod, newdata=test[1:10,], type="prob", agg="wei")
-               1           2
- [1,] 0.99333333 0.006666667
- [2,] 0.00000000 1.000000000
- [3,] 1.00000000 0.000000000
- [4,] 0.00000000 1.000000000
- [5,] 0.00000000 1.000000000
- [6,] 0.00000000 1.000000000
- [7,] 0.10081466 0.899185336
- [8,] 0.01419878 0.985801217
- [9,] 1.00000000 0.000000000
-[10,] 0.00000000 1.000000000
+                1           2
+ [1,] 1.000000000 0.000000000
+ [2,] 0.996441281 0.003558719
+ [3,] 1.000000000 0.000000000
+ [4,] 1.000000000 0.000000000
+ [5,] 0.484359233 0.515640767
+ [6,] 0.000000000 1.000000000
+ [7,] 1.000000000 0.000000000
+ [8,] 0.001138952 0.998861048
+ [9,] 1.000000000 0.000000000
+[10,] 0.000000000 1.000000000
 > 
 > mypredict.lda <- function(object, newdata)
 +        predict(object, newdata = newdata)$class
@@ -122,7 +123,7 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = lda,
 
 	 10-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.03 
+Misclassification error:  0.035 
 
 > errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
 + est.para=list(k=5, random=FALSE))
@@ -133,7 +134,24 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = lda,
 
 	 5-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.03 
+Misclassification error:  0.04 
+
+> lapply(errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
++ est.para=list(k=5, random=FALSE, getmodels=TRUE))$models, class)
+[[1]]
+[1] "lda"
+
+[[2]]
+[1] "lda"
+
+[[3]]
+[1] "lda"
+
+[[4]]
+[1] "lda"
+
+[[5]]
+[1] "lda"
 
 > errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
 + nbagg=10)
@@ -144,7 +162,7 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = bagging,
 
 	 2-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.155 
+Misclassification error:  0.13 
 
 > errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
 + nbagg=10, comb=comb.lda)
@@ -155,7 +173,7 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = bagging,
 
 	 2-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.06 
+Misclassification error:  0.07 
 
 > errorest(classes ~ ., data=learn, model=lda,
 + predict=mypredict.lda, estimator="boot")
@@ -167,8 +185,8 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = lda,
 	 Bootstrap estimator of misclassification error 
 	 with 25 bootstrap replications
 
-Misclassification error:  0.048 
-Standard deviation: 0.0052 
+Misclassification error:  0.0395 
+Standard deviation: 0.0023 
 
 > errorest(classes ~ ., data=learn, model=lda,
 + predict=mypredict.lda, estimator="632plus")
@@ -180,7 +198,7 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = lda,
 	 .632+ Bootstrap estimator of misclassification error 
 	 with 25 bootstrap replications
 
-Misclassification error:  0.033 
+Misclassification error:  0.0331 
 
 > 
 > # Regression
@@ -198,21 +216,21 @@ Bagging regression trees with 10 bootstrap replications
 Call: bagging.data.frame(formula = y ~ ., data = learn, coob = TRUE, 
     nbagg = 10)
 
-Out-of-bag estimate of root mean squared error:  3.1874 
+Out-of-bag estimate of root mean squared error:  3.4471 
 
 > predict(mod)[1:10]
- [1]        NA 15.532137  7.306890  8.981709 14.445341 10.741602 17.357103
- [8] 11.093114 11.400889  7.545898
+ [1] 14.832807  9.278918  9.219854 12.524778 16.815055  8.967995        NA
+ [8] 13.428337 12.907729 14.159305
 > 
 > predict(mod, newdata=test[1:10,])
- [1] 19.477639 19.225918 16.964340  7.706251 14.497439 16.291955 13.541693
- [8]  9.843498 18.893207 19.511636
+ [1] 17.886853 15.918700 10.594017 21.354134 16.893509 15.526948 16.583579
+ [8]  9.883741 15.016663 18.026174
 > predict(mod, newdata=test[1:10,], agg="aver") 
- [1] 19.477639 19.225918 16.964340  7.706251 14.497439 16.291955 13.541693
- [8]  9.843498 18.893207 19.511636
+ [1] 17.886853 15.918700 10.594017 21.354134 16.893509 15.526948 16.583579
+ [8]  9.883741 15.016663 18.026174
 > predict(mod, newdata=test[1:10,], agg="wei")  
- [1] 19.795115 19.329776 17.186216  7.817882 14.448255 16.075408 13.607599
- [8] 10.104368 18.992186 19.495389
+ [1] 18.15920 15.90136 10.70243 21.22251 16.81084 15.64950 16.95415 10.27786
+ [9] 15.63578 18.30429
 > errorest(y ~ ., data=learn, model=lm)
 
 Call:
@@ -220,7 +238,7 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm)
 
 	 10-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  2.7929 
+Root mean squared error:  2.8058 
 
 > errorest(y ~ ., data=learn, model=lm, est.para=list(k=5, random=FALSE))
 
@@ -230,7 +248,24 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm,
 
 	 5-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  2.8395 
+Root mean squared error:  2.7246 
+
+> lapply(errorest(y ~ ., data=learn, model=lm, est.para=list(k=5,
++ random=FALSE, getmodels=TRUE))$models, class)
+[[1]]
+[1] "lm"
+
+[[2]]
+[1] "lm"
+
+[[3]]
+[1] "lm"
+
+[[4]]
+[1] "lm"
+
+[[5]]
+[1] "lm"
 
 > errorest(y ~ ., data=learn, model=lm, estimator="boot")
 
@@ -241,7 +276,7 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm,
 	 Bootstrap estimator of root mean squared error 
 	 with 25 bootstrap replications
 
-Root mean squared error:  2.926 
+Root mean squared error:  2.9613 
 
 > 
 > # survival
@@ -263,61 +298,61 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 133.0000  133.0000    0.4573    0.0361    0.3211    0.2651    0.3811 
+ 1.43e+02  1.43e+02  6.86e-02  7.27e-03  4.92e-02  4.11e-02  5.97e-02 
 
 [[2]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 1.44e+02  1.44e+02  2.21e-02  2.29e-03  1.68e-02  1.18e-02  2.15e-02 
+ 128.0000  128.0000    0.3946    0.0355    0.2834    0.2425    0.3663 
 
 [[3]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 1.40e+02  1.40e+02  4.10e-02  4.36e-03  2.74e-02  2.45e-02  3.55e-02 
+ 1.30e+02  1.30e+02  4.54e-02  3.49e-03  3.66e-02  2.91e-02  4.49e-02 
 
 [[4]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 146.0000  146.0000    0.7953    0.0457    0.6637    0.5685    0.8553 
+ 138.0000  138.0000    0.3892    0.0348    0.2736    0.2187    0.2942 
 
 [[5]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 1.54e+02  1.54e+02  3.08e-02  2.87e-03  2.15e-02  1.98e-02  2.45e-02 
+ 139.0000  139.0000    0.1337    0.0221    0.0492    0.0439    0.0552 
 
 [[6]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 137.0000  137.0000    0.3398    0.0198    0.3152    0.2385    0.3811 
+ 133.0000  133.0000    0.1747    0.0134    0.1372    0.1111    0.1626 
 
 [[7]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 127.0000  127.0000    0.1428    0.0181    0.0474    0.0325    0.1068 
+ 1.46e+02  1.46e+02  9.17e-02  6.54e-03  6.82e-02  5.44e-02  1.12e-01 
 
 [[8]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 1.44e+02  1.44e+02  2.21e-02  2.29e-03  1.68e-02  1.18e-02  2.15e-02 
+ 124.0000  124.0000    0.3698    0.0384    0.2603    0.1817    0.2942 
 
 [[9]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 127.0000  127.0000    0.2356    0.0197    0.1701    0.1589    0.2188 
+ 1.46e+02  1.46e+02  7.71e-02  7.65e-03  5.52e-02  4.13e-02  7.68e-02 
 
 [[10]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
- 117.0000  117.0000    0.1340    0.0125    0.1042    0.0548    0.1589 
+ 1.35e+02  1.35e+02  3.44e-02  2.58e-03  2.84e-02  2.41e-02  3.42e-02 
 
 > 
 > errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
@@ -330,7 +365,7 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 
 	 2-fold cross-validation estimator of Brier's score
 
-Brier's score:  0.0765 
+Brier's score:  0.0617 
 
 > errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
 +          estimator="boot", nbagg=5, est.para=list(nboot=5))
@@ -343,7 +378,16 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 	 Bootstrap estimator of Brier's score
 	 with 5 bootstrap replications
 
-Brier's score:  0.0721 
+Brier's score:  0.095 
+
+> lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
++          estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
++          getmodels=TRUE))$models, class)
+[[1]]
+[1] "survbagg"
+
+[[2]]
+[1] "survbagg"
 
 > 
 > # bundling for regression
@@ -363,8 +407,8 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 
 
 > predict(modc, newdata=learn)[1:10]
- [1] 22.136593  5.802498 19.063319 15.700646 18.800151 11.746587  9.941371
- [8] 14.538651 10.786794 11.811248
+ [1] 19.884659  7.979953 15.136274 17.090984 10.593808 15.343204 17.641397
+ [8] 12.360645 14.277689 10.893690
 > 
 > # bundling for survival
 > 
@@ -378,25 +422,25 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
-    892.0     448.0    1577.9      30.7    1601.0    1502.0    1753.0 
+   1086.0     485.0    1696.4      29.4    1753.0    1675.0    1814.0 
 
 [[2]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
-      921       304      1879        32      2093      2018      2372 
+    583.0     279.0    1580.3      39.9    1814.0    1701.0    2015.0 
 
 [[3]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
 
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
-    580.0     352.0    1270.3      36.2     918.0     859.0    1090.0 
+    651.0     324.0    1482.9      35.9    1493.0    1337.0    1814.0 
 
 > 
 > # test for method dispatch on integer valued responses
 > y <- sample(1:100, 100)
 > class(y)
-NULL
+[1] "integer"
 > x <- matrix(rnorm(100*5), ncol=5)
 > mydata <- as.data.frame(cbind(y, x))
 > 
@@ -404,14 +448,14 @@ NULL
 
 	 10-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  30.332 
+Root mean squared error:  30.3495 
 
 > bootest(y, y ~ ., data=mydata, model=lm, predict=predict)
 
 	 Bootstrap estimator of root mean squared error 
 	 with 25 bootstrap replications
 
-Root mean squared error:  31.1361 
+Root mean squared error:  31.8694 
 
 > bagging(y ~., data=mydata, nbagg=10)
 

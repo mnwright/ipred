@@ -1,4 +1,4 @@
-# $Id: ipredknn.R,v 1.3 2003/03/03 11:56:34 hothorn Exp $
+# $Id: ipredknn.R,v 1.4 2003/03/31 08:44:16 peters Exp $
 
 # k-NN compatible with the fit(formula) - predict(object) framework
 

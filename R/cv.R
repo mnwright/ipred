@@ -1,9 +1,10 @@
-#$Id: cv.R,v 1.17 2003/03/12 17:06:40 hothorn Exp $
+#$Id: cv.R,v 1.19 2003/06/11 10:40:17 peters Exp $
 
 cv <- function(y, ...) {
   if(is.null(class(y)))
     class(y) <- data.class(y)
-  UseMethod("cv", y, ...)
+#  UseMethod("cv", y, ...)
+  UseMethod("cv", y)
 }
 
 cv.default <- function(y, ...) {
@@ -15,7 +16,7 @@ cv.integer <- function(y, ...) {
 }
 
 cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE, 
-                      strat=FALSE, predictions=NULL, ...) {
+                      strat=FALSE, predictions=NULL, getmodels=NULL,...) {
 
   # k-fold cross-validation of misclassification error
 
@@ -28,6 +29,7 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
   if (is.null(random)) random <- TRUE
   if (is.null(strat)) strat <- FALSE
   if (is.null(predictions)) predictions <- FALSE
+  if (is.null(getmodels)) getmodels <- FALSE
   USEPM <- FALSE
 
   # to reproduce results, either use `set.seed' or a fixed partition of 
@@ -48,10 +50,15 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
   allpred <- vector(mode="character", length=N)
   fu <- function(x) levels(x)[as.integer(x)]
   nindx <- 1:N
+
+  if (getmodels)
+    models <- vector(k, mode="list")
+
   for(i in 1:k) {
     tindx <- mysplit[[i]]
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)
+    if (getmodels) models[[i]] <- mymodel
 
     # check of mymodel is a function which should be used instead of
     # predict
@@ -83,12 +90,14 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
     RET <- list(error = err, k = k, predictions=allpred)
   else 
     RET <- list(error = err, k = k)
+  if (getmodels)
+    RET <- c(RET, models=list(models))
   class(RET) <- "cvclass"
   RET
 }
 
 cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
-                       predictions=NULL, strat=NULL, ...) {
+                       predictions=NULL, strat=NULL, getmodels=NULL,...) {
 
   # k-fold cross-validation of mean squared error 
 
@@ -98,6 +107,7 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
   if (is.null(k)) k <- 10
   if (is.null(random)) random <- TRUE
   if (is.null(predictions)) predictions <- FALSE
+  if (is.null(getmodels)) getmodels <- FALSE   
   USEPM <- FALSE
   # determine an appropriate splitting for the sample size into
   # k roughly equally sized parts
@@ -112,6 +122,9 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
     myindx <- 1:N
   nindx <- 1:N
 
+  if (getmodels)
+    models <- vector(k, mode="list")
+
   allpred <- rep(0, N)
   for(i in 1:k) {
     if (i > 1)
@@ -121,6 +134,7 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
     
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)
+    if (getmodels) models[[i]] <- mymodel
 
     # check of mymodel is a function which should be used instead of
     # predict
@@ -144,12 +158,14 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
     RET <- list(error = err, k = k, predictions=allpred)
   else
     RET <- list(error = err, k = k)
+  if (getmodels) 
+    RET <- c(RET, models=list(models))
   class(RET) <- "cvreg" 
   RET  
 }
 
 cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
-                    predictions=FALSE, strat=FALSE, ...) {
+                    predictions=FALSE, strat=FALSE, getmodels=NULL, ...) {
 
   # k-fold cross-validation of Brier's score
 
@@ -157,6 +173,7 @@ cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
   if(is.null(random)) random <- TRUE
   if (is.null(predictions)) predictions <- FALSE
   if (is.null(strat)) strat <- FALSE
+  if (is.null(getmodels)) getmodels <- FALSE   
   USEPM <- FALSE
 
   N <- length(y[,1])
@@ -179,6 +196,9 @@ cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
   else
     myindx <- 1:N
 
+  if (getmodels)
+    models <- vector(k, mode="list")
+
   cverr <- c()
   for(i in 1:k) {
     if (i > 1)
@@ -188,6 +208,7 @@ cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
 
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)
+    if (getmodels) models[[i]] <- mymodel
 
     # check if mymodel is a function which should be used instead of
     # predict
@@ -214,6 +235,8 @@ cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
     cverr <- c(cverr,rep(err, length(tindx)))
   }
   RET <- list(error = mean(cverr), k=k)
+  if (getmodels) 
+    RET <- c(RET, models=list(models))
   class(RET) <- "cvsurv" 
   RET  
 }

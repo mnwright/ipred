@@ -73,7 +73,7 @@ The trees in this function are computed using the implementation in the
 implements methods for different responses. If \code{y} is a factor,
 classification trees are constructed. For numerical vectors
 \code{y}, regression trees are aggregated and if \code{y} is a survival 
-object, bagging survival trees (Hothorn et al, 2002) is performed. 
+object, bagging survival trees (Hothorn et al, 2003) is performed. 
 The function \code{bagging} offers a formula based interface to
 \code{ipredbagg}.
 
@@ -151,7 +151,8 @@ Preprint available from
 \url{http://www.mathpreprints.com/math/Preprint/blausen/20021016/1}.
 
 Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
-Radespiel-Troeger (2002), Bagging Survival Trees. \emph{submitted}.
+Radespiel-Troeger (2003), Bagging Survival Trees. \emph{Statistics in
+Medicine} (accepted).
 Preprint available from
 \url{http://www.mathpreprints.com/math/Preprint/blausen/20020518/2}.
 

@@ -8,7 +8,7 @@
 
 %%\VignetteIndexEntry{Some more or less useful examples for illustration.}
 %%\VignetteDepends{ipred}
-
+%\textwidth=6.2in 
 
 \usepackage{/usr/local/lib/R/share/texmf/Sweave}
 \begin{document}
@@ -134,6 +134,7 @@ Loading required package: mlbench
 Loading required package: survival 
 Loading required package: class 
 Loading required package: nnet 
+Loading required package: mvtnorm 
 \end{Soutput}
 \begin{Sinput}
 >data(GlaucomaM)
@@ -229,18 +230,34 @@ and intermediate by specifying the input formula.
 \begin{Schunk}
 \begin{Sinput}
 >data(GlaucomaMVF)
->formula.indirect <- clv + lora + cs ~ 
-+     .
+>GlaucomaMVF <- GlaucomaMVF[, -63]
+>formula.indirect <- Class ~ clv + lora + 
++     cs ~ .
 \end{Sinput}
 \end{Schunk}
 The variables on the left-hand side represent the intermediate variables, 
 modeled by the explanatory variables on the right-hand side. Almost each 
 modeling technique can be used to predict the intermediate variables. We 
-chose a linear model by \texttt{pFUN = lm}.
+chose a linear model by \texttt{pFUN = list(list(model = lm))}.
 \begin{Schunk}
 \begin{Sinput}
->fit <- inclass(formula.indirect, pFUN = lm, 
-+     data = GlaucomaMVF)
+>classify <- function(data) {
++     attach(data)
++     res <- ifelse((!is.na(clv) & !is.na(lora) & 
++         clv >= 5.1 & lora >= 49.23372) | 
++         (!is.na(clv) & !is.na(lora) & 
++             !is.na(cs) & clv < 5.1 & lora >= 
++             58.55409 & cs < 1.405) | (is.na(clv) & 
++         !is.na(lora) & !is.na(cs) & lora >= 
++         58.55409 & cs < 1.405) | (!is.na(clv) & 
++         is.na(lora) & cs < 1.405), 0, 
++         1)
++     detach(data)
++     factor(res, labels = c("glaucoma", 
++         "normal"))
++ }
+>fit <- inclass(formula.indirect, pFUN = list(list(model = lm)), 
++     cFUN = classify, data = GlaucomaMVF)
 \end{Sinput}
 \end{Schunk}
 \texttt{print} displays the subdivision of variables and the chosen 
@@ -261,32 +278,12 @@ variables based on the explanatory variables and classifies them
 according to a fixed classifying function in a second step, that means 
 a deterministically known function for the class membership has to be 
 specified. In our example this function is given in 
-Figure \ref{diag} and implemented in the function \texttt{classify}.
-\begin{Schunk}
-\begin{Sinput}
->classify <- function(data) {
-+     attach(data)
-+     res <- ifelse((!is.na(clv) & !is.na(lora) & 
-+         clv >= 5.1 & lora >= 49.23372) | 
-+         (!is.na(clv) & !is.na(lora) & 
-+             !is.na(cs) & clv < 5.1 & lora >= 
-+             58.55409 & cs < 1.405) | (is.na(clv) & 
-+         !is.na(lora) & !is.na(cs) & lora >= 
-+         58.55409 & cs < 1.405) | (!is.na(clv) & 
-+         is.na(lora) & cs < 1.405), 0, 
-+         1)
-+     detach(data)
-+     factor(res, labels = c("glaucoma", 
-+         "normal"))
-+ }
-\end{Sinput}
-\end{Schunk}
+Figure \ref{diag} and implemented in the function \texttt{classify}.\\
 Prediction of future observations is now performed by
 \begin{Schunk}
 \begin{Sinput}
->predict(object = fit, cFUN = classify, 
-+     newdata = GlaucomaMVF[c(1:3, 86:88), 
-+         ])
+>predict(object = fit, newdata = GlaucomaMVF[c(1:3, 
++     86:88), ])
 \end{Sinput}
 \begin{Soutput}
 [1] normal   normal   normal   glaucoma glaucoma
@@ -301,16 +298,18 @@ trees are fitted for each bootstrap sample, with respect to the
 measurement scale of the specified intermediate variables 
 \begin{Schunk}
 \begin{Sinput}
->fit <- inclass(formula.indirect, pFUN = bagging, 
+>mypredict.rpart <- function(object, newdata) {
++     RES <- predict(object, newdata)
++     RET <- rep(NA, nrow(newdata))
++     NAMES <- rownames(newdata)
++     RET[NAMES %in% names(RES)] <- RES[NAMES[NAMES %in% 
++         names(RES)]]
++     RET
++ }
+>fit <- inbagg(formula.indirect, pFUN = list(list(model = rpart, 
++     predict = mypredict.rpart)), cFUN = classify, 
 +     nbagg = 25, data = GlaucomaMVF)
->fit
 \end{Sinput}
-\begin{Soutput}
- Indirect classification, with 3 intermediate variables: 
- clv lora cs 
- 
- Predictive model per intermediate is regbagg 
-\end{Soutput}
 \end{Schunk}
 The call for the prediction of values remains unchanged.
 
@@ -358,40 +357,30 @@ errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = lda,
 
 	 10-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.2806 
+Misclassification error:  0.2041 
 \end{Soutput}
 \end{Schunk}
 For the indirect approach the specification of the call becomes 
-slightly more complicated. Again for a unified interface a wrapper 
-function has to be used, which incorporates the fixed classification rule
-\begin{Schunk}
-\begin{Sinput}
->mypredict.inclass <- function(object, 
-+     newdata) {
-+     res <- predict.inclass(object = object, 
-+         cFUN = classify, newdata = newdata)
-+     return(res)
-+ }
-\end{Sinput}
-\end{Schunk}
+slightly more complicated. 
+%Again for a unified interface a wrapper 
+%function has to be used, which incorporates the fixed classification rule
 The bias corrected estimator {\sl .632+} is computed by 
 \begin{Schunk}
 \begin{Sinput}
 >errorest(formula.indirect, data = GlaucomaMVF, 
-+     model = inclass, predict = mypredict.inclass, 
-+     estimator = "632plus", iclass = "Class", 
-+     pFUN = lm)
++     model = inclass, estimator = "632plus", 
++     pFUN = list(list(model = lm)), cFUN = classify)
 \end{Sinput}
 \begin{Soutput}
 Call:
 errorest.data.frame(formula = formula.indirect, data = GlaucomaMVF, 
-    model = inclass, predict = mypredict.inclass, iclass = "Class", 
-    estimator = "632plus", pFUN = lm)
+    model = inclass, estimator = "632plus", pFUN = list(list(model = lm)), 
+    cFUN = classify)
 
 	 .632+ Bootstrap estimator of misclassification error 
 	 with 25 bootstrap replications
 
-Misclassification error:  0.2461 
+Misclassification error:  0.2417 
 \end{Soutput}
 \end{Schunk}
 Because of the subdivision of variables and a formula describing the 
@@ -451,7 +440,7 @@ errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = mymod,
 
 	 5-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.2194 
+Misclassification error:  0.2602 
 \end{Soutput}
 \end{Schunk}
 

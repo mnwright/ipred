@@ -1,43 +1,40 @@
 \name{predict.inclass}
 \alias{predict.inclass}
 
-
 \title{Predictions from an Inclass Object}
 
 \description{
-Predicts the class membership of new observations through indirect classification.
+Predicts the class membership of new observations through indirect
+classification.
 }
 
 \usage{
-\method{predict}{inclass}(object, cFUN, intbag=NULL, newdata, ...)
+predict.inclass(object, newdata, ...)
 }
 
 \arguments{
   \item{object}{ object of class \code{inclass}, see \code{\link{inclass}}.}
-  \item{cFUN}{ fixed function which classifies the predicted intermediates.}
-  \item{intbag}{logical. If \code{pFUN = bagging} bagging either stabilises
-the prediction of the intermediate variables or the classifications. If
-\code{intbag = TRUE} intermediates are aggregated, bagging of the whole 
-classifying procedure is performed otherwise.}
   \item{newdata}{data frame to be classified.}
   \item{\dots}{additional arguments corresponding to the predictive models 
-specified in \code{\link{inclass}}. If the intermediate is nominal and
-\code{pFUN = rpart} or \code{bagging} one argument has to be \code{type = "class"}. }
+specified in \code{\link{inclass}}.}
 }
-
 \details{
-Predictions of class memberships are calculated. i.e. values of the intermediate variables are predicted and classified following \code{cFUN}, see \code{\link{inclass}}.
+Predictions of class memberships are calculated. i.e. values of the
+intermediate variables are predicted and classified following \code{cFUN},
+see \code{\link{inclass}}.
 }
-
 \value{
-The vector of predicted classes is returned. 
+The vector of predicted classes is returned.
 }
-
 \references{
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised classification with structured class definitions.
 \emph{Computational Statistics \& Data Analysis} \bold{36},
 209--225.
+
+Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2003),
+Diagnosis of glaucoma by indirect classifiers.
+\emph{Methods of Information in Medicine} \bold{1}, 99-103.
 }
 
 \author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
@@ -50,19 +47,22 @@ Supervised classification with structured class definitions.
 theta90 <- varset(N = 1000, sigma = 0.1, theta = 90, threshold = 0)
 
 dataset <- as.data.frame(cbind(theta90$explanatory, theta90$intermediate))
-names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
+names(dataset) <- c(colnames(theta90$explanatory),
+colnames(theta90$intermediate))
 
 classify <- function(Y, threshold = 0) {
+  Y <- Y[,c("y1", "y2")]
   z <- (Y > threshold)
   resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
   return(resp)
 }
 
-formula <- flist(y1+y2~x1+x2)
+formula <- response~y1+y2~x1+x2
 
-fit <- inclass(formula, pFUN = lm, data = dataset)
+fit <- inclass(formula, data = dataset, pFUN = list(list(model = lm)), 
+ cFUN = classify)
 
-predict.inclass(object = fit, cFUN = classify, newdata = dataset)
+predict(object = fit, newdata = dataset)
 
 
 data(Smoking)
@@ -72,6 +72,7 @@ data(Smoking)
 # reponse is defined by:
 
 classify <- function(data){
+  data <- data[,c("TVPS", "BPNL", "COHB")]
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
@@ -80,15 +81,17 @@ classify <- function(data){
 response <- classify(Smoking[ ,c("TVPS", "BPNL", "COHB")])
 smoking <- cbind(Smoking, response)
 
-formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
-fit <- inclass(formula, pFUN = lm, data = smoking)
+fit <- inclass(formula, data = smoking, 
+  pFUN = list(list(model = lm)), cFUN = classify)
 
-predict.inclass(object = fit, cFUN = classify, newdata = smoking)
+
+predict(object = fit, newdata = smoking)
 
 
 data(GlaucomaMVF)
-glaucoma <- GlaucomaMVF[,-67]
+glaucoma <- GlaucomaMVF[,(names(GlaucomaMVF) != "tension")]
 # explanatory variables are derived by laser scanning image and intra occular pressure
 # intermediate variables are: clv, cs, lora
 # response is defined by
@@ -104,11 +107,12 @@ classify <- function (data) {
   factor (res, labels = c("glaucoma", "normal"))
 }
 
-fit <- inclass(clv+lora+cs~., data = glaucoma, pFUN = bagging)
-predict.inclass(object = fit, cFUN = classify, newdata = glaucoma)
+fit <- inclass(Class~clv+lora+cs~., data = glaucoma, 
+             pFUN = list(list(model = rpart)), cFUN = classify)
+
+data(GlaucomaM)
+predict(object = fit, newdata = GlaucomaM)
 
 }
 
 \keyword{misc}
-
-

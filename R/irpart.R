@@ -29,7 +29,7 @@ irpart <- function(formula, data=NULL, weights, subset,
     wt <- model.extract(m, "weights")
     if(length(wt)==0) wt <- rep(1.0, nrow(m))
     offset <- attr(Terms, "offset")
-    X <- rpart.matrix(m)
+    X <- getFromNamespace("rpart.matrix", ns = "rpart")(m)
     nobs <- nrow(X)
     nvar <- ncol(X)
 
@@ -60,9 +60,11 @@ irpart <- function(formula, data=NULL, weights, subset,
 	if (method.int==4) method.int <- 2
 
 	if (missing(parms))
-	  init <- (get(paste("rpart", method, sep='.')))(Y,offset, ,wt)
+	  init <- getFromNamespace(paste("rpart", method, sep='.'), 
+                     ns = "rpart")(Y,offset, ,wt)
 	else
-	  init <- (get(paste("rpart", method, sep='.')))(Y,offset, parms, wt)
+	  init <- getFromNamespace(paste("rpart", method, sep='.'), 
+                     ns = "rpart")(Y,offset, parms, wt)
 	}
 
     Y <- init$y

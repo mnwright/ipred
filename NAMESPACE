@@ -1,0 +1,58 @@
+useDynLib(ipred)
+
+### exported functions
+export(
+getsurv,
+bagging, bagging.default, bagging.data.frame, 
+ipredbagg.Surv, ipredbagg.factor, ipredbagg.numeric,
+control.errorest, 
+errorest, errorest.default, errorest.data.frame,
+bootest, bootest.default, bootest.integer,
+bootest.factor, bootest.numeric, bootest.Surv,
+cv, cv.default, cv.integer, cv.factor, cv.numeric, cv.Surv,
+inbagg, inbagg.default, inbagg.data.frame, 
+inclass, inclass.default, inclass.data.frame,
+ipredknn, predict.ipredknn,
+kfoldcv, mypredict.lm, rsurv, sbrier, varset,
+slda, slda.default, slda.formula, slda.factor
+)
+
+### register S3 methods
+#S3method(print, bagging) 
+S3method(prune, classbagg)  
+S3method(prune, survbagg)   
+S3method(prune, classbagg)  
+S3method(print, classbagg)
+S3method(print, regbagg)
+S3method(print, survbagg)              
+S3method(print, classbagg)              
+S3method(summary, classbagg)
+S3method(summary, survbagg) 
+S3method(summary, classbagg)
+S3method(print, cvclass)
+S3method(print, bootestclass) 
+S3method(print, cvreg)
+S3method(print, bootestreg)       
+S3method(print, cvsurv)
+S3method(print, bootestsurv)
+S3method(print, inbagg)
+S3method(summary, inbagg) 
+S3method(print, inclass)   
+S3method(summary, inclass)
+S3method(predict, inbagg)
+S3method(predict, inclass)
+S3method(predict, classbagg)
+S3method(predict, regbagg)
+S3method(predict, survbagg)  
+S3method(predict, slda) 
+#S3method(predict, sclass)
+#S3method(predict, sreg)
+
+
+##imported functions
+import(class)
+import(rpart)
+import(MASS)
+#import(mlbench)
+#import(survival)
+import(nnet)

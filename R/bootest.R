@@ -1,9 +1,10 @@
-# $Id: bootest.R,v 1.14 2003/03/12 17:06:40 hothorn Exp $
+# $Id: bootest.R,v 1.17 2003/06/11 10:40:16 peters Exp $
 
 bootest <- function(y, ...) {
   if(is.null(class(y)))
     class(y) <- data.class(y)
-  UseMethod("bootest", y, ...)
+#  UseMethod("bootest", y, ...)
+  UseMethod("bootest", y)
 }
 
 bootest.default <- function(y, ...) {
@@ -64,7 +65,7 @@ bootest.factor <- function(y, formula, data, model, predict,
     # check if full.model is a function which should be used instead of
     # predict
     if (is.function(full.model)) {
-      predict <- fullmodel
+      predict <- full.model
       USEPM <- TRUE
     }
 

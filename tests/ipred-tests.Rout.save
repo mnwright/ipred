@@ -1,17 +1,17 @@
 
 R : Copyright 2003, The R Development Core Team
-Version 1.6.2  (2003-01-10)
+Version 1.8.0 Under development (unstable) (2003-07-23)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
-Type `license()' or `licence()' for distribution details.
+Type 'license()' or 'licence()' for distribution details.
 
 R is a collaborative project with many contributors.
-Type `contributors()' for more information.
+Type 'contributors()' for more information.
 
-Type `demo()' for some demos, `help()' for on-line help, or
-`help.start()' for a HTML browser interface to help.
-Type `q()' to quit R.
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
 
 > attach(NULL, name = "CheckExEnv")
 > assign(".CheckExEnv", as.environment(2), pos = length(search())) # base
@@ -50,6 +50,7 @@ Loading required package: mlbench
 Loading required package: survival 
 Loading required package: class 
 Loading required package: nnet 
+Loading required package: mvtnorm 
 > cleanEx(); ..nameEx <- "DLBCL"
 > ###--- >>> `DLBCL' <<<----- Diffuse Large B-Cell Lymphoma
 > 
@@ -208,19 +209,14 @@ Out-of-bag estimate of misclassification error:  0.1276
 +   factor (res, labels = c("glaucoma", "normal"))
 + }
 > 
-> mypredict.inclass <- function(object, newdata){
-+   res <- predict.inclass(object = object, cFUN = response, newdata = newdata)
-+   return(res)
-+ }
-> 
-> errorest(clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
-+          predict=mypredict.inclass, iclass="Class", estimator="cv", 
-+          pFUN = rpart)
+> errorest(Class~clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
++          estimator="cv", 
++          pFUN = list(list(model = rpart)), cFUN = response)
 
 Call:
-errorest.data.frame(formula = clv + lora + cs ~ ., data = GlaucomaMVF, 
-    model = inclass, predict = mypredict.inclass, iclass = "Class", 
-    estimator = "cv", pFUN = rpart)
+errorest.data.frame(formula = Class ~ clv + lora + cs ~ ., data = GlaucomaMVF, 
+    model = inclass, estimator = "cv", pFUN = list(list(model = rpart)), 
+    cFUN = response)
 
 	 10-fold cross-validation estimator of misclassification error 
 
@@ -328,7 +324,7 @@ Bagging regression trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = y ~ ., data = learn, coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  2.8469 
+Out-of-bag estimate of root mean squared error:  2.9212 
 
 > 
 > # Survival data
@@ -350,7 +346,7 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 +
     MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
     MGEc.10 + IPI, data = DLBCL, coob = TRUE)
 
-Out-of-bag estimate of Brier's score:  0.1968 
+Out-of-bag estimate of Brier's score:  0.1924 
 
 > 
 > 
@@ -470,6 +466,7 @@ Misclassification error:  0.3131
 > # 3) response (resp) is defined by:
 > 
 > resp <- function(data){
++   data <- data[,c("TVPS", "BPNL", "COHB")]
 +   res <- t(t(data) > c(4438, 232.5, 58))
 +   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
 +   res
@@ -478,25 +475,20 @@ Misclassification error:  0.3131
 > response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
 > smoking <- cbind(Smoking, response)
 > 
-> formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
-> 
-> mypredict.inclass <- function(object, newdata){
-+   res <- predict.inclass(object = object, cFUN = resp, newdata = newdata)
-+   return(res)
-+ }
+> formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
 > # Estimation per leave-one-out estimate for the misclassification is 
 > # 36.36% (Hand et al., 2001), using indirect classification with 
 > # linear models
 > 
-> errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
-+          estimator = "cv", iclass = "response", pFUN = lm,
-+          est.para=control.errorest(k=nrow(smoking)))
+> errorest(formula, data = smoking, model = inclass,
++          estimator = "cv", pFUN = list(list(model = lm)),
++          est.para=control.errorest(k=nrow(smoking)), cFUN = resp)
 
 Call:
 errorest.data.frame(formula = formula, data = smoking, model = inclass, 
-    predict = mypredict.inclass, iclass = "response", estimator = "cv", 
-    est.para = control.errorest(k = nrow(smoking)), pFUN = lm)
+    estimator = "cv", est.para = control.errorest(k = nrow(smoking)), 
+    pFUN = list(list(model = lm)), cFUN = resp)
 
 	 55-fold cross-validation estimator of misclassification error 
 
@@ -580,17 +572,18 @@ Brier's score:  0.1881
 > # 3) response (resp) is defined by:
 > 
 > resp <- function(data){
++   data <- data[, c("TVPS", "BPNL", "COHB")]
 +   res <- t(t(data) > c(4438, 232.5, 58))
 +   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
 +   res
 + }
 > 
 > response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
-> smoking <- cbind(Smoking, response)
+> smoking <- data.frame(Smoking, response)
 > 
-> formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+> formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
-> inclass(formula, pFUN = lm, data = smoking)
+> inclass(formula, pFUN = list(list(model = lm)), cFUN = resp, data = smoking)
 
  Indirect classification, with 3 intermediate variables: 
  TVPS BPNL COHB 
@@ -623,7 +616,7 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = ipredknn,
 
 	 10-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.0533 
+Misclassification error:  0.0267 
 
 > 
 > 
@@ -716,44 +709,49 @@ Levels: bad good
 > names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
 > 
 > classify <- function(Y, threshold = 0) {
++   Y <- as.data.frame(Y)
++   Y <- Y[,c("y1", "y2")]
 +   z <- (Y > threshold)
 +   resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
 +   return(resp)
 + }
 > 
-> formula <- flist(y1+y2~x1+x2)
+> response <- classify(dataset)
+> dataset <- data.frame(dataset)
 > 
-> fit <- inclass(formula, pFUN = lm, data = dataset)
+> formula <- response~y1+y2~x1+x2
 > 
-> predict.inclass(object = fit, cFUN = classify, newdata = dataset)
-   [1] 0 0 1 0 0 0 0 1 1 1 0 0 0 1 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 1 0 1 0 1 1
-  [38] 1 1 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 0 1 0 0 1 0 1 1 0 1
-  [75] 0 0 0 0 0 0 1 0 0 1 1 1 1 1 1 1 0 0 0 1 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 1 0
- [112] 0 0 1 0 0 0 1 0 1 0 0 1 0 1 1 0 0 1 0 1 0 1 1 1 0 1 0 0 1 0 1 1 1 1 1 0 0
- [149] 1 0 0 0 0 0 1 0 1 1 1 0 1 1 0 1 0 1 1 1 0 1 0 1 0 1 1 0 0 0 0 0 0 0 1 0 0
- [186] 0 0 1 0 0 0 0 0 1 0 1 0 0 0 0 1 1 1 1 1 0 1 0 0 1 0 0 0 0 1 0 0 1 0 0 1 1
- [223] 0 0 0 0 1 1 1 1 0 1 0 0 1 1 1 0 0 0 1 1 0 1 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0
- [260] 1 0 1 0 0 0 0 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 1 0 0 1 1 1 0 0 0 0 0 0 0 1 0
- [297] 1 0 1 1 1 1 1 1 1 0 1 1 1 0 1 1 1 0 0 1 0 0 0 0 1 1 1 0 0 1 1 1 1 1 1 1 0
- [334] 0 1 1 1 1 1 1 1 1 1 0 1 0 0 1 0 1 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 1 0 0 0
- [371] 0 1 1 0 1 0 1 0 0 0 1 1 0 0 1 1 1 1 0 1 0 1 1 1 1 1 0 1 1 0 1 0 0 0 0 1 0
- [408] 1 1 0 0 1 0 0 1 1 0 0 0 1 1 1 0 1 0 0 0 1 0 1 1 0 1 0 0 1 0 0 0 0 0 0 1 1
- [445] 1 1 0 1 0 0 1 0 0 1 1 1 0 0 0 0 1 0 1 0 1 0 1 0 1 0 1 0 0 1 1 1 0 0 0 0 0
- [482] 1 1 0 0 0 1 0 0 0 0 1 0 1 0 1 0 1 0 1 0 0 1 1 0 0 0 0 0 1 1 1 0 0 0 1 1 0
- [519] 1 0 0 0 1 0 0 1 0 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 1 1 1 0 0 1
- [556] 0 1 1 0 0 1 0 1 0 1 1 1 1 0 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0
- [593] 1 1 1 1 0 1 1 1 1 1 0 1 0 0 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 1 1 0 0 1 0 0 1
- [630] 0 0 1 1 0 0 1 0 0 0 1 1 0 1 1 0 0 1 1 0 0 0 1 1 0 0 0 1 0 0 0 0 0 0 1 0 1
- [667] 0 0 0 0 0 0 0 1 0 1 1 0 0 1 1 1 0 1 0 1 0 1 1 1 1 1 1 0 1 0 0 1 1 1 0 0 0
- [704] 1 0 1 1 0 0 0 1 0 1 0 1 1 0 1 0 1 0 1 1 1 1 1 1 1 1 0 0 0 1 1 1 1 1 0 1 1
- [741] 0 1 0 1 0 1 0 1 0 0 1 1 1 0 1 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0
- [778] 1 0 1 0 0 1 0 1 1 0 1 0 0 0 1 0 1 1 0 0 0 0 1 0 1 1 0 1 1 1 0 0 0 0 1 0 0
- [815] 0 1 1 0 0 1 0 0 0 0 0 1 0 0 1 0 1 1 0 1 1 1 0 0 0 1 0 1 0 1 1 1 0 0 1 1 0
- [852] 1 0 0 1 1 1 0 1 1 1 0 1 0 1 0 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0 0 1 0 0 0 0 1
- [889] 0 0 0 0 0 0 0 1 0 0 0 1 0 1 0 0 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 0 0 1 1 1 1
- [926] 1 0 0 1 0 0 1 1 1 1 0 1 1 1 0 1 1 1 0 0 1 0 1 0 0 0 1 1 1 0 1 0 1 0 0 0 1
- [963] 0 1 1 1 1 1 1 0 0 0 0 1 1 1 0 1 1 0 0 0 0 0 0 1 0 0 0 0 1 0 1 0 1 0 1 0 0
-[1000] 1
+> fit <- inclass(formula, pFUN = list(list(model = lm)), cFUN = classify, data = dataset)
+> 
+> predict(object = fit, newdata = dataset)
+   [1] 0 0 0 0 0 1 0 0 0 1 0 0 0 0 1 0 1 0 0 1 1 1 0 1 1 0 0 0 0 1 0 0 1 0 0 1 1
+  [38] 1 1 0 0 1 0 1 1 0 1 1 1 1 0 0 0 1 1 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 0
+  [75] 1 0 0 1 0 1 1 0 1 0 0 0 0 0 0 1 0 0 1 1 1 1 1 1 1 0 0 0 1 0 0 1 0 0 0 0 0
+ [112] 1 0 1 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 0 1 0 1 1 0 0 1 0 1 0 0 1 0 1 0 1
+ [149] 1 0 0 1 1 0 0 1 1 1 0 1 1 1 0 1 0 0 1 1 0 0 1 0 0 0 1 1 0 0 1 1 1 0 1 1 1
+ [186] 1 0 1 0 0 0 0 0 0 1 1 0 1 0 1 1 0 0 0 0 1 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0
+ [223] 0 0 1 0 1 0 1 0 1 0 1 0 0 1 0 1 0 0 0 1 0 1 0 1 1 1 1 1 0 1 0 1 1 0 1 0 0
+ [260] 1 0 0 0 1 1 0 1 0 0 1 0 0 0 1 1 1 1 0 1 0 0 0 0 0 0 0 0 0 1 1 0 1 0 0 1 0
+ [297] 0 0 1 0 0 0 1 0 0 0 0 1 0 1 0 1 0 0 1 1 0 0 1 0 1 0 0 0 1 0 0 1 1 0 0 1 0
+ [334] 1 0 1 0 0 1 0 0 1 1 1 0 0 0 1 1 0 1 1 1 1 0 0 1 0 0 0 1 1 1 0 0 0 0 0 0 1
+ [371] 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 1 1 0 0 1 1 1 1 1 1 0 1 0 1 1
+ [408] 1 1 1 0 1 1 0 1 0 0 0 0 1 0 1 1 0 0 1 0 0 1 1 0 0 0 1 1 1 0 1 0 0 0 1 0 1
+ [445] 1 0 1 0 0 1 0 0 0 0 0 0 1 1 1 1 0 1 0 0 1 0 0 1 1 1 0 0 0 0 1 0 1 0 0 0 0
+ [482] 1 1 0 0 0 0 0 1 1 1 0 0 1 0 0 0 1 0 1 1 0 1 0 0 1 1 0 0 0 1 0 1 0 1 0 1 1
+ [519] 1 0 0 0 1 1 0 1 0 1 1 0 1 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 1 1 0 1 1 0 1 0
+ [556] 0 1 0 0 0 0 0 1 1 0 0 0 0 1 1 1 1 0 0 0 1 0 0 1 1 1 0 1 1 0 0 0 1 1 0 0 0
+ [593] 0 0 0 0 1 1 0 0 1 1 0 0 0 0 1 1 1 1 1 0 0 0 0 1 0 0 1 0 0 0 0 1 0 1 0 1 0
+ [630] 0 0 0 1 1 0 1 0 0 0 1 0 0 1 0 0 1 0 1 1 0 0 1 0 0 0 0 1 1 1 0 0 0 0 0 0 1
+ [667] 0 0 0 1 1 0 1 0 0 1 1 1 1 1 1 0 0 0 0 0 1 0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 0
+ [704] 0 0 0 1 1 0 1 1 0 0 1 0 0 0 0 0 0 1 1 1 0 0 0 1 0 0 1 1 0 0 1 1 0 1 0 1 0
+ [741] 1 1 1 1 1 0 0 1 0 1 1 1 0 0 1 0 0 1 0 0 1 0 0 1 1 1 1 0 1 0 1 0 1 0 1 1 0
+ [778] 1 0 0 0 0 0 0 1 1 0 0 0 0 0 1 0 0 0 0 0 1 1 1 0 1 0 1 1 0 1 1 1 0 1 0 1 0
+ [815] 1 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 1 1 0 0 1 1 0 0 0 0 0 1 0 0 1 0 1 1 0 1
+ [852] 1 1 0 0 0 1 0 1 0 1 1 1 0 0 1 1 0 1 0 0 1 1 0 0 0 1 1 1 0 1 0 0 0 0 0 0 0
+ [889] 0 0 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 1 0 0 0 1 1 0 1 0 0 1 1 1
+ [926] 0 0 0 0 0 1 0 0 0 1 1 1 0 0 1 1 1 1 1 0 0 1 0 0 1 1 1 1 0 1 1 1 0 1 1 1 0
+ [963] 0 1 0 1 0 0 0 1 1 1 1 0 1 0 1 0 0 0 1 0 1 1 1 1 1 1 0 0 0 0 1 1 1 0 1 1 0
+[1000] 0
 Levels: 0 1
 > 
 > data(Smoking)
@@ -763,25 +761,26 @@ Levels: 0 1
 > # reponse is defined by:
 > 
 > classify <- function(data){
++   data <- data[, c("TVPS", "BPNL", "COHB")]
 +   res <- t(t(data) > c(4438, 232.5, 58))
 +   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
 +   res
 + }
 > 
 > response <- classify(Smoking[ ,c("TVPS", "BPNL", "COHB")])
-> smoking <- cbind(Smoking, response)
+> smoking <- data.frame(Smoking, response)
 > 
-> formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+> formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
-> fit <- inclass(formula, pFUN = lm, data = smoking)
+> fit <- inclass(formula, pFUN = list(list(model = lm)), cFUN = classify, data = smoking)
 > 
-> predict.inclass(object = fit, cFUN = classify, newdata = smoking)
+> predict(object = fit, newdata = smoking)
  [1] 1 1 0 1 0 1 1 0 0 0 1 1 1 1 1 0 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 [39] 1 1 0 1 1 1 1 1 1 0 0 1 1 1 1 1 1
 Levels: 0 1
 > 
 > data(GlaucomaMVF)
-> glaucoma <- GlaucomaMVF[,-67]
+> glaucoma <- GlaucomaMVF
 > # explanatory variables are derived by laser scanning image and intra occular pressure
 > # intermediate variables are: clv, cs, lora
 > # response is defined by
@@ -797,28 +796,29 @@ Levels: 0 1
 +   factor (res, labels = c("glaucoma", "normal"))
 + }
 > 
-> fit <- inclass(clv+lora+cs~., data = glaucoma, pFUN = bagging)
-> predict.inclass(object = fit, cFUN = classify, newdata = glaucoma)
+> fit <- inbagg(Class~clv+lora+cs~., data = glaucoma, pFUN = list(list(model
++ = rpart)), cFUN = classify, ns = 1, replace = TRUE)
+> predict(object = fit, newdata = glaucoma)
   [1] normal   normal   normal   glaucoma normal   normal   normal   normal  
-  [9] glaucoma normal   normal   normal   normal   normal   glaucoma normal  
- [17] glaucoma glaucoma normal   normal   normal   glaucoma normal   glaucoma
- [25] glaucoma normal   normal   normal   normal   glaucoma normal   glaucoma
- [33] normal   glaucoma glaucoma normal   glaucoma normal   glaucoma glaucoma
+  [9] normal   normal   normal   normal   normal   normal   normal   normal  
+ [17] glaucoma normal   normal   normal   normal   glaucoma normal   glaucoma
+ [25] glaucoma normal   normal   normal   normal   glaucoma normal   normal  
+ [33] normal   normal   glaucoma normal   normal   normal   glaucoma glaucoma
  [41] normal   normal   normal   glaucoma normal   normal   normal   normal  
- [49] normal   normal   normal   normal   normal   normal   normal   normal  
- [57] normal   normal   normal   normal   normal   normal   normal   glaucoma
+ [49] normal   normal   normal   normal   normal   glaucoma normal   normal  
+ [57] normal   normal   normal   glaucoma normal   normal   normal   normal  
  [65] normal   normal   normal   glaucoma normal   normal   normal   normal  
- [73] glaucoma glaucoma glaucoma glaucoma normal   glaucoma normal   glaucoma
- [81] glaucoma normal   glaucoma normal   glaucoma glaucoma glaucoma glaucoma
- [89] glaucoma glaucoma glaucoma normal   glaucoma glaucoma glaucoma glaucoma
+ [73] glaucoma normal   glaucoma normal   normal   normal   normal   normal  
+ [81] glaucoma normal   normal   normal   glaucoma glaucoma glaucoma glaucoma
+ [89] normal   glaucoma glaucoma normal   glaucoma glaucoma normal   glaucoma
  [97] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
 [105] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
 [113] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
 [121] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
 [129] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
-[137] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
-[145] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
-[153] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[137] glaucoma glaucoma normal   normal   glaucoma glaucoma glaucoma glaucoma
+[145] glaucoma glaucoma normal   glaucoma glaucoma glaucoma normal   glaucoma
+[153] glaucoma glaucoma glaucoma normal   glaucoma glaucoma glaucoma glaucoma
 [161] normal   glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
 [169] glaucoma glaucoma
 Levels: glaucoma normal
@@ -1019,9 +1019,9 @@ attr(,"time")
 > mslda <- slda(classes ~ ., data=learn)
 > 
 > print(mean(predict(mlda, newdata=test)$class != test$classes))
-[1] 0.035
+[1] 0.051
 > print(mean(predict(mslda, newdata=test)$class != test$classes))
-[1] 0.032
+[1] 0.024
 > 
 > 
 > ## Keywords: 'multivariate'.
@@ -1047,7 +1047,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  48.35 1.3 58.34 0 0 
+Time elapsed:  93.26 0.97 104.44 0 0 
 > dev.off(); quit('no')
 null device 
           1 

@@ -1,7 +1,7 @@
-# $Id: errorest.R,v 1.19 2003/02/25 15:41:40 hothorn Exp $
+# $Id: errorest.R,v 1.22 2003/04/02 14:43:03 hothorn Exp $
 
 control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
-                     random=TRUE, predictions=FALSE) {
+                     random=TRUE, predictions=FALSE, getmodels=FALSE) {
   if (k < 1) { 
     warning("k < 1, using k=10")
     k <- 10
@@ -23,8 +23,13 @@ control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
     predictions <- FALSE
   }
 
+  if (!is.logical(getmodels)) {
+    warning("getmodel is not a logical, using getmodels=FALSE")
+    getmodels <- FALSE
+  }
+
   RET <- list(k=k, nboot=nboot, strat=strat, random=random, 
-              predictions=predictions)
+              predictions=predictions, getmodels=getmodels)
   return(RET)
 }
 
@@ -34,15 +39,16 @@ errorest.default <- function(formula, data, ...)
   stop(paste("Do not know how to handle objects of class", class(data)))
 
 errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
-                     model=NULL, predict=NULL, iclass=NULL,
+                     model=NULL, predict=NULL, 
                      estimator = c("cv", "boot", "632plus"),
                      est.para = control.errorest(), ...) {
 
   cl <- match.call()
   m <- match.call(expand.dots = FALSE)
-  if(paste(m$model) == "inclass") {
-    RET <- errorestinclass(flist(formula), data=data, subset, na.action,
-           model, predict, iclass, estimator, est.para, ...)
+  if (length(grep("inclass", paste(m$model))) > 0 || 
+      length(grep("inbagg", paste(m$model))) > 0) {
+    RET <- errorestinclass(formula, data=data, subset, na.action,
+           model, predict, estimator, est.para, ...)
     RET$call <- cl
   } else { 
 
@@ -82,7 +88,8 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
     switch(estimator, "cv" = {
       RET <- cv(y, formula, data, model=model, predict=predict, 
                 k=est.para$k, random=est.para$random,
-                predictions=est.para$predictions, strat=est.para$strat, ...)
+                predictions=est.para$predictions, strat=est.para$strat,
+                getmodels=est.para$getmodels, ...)
     }, "boot" = {
       RET <- bootest(y, formula, data, model=model, predict=predict,
                      nboot=est.para$nboot, ...)
@@ -96,12 +103,13 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
 }
 
 errorestinclass <- function(formula, data, subset=NULL, na.action=NULL, 
-                     model=NULL, predict=NULL, iclass=NULL,
+                     model=NULL, predict=NULL,
                      estimator = c("cv", "boot", "632plus"),
                      est.para = control.errorest(), ...) {
   if (is.null(data)) stop("data argument required but not given")
-  if (is.null(iclass)) 
-    stop("no class membership variable for indirect classification given")
+#  if (is.null(iclass)) 
+#    stop("no class membership variable for indirect classification given")
+  iclass <- paste(formula[[2]][[2]])
   if (!(iclass %in% colnames(data))) 
     stop("membership variable not in given data")
 
@@ -113,7 +121,8 @@ errorestinclass <- function(formula, data, subset=NULL, na.action=NULL,
 
   y <- data[,iclassindx]
   if (!is.factor(y)) stop("iclass is not a factor")
-  X <- data[,-iclassindx]
+#  X <- data[,-iclassindx]
+  X <- data
 
   if(is.null(model))
       stop("no classifier specified")

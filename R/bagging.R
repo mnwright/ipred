@@ -1,4 +1,4 @@
-# $Id: bagging.R,v 1.17 2003/03/03 17:51:07 peters Exp $
+# $Id: bagging.R,v 1.18 2003/03/31 08:44:16 peters Exp $
 
 bagging <- function(formula, data, ...) UseMethod("bagging", data)
 

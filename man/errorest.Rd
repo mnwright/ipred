@@ -2,7 +2,6 @@
 \alias{errorest}
 \alias{errorest.data.frame}
 \alias{errorest.default}
-\alias{errorestinclass}
 \title{ Estimators of Prediction Error }
 \description{
 Resampling based estimates of prediction error: misclassification error, 
@@ -10,7 +9,7 @@ root mean squared error or Brier score for survival data.
 }
 \usage{
 \method{errorest}{data.frame}(formula, data, subset, na.action=na.omit, 
-         model=NULL, predict=NULL, iclass=NULL, 
+         model=NULL, predict=NULL,
          estimator=c("cv", "boot", "632plus"), 
          est.para=control.errorest(), ...)
 }
@@ -45,9 +44,6 @@ root mean squared error or Brier score for survival data.
                  comparable to the responses (that is: factors for 
                  classification problems). See the example on how to make
                  this sure for any predictor.}
-  \item{iclass}{character. Specifying the class membership variable 
-                (response) in \code{data} in the framework of indirect
-                classification.}
   \item{estimator}{estimator of the misclassification error: 
                    \code{cv} cross-validation, \code{boot} bootstrap or 
                    \code{632plus} bias corrected bootstrap (classification
@@ -80,10 +76,7 @@ only. Use \code{\link{control.errorest}} to specify additional arguments.
 
 \code{errorest} is a formula based interface to the generic functions 
 \code{\link{cv}} or \code{\link{bootest}} which implement methods for
-classification, regression and survival problems. In addition, the function
-\code{errorestinclass} deals with estimation of the misclassification error
-for indirect classifiers (\code{\link{inclass}}, Hand et al., 2001).
-
+classification, regression and survival problems.
 }
 
 \value{
@@ -186,6 +179,7 @@ data(Smoking)
 # 3) response (resp) is defined by:
 
 resp <- function(data){
+  data <- data[, c("TVPS", "BPNL", "COHB")]
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
@@ -194,19 +188,14 @@ resp <- function(data){
 response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
 smoking <- cbind(Smoking, response)
 
-formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
-
-mypredict.inclass <- function(object, newdata){
-  res <- predict.inclass(object = object, cFUN = resp, newdata = newdata)
-  return(res)
-}
+formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
 # Estimation per leave-one-out estimate for the misclassification is 
 # 36.36\% (Hand et al., 2001), using indirect classification with 
 # linear models
 
-errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
-         estimator = "cv", iclass = "response", pFUN = lm,
+errorest(formula, data = smoking, model = inclass,estimator = "cv", 
+         pFUN = list(list(model=lm, predict = mypredict.lm)), cFUN = resp,  
          est.para=control.errorest(k=nrow(smoking)))
 
 

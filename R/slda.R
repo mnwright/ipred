@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.3 2003/03/12 17:06:05 hothorn Exp $
+# $Id: slda.R,v 1.5 2003/08/08 12:13:42 hothorn Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 
@@ -73,7 +73,8 @@ slda.factor <- function(y, X, q=NULL, ...) {
     D <- diag(p)
   }
   Xstab <- as.matrix(X) %*% D
-  mylda <- lda(x=as.data.frame(Xstab), grouping=y, ...)
+  colnames(Xstab) <- paste("V", 1:ncol(Xstab), sep="")
+  mylda <- lda(Xstab, grouping = y, ...)
   RET <- list(scores = D, mylda = mylda)
   class(RET) <- "slda"
   RET
