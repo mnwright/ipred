@@ -1,6 +1,10 @@
-# $Id: CHANGES,v 1.35 2003/10/29 15:40:53 hothorn Exp $
+# $Id: CHANGES,v 1.36 2003/11/03 15:29:14 hothorn Exp $
 
-	0.7-2 (xx.10.2003)
+	0.7-3 (03.11.2003)
+
+	fix documentation bugs found by `codoc'
+
+	0.7-2 (29.10.2003)
 
 	`rpart' is sensitive to compilers / optimization flags:
 	the results we compare `ipred's tests with are produced with

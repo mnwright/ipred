@@ -11,7 +11,8 @@
 are normally not called by users.
 }
 \usage{
-\method{cv}{factor}(y, formula, data, model, predict, k=10, random=TRUE, strat=TRUE,
+\method{cv}{factor}(y, formula, data, model, predict, k=10, random=TRUE, 
+            strat=FALSE,
             predictions=NULL, getmodels=NULL, \dots) 
 }
 \arguments{
@@ -30,8 +31,9 @@ only which predicts the status of the observations in \code{newdata} based
 on the fitted model in \code{object}.}
   \item{k}{k-fold cross-validation.}
   \item{random}{logical, indicates whether a random order or the given
-order of the data should be used for sample splitting or not.}
-  \item{strat}{logical, stratified sampling or not.}
+order of the data should be used for sample splitting or not, defaults to
+\code{TRUE}.}
+  \item{strat}{logical, stratified sampling or not, defaults to \code{FALSE}.}
   \item{predictions}{logical, return the prediction of each observation.}
   \item{getmodels}{logical, return a list of models for each fold.}
   \item{\dots}{additional arguments to \code{model}.}

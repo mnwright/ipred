@@ -5,13 +5,14 @@
   Simulation Setup for Survival Data.
 }
 \usage{
-rsurv(N, model=c("A", "B", "C", "tree"), gamma=1, fact=1, pnon=10,
+rsurv(N, model=c("A", "B", "C", "D", "tree"), gamma=NULL, fact=1, pnon=10,
       gethaz=FALSE)
 }
 \arguments{
   \item{N}{ number of observations. }
   \item{model}{ type of model. }
-  \item{gamma}{simulate censoring time as runif(N, 0, gamma).}
+  \item{gamma}{simulate censoring time as runif(N, 0, gamma). Defaults to
+               \code{NULL} (no censoring).}
   \item{fact}{scale parameter for \code{model=tree}.}
   \item{pnon}{number of additional non-informative variables for the tree
               model.}

@@ -6,7 +6,7 @@
 \code{\link{bagging}} and \code{\link{errorest}}.
 }
 \usage{
-ipredknn(formula, data, subset, na.action, k=1, \dots)
+ipredknn(formula, data, subset, na.action, k=5, \dots)
 }
 \arguments{
   \item{formula}{a formula of the form \code{lhs ~ rhs} where \code{lhs} 
@@ -18,7 +18,7 @@ ipredknn(formula, data, subset, na.action, k=1, \dots)
                 to be used.}
   \item{na.action}{function which indicates what should happen when
                    the data contain \code{NA}s.}
-  \item{k}{number of neighbours considered.}
+  \item{k}{number of neighbours considered, defaults to 5.}
   \item{...}{additional parameters.}
 }
 

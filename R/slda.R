@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.6 2003/10/29 15:10:57 hothorn Exp $
+# $Id: slda.R,v 1.7 2003/11/03 15:29:14 hothorn Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 
@@ -7,7 +7,7 @@ slda <- function(y, ...) UseMethod("slda")
 slda.default <- function(y, ...) 
   stop(paste("Do not know how to handle objects of class", class(data)))
 
-slda.formula <- function(formula, data, subset, na.action, ...) {
+slda.formula <- function(formula, data, subset, na.action=na.rpart, ...) {
    cl <- match.call()
    if(missing(formula)
        || (length(formula) != 3)
