@@ -32,8 +32,7 @@ Type `q()' to quit R.
 > assign("cleanEx",
 +        function(env = .GlobalEnv) {
 + 	   rm(list = ls(envir = env, all.names = TRUE), envir = env)
-+            RNGkind("Wichmann-Hill", "default")
-+ 	   # assign(".Random.seed", c(0, rep(7654, 3)), pos = 1)
++            RNGkind("Wichmann-Hill", "Kinderman-Ramage")
 +            set.seed(290875)
 + 	   assign("T", NULL, pos = 1);
 + 	   assign("F", NULL, pos = 1);
@@ -1048,7 +1047,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  40.76 1.41 51.88 0 0 
+Time elapsed:  55.22 1 57.52 0 0 
 > dev.off(); quit('no')
 null device 
           1 

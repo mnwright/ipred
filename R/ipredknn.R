@@ -1,4 +1,4 @@
-# $Id: ipredknn.R,v 1.2 2002/09/12 08:56:42 hothorn Exp $
+# $Id: ipredknn.R,v 1.3 2003/03/03 11:56:34 hothorn Exp $
 
 # k-NN compatible with the fit(formula) - predict(object) framework
 
@@ -40,6 +40,7 @@ ipredknn <- function(formula, data, subset, na.action, k=5, ...) {
 }
 
 predict.ipredknn <- function(object, newdata, type=c("prob", "class"), ...) {
+    type <- match.arg(type)
     if(!inherits(object, "ipredknn")) stop("object not of class ipredknn")
     if(!is.null(Terms <- object$terms)) { #
     # formula fit (only)

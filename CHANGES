@@ -1,5 +1,20 @@
-# $Id: CHANGES,v 1.26 2003/02/25 15:45:01 hothorn Exp $
+# $Id: CHANGES,v 1.28 2003/03/03 15:23:20 hothorn Exp $
 
+	0.6-11 (05.03.2003)
+
+	632plus was false when the no-information error rate was less than
+	the raw bootstrap estimator (eq. 29 was used instead of eq. 32 in
+	Efron & Tibshirani, 1997). Thanks to Ramon Diaz <rdiaz@cnio.es> for
+	reporting.
+
+	changed the RNGkind to
+		RNGkind("Wichmann-Hill", "Kinderman-Ramage")
+	or RNGversion("1.6.2") making the regression tests pass R CMD check
+	with R-devel (1.7.0)
+
+	ipred is allowed to import rpart.{anova, class, exp, poisson, 
+	matrix} from package rpart, thanks to BDR.
+	
 	0.6-9 (25.02.2003)
 
 	the terms attribute of data in errorest.data.frame may cause problems

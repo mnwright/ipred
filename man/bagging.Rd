@@ -115,7 +115,7 @@ trees (and possibly additional objects) for each bootstrap sample.}
 \item{err}{if \code{OOB=TRUE}, the out-of-bag estimate of
 misclassification or root mean squared error or the Brier score for censored
 data.}
-\item{comb}{logical whether a combination of method was requested.}
+\item{comb}{logical whether a combination of models was requested.}
 
  For each class methods for the generics \code{\link[rpart]{prune}}, 
 \code{\link{print}}, \code{\link{summary}} and \code{\link{predict}} are

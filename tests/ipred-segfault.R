@@ -1,5 +1,13 @@
 library('ipred')
+
+actversion <- paste(R.version$major, R.version$minor, sep=".")
+thisversion <- "1.7.0"
+
+if (compareVersion(actversion, thisversion) >= 0) {
+  RNGversion("1.6.2")
+}
 set.seed(29081975)
+
 
 # Classification
 

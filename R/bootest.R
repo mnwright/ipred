@@ -1,4 +1,4 @@
-# $Id: bootest.R,v 1.12 2003/02/17 13:15:19 hothorn Exp $
+# $Id: bootest.R,v 1.13 2003/03/03 15:23:43 hothorn Exp $
 
 bootest <- function(y, ...) {
   if(is.null(class(y)))
@@ -72,14 +72,18 @@ bootest.factor <- function(y, formula, data, model, predict,
     full.pred <- predict(full.model, newdata = data)
     resubst <- mean(full.pred != y, na.rm = TRUE)
 
+    err632 <- 0.368*resubst + 0.632*one
+
     y <- y[!is.na(y) & !is.na(full.pred)]
     full.pred <- full.pred[!is.na(y) & !is.na(full.pred)]
     gamma <- sum(outer(y, full.pred, function(x, y) ifelse(x==y, 0, 1) ))/
                  (length(y)^2)
     r <- (one - resubst)/(gamma - resubst)
     r <- ifelse(one > resubst & gamma > resubst, r, 0)
-    weight <- .632/(1-.368*r)
-    err <- (1-weight)*resubst + weight*one
+    errprime <- min(one, gamma)
+    #    weight <- .632/(1-.368*r)
+    #    err <- (1-weight)*resubst + weight*one
+    err <- err632 + (errprime - resubst)*(0.368*0.632*r)/(1-0.368*r)
     RET <- list(error = err, nboot=nboot, bc632plus=TRUE)
   } else {
     err <- one
