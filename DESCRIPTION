@@ -1,7 +1,7 @@
 Package: ipred
 Title: Improved Predictors 
-Version: 0.8-1
-Date: $Date: 2004/21/11 07:46:34 $
+Version: 0.8-2
+Date: $Date: 2004/09/12 07:46:34 $
 Author: Andrea Peters <Andrea.Peters@imbe.imed.uni-erlangen.de> and 
   Torsten Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de>
 Maintainer: Andrea Peters <Andrea.Peters@imbe.imed.uni-erlangen.de>
@@ -11,4 +11,4 @@ Description: Improved predictive models by indirect classification and
 Depends: rpart (>= 3.1-8), MASS, mlbench, survival, nnet, class
 Suggests: mvtnorm
 License: GPL
-Packaged: Thu Nov 25 14:22:41 2004; peters
+Packaged: Thu Dec  9 14:21:56 2004; peters

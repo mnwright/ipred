@@ -1,4 +1,9 @@
 # $Id: CHANGES,v 1.42 2004/06/08 07:46:34 peters Exp $
+	0.8-2 (09.12.2004)
+
+	- slda: correct for one explanatory variable:
+		ewp <- svd(solve(diag(diag(Snull), ncol = ncol(Snull)))%*%Snull)	
+							^^^^^^^^^^^^^
 	0.8-1 (25.11.2004)
 	
 	- change #!/bin/bash -> #!/bin/sh 

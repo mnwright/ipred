@@ -61,7 +61,7 @@ slda.factor <- function(y, X, q=NULL, ...) {
 
   # this is S_0 in Kropf (2000)
   Snull <- cov(Xnull)
-  ewp <- svd(solve(diag(diag(Snull)))%*%Snull)
+  ewp <- svd(solve(diag(diag(Snull), ncol = ncol(Snull)))%*%Snull)
   if (!is.complex(ewp$d)) {
     # determine q by the number of eigenvalues > 1
     if (is.null(q)) q <- sum(ewp$d > 1)
