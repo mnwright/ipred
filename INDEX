@@ -1,0 +1,16 @@
+bagging                  Bagging Classification and Regression Trees
+errorest                 Estimators for the Prediction Error
+flist                    Create an Object of Class flist
+inclass                  Indirect Classification
+kfoldcv                  Subsamples for k-fold Cross-Validation
+mypredict.lm             Predictions based on Linear Models
+predict.bagging          Predictions from a Bagging Object
+predict.inclass          Predictions from an Inclass Object
+print.bagging            Print Method for Bagging Object
+print.errorest           Print Method for Errorest Object
+print.inclass            Print Method for Inclass Object
+prune.bagging            Prune Bagged Trees
+smoking                  Smoking Styles
+summary.bagging          Summarising Bagging
+summary.inclass          Summarising Inclass
+varset                   Simulation Model
