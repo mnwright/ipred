@@ -22,4 +22,4 @@ control.errorest(k = 10, nboot = 25, strat = FALSE, random = TRUE,
 \value{
   A list with the same components as arguments. 
 }
-\keywords{misc}
+\keyword{misc}
