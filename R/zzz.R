@@ -1,4 +1,4 @@
-# $Id: zzz.R,v 1.12 2003/07/22 14:56:31 peters Exp $
+# $Id: zzz.R,v 1.13 2004/01/16 15:21:36 peters Exp $
 
 .onLoad <- function(lib, pkg) {
     if(!require(rpart))

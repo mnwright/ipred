@@ -11,8 +11,9 @@
 are normally not called by users.
 }
 \usage{
-\method{bootest}{factor}(y, formula, data, model, predict, nboot=25, bc632plus=FALSE, \dots)
-}
+\method{bootest}{factor}(y, formula, data, model, predict, nboot=25,
+bc632plus=FALSE, list.tindx = NULL, predictions = FALSE, 
+both.boot = FALSE, \dots)}
 \arguments{
   \item{y}{the response variable, either of class \code{factor}
 (classification), \code{numeric} (regression) or \code{Surv} (survival).}
@@ -30,7 +31,14 @@ only which predicts the status of the observations in \code{newdata} based
 on the fitted model in \code{object}.}
   \item{nboot}{number of bootstrap replications to be used.}
   \item{bc632plus}{logical. Should the bias corrected version of misclassification
-error be computed?}
+    error be computed?}
+  \item{predictions}{logical, return a matrix of predictions. The ith column
+contains predictions of the ith out-of-bootstrap sample and 'NA's
+corresponding to the ith bootstrap sample.}
+  \item{list.tindx}{list of numeric vectors, indicating which
+    observations are included in each bootstrap sample.}
+  \item{both.boot}{logical, return both (bootstrap and 632plus) estimations or
+    only one of them.}
   \item{\dots}{additional arguments to \code{model}.}
 }
 

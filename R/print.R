@@ -1,4 +1,4 @@
-#$Id: print.R,v 1.3 2002/09/24 12:31:49 hothorn Exp $
+#$Id: print.R,v 1.4 2004/02/09 08:08:21 peters Exp $
 
 print.classbagg <- function(x, digits=4, ...)
 {
@@ -110,25 +110,50 @@ print.cvclass <- function(x, digits=4, ...)
   cat("\n")
 }
 
-print.bootestclass <- function(x, digits=4, ...)
-{
-  cat("\n")
-  if (!is.null(x$call)) {
-    cat("Call:\n")
-    print(x$call)
+print.bootestclass <- function(x, digits=4, ...) {
+  if(all(names(x)[names(x)!="call"] %in% c("boot", "632plus"))) {
+    XX <- x
+    for(i in c("boot", "632plus")) {
+      x <- XX[[i]]
+      x$call <- XX[["call"]]
+      cat("\n")
+      if (!is.null(x$call)) {
+        cat("Call:\n")
+        print(x$call)
+        cat("\n")
+      }
+      if (x$bc632plus) {
+        cat("\t", ".632+ Bootstrap estimator of misclassification error \n")
+      } else { 
+        cat("\t", "Bootstrap estimator of misclassification error \n")
+      }
+      cat("\t with" , x$nboot, "bootstrap replications\n")
+      cat("\n")
+      cat("Misclassification error: ", round(x$error, digits), "\n")
+      if (!x$bc632plus) cat("Standard deviation:", round(x$sd, digits), "\n")
+      cat("\n")
+    }
+  } else {
+# if(!all(names(x) %in% c("boot", "632plus"))){
     cat("\n")
+    if (!is.null(x$call)) {
+      cat("Call:\n")
+      print(x$call)
+      cat("\n")
+    }
+    if (x$bc632plus) 
+      cat("\t", ".632+ Bootstrap estimator of misclassification error \n")
+    else 
+      cat("\t", "Bootstrap estimator of misclassification error \n")
+    cat("\t with" , x$nboot, "bootstrap replications\n")
+    cat("\n")
+    cat("Misclassification error: ", round(x$error, digits), "\n")
+    if (!x$bc632plus)
+      cat("Standard deviation:", round(x$sd, digits), "\n")
+    cat("\n")   
   }
-  if (x$bc632plus) 
-    cat("\t", ".632+ Bootstrap estimator of misclassification error \n")
-  else 
-    cat("\t", "Bootstrap estimator of misclassification error \n")
-  cat("\t with" , x$nboot, "bootstrap replications\n")
-  cat("\n")
-  cat("Misclassification error: ", round(x$error, digits), "\n")
-  if (!x$bc632plus)
-  cat("Standard deviation:", round(x$sd, digits), "\n")
-  cat("\n")
 }
+  
 
 
 print.cvreg <- function(x, digits=4, ...)

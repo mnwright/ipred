@@ -39,13 +39,14 @@ mypredict.lda <- function(object, newdata)
 
 errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda)
 errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
-est.para=list(k=5, random=FALSE))
+  est.para=control.errorest(k=5, random=FALSE))
+
 lapply(errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
-est.para=list(k=5, random=FALSE, getmodels=TRUE))$models, class)
-errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
-nbagg=10)
-errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
-nbagg=10, comb=comb.lda)
+  est.para=control.errorest(k=5, random=FALSE, getmodels=TRUE))$models, class)
+errorest(classes ~ ., data=learn, model=bagging,
+         est.para=control.errorest(k=2), nbagg=10)
+errorest(classes ~ ., data=learn, model=bagging,
+         est.para=control.errorest(k=2), nbagg=10, comb=comb.lda)
 errorest(classes ~ ., data=learn, model=lda,
 predict=mypredict.lda, estimator="boot")
 errorest(classes ~ ., data=learn, model=lda,
@@ -66,9 +67,10 @@ predict(mod, newdata=test[1:10,])
 predict(mod, newdata=test[1:10,], agg="aver") 
 predict(mod, newdata=test[1:10,], agg="wei")  
 errorest(y ~ ., data=learn, model=lm)
-errorest(y ~ ., data=learn, model=lm, est.para=list(k=5, random=FALSE))
-lapply(errorest(y ~ ., data=learn, model=lm, est.para=list(k=5,
-random=FALSE, getmodels=TRUE))$models, class)
+errorest(y ~ ., data=learn, model=lm,
+         est.para=control.errorest(k=5, random=FALSE))
+lapply(errorest(y ~ ., data=learn, model=lm,
+                est.para=control.errorest(k=5, random=FALSE, getmodels=TRUE))$models, class)
 errorest(y ~ ., data=learn, model=lm, estimator="boot")
 
 # survival
@@ -80,12 +82,22 @@ mod <- bagging(Surv(time, cens) ~ ., data=learn, nbagg=10)
 mod
 predict(mod, newdata=test[1:10,])
 
+#errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+#         est.para=list(k=2, random=FALSE), nbagg=5)
+#errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+#         estimator="boot", nbagg=5, est.para=list(nboot=5))
+#insert control.errorest
 errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-         est.para=list(k=2, random=FALSE), nbagg=5)
+         est.para=control.errorest(k=2, random=FALSE), nbagg=5)
 errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-         estimator="boot", nbagg=5, est.para=list(nboot=5))
+         estimator="boot", nbagg=5, est.para=control.errorest(nboot=5))
+
+#lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+#         estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
+#         getmodels=TRUE))$models, class)
+#insert control.errorest
 lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-         estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
+         estimator="cv", nbagg=1, est.para=control.errorest(k=2, random=FALSE,
          getmodels=TRUE))$models, class)
 
 # bundling for regression

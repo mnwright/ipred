@@ -1,9 +1,8 @@
-#$Id: cv.R,v 1.19 2003/06/11 10:40:17 peters Exp $
+#$Id: cv.R,v 1.21 2004/02/11 09:13:51 peters Exp $
 
 cv <- function(y, ...) {
   if(is.null(class(y)))
     class(y) <- data.class(y)
-#  UseMethod("cv", y, ...)
   UseMethod("cv", y)
 }
 
@@ -16,12 +15,12 @@ cv.integer <- function(y, ...) {
 }
 
 cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE, 
-                      strat=FALSE, predictions=NULL, getmodels=NULL,...) {
+                      strat=FALSE, predictions=NULL, getmodels=NULL, list.tindx = NULL, ...) {
 
   # k-fold cross-validation of misclassification error
 
   if (!is.data.frame(data)) stop("data is not of class data.frame")
-
+ 
   N <- length(y)
   classes <- levels(y)
 
@@ -32,6 +31,11 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
   if (is.null(getmodels)) getmodels <- FALSE
   USEPM <- FALSE
 
+  if(!is.null(list.tindx)) k <- length(list.tindx)
+  if(!is.null(list.tindx)) {
+    random <- FALSE
+  }
+  
   # to reproduce results, either use `set.seed' or a fixed partition of 
   # the samples
   if (random) 
@@ -41,12 +45,11 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
 
   y <- y[myindx]
   data <- data[myindx,]
-
-  # determine an appropriate splitting for the sample size into
-  # k roughly equally sized parts
-
-  mysplit <- ssubset(y, k, strat=strat)
-
+  
+    # determine an appropriate splitting for the sample size into
+    # k roughly equally sized parts
+  
+  mysplit <- ipred:::ssubset(y, k, strat=strat)
   allpred <- vector(mode="character", length=N)
   fu <- function(x) levels(x)[as.integer(x)]
   nindx <- 1:N
@@ -55,7 +58,13 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
     models <- vector(k, mode="list")
 
   for(i in 1:k) {
-    tindx <- mysplit[[i]]
+
+    if(!is.null(list.tindx)) {
+      tindx <- list.tindx[[i]]
+    } else {
+      tindx <- mysplit[[i]]
+    }
+    
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)
     if (getmodels) models[[i]] <- mymodel
@@ -97,11 +106,12 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
 }
 
 cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
-                       predictions=NULL, strat=NULL, getmodels=NULL,...) {
+                       predictions=NULL, strat=NULL, getmodels=NULL, list.tindx = NULL, ...) {
 
   # k-fold cross-validation of mean squared error 
 
-  if (!is.data.frame(data)) stop("data is not of class data.frame");
+  if (!is.data.frame(data)) stop("data is not of class data.frame")
+  if(!is.null(list.tindx)) k <- length(list.tindx)
   N <- length(y)
 
   if (is.null(k)) k <- 10
@@ -112,26 +122,30 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
   # determine an appropriate splitting for the sample size into
   # k roughly equally sized parts
 
-  a <- kfoldcv(k, N)
-
-  # to reproduce results, either use `set.seed' or a fixed partition of
-  # the samples
-  if (random)
-    myindx <- sample(1:N, N)
-  else
-    myindx <- 1:N
-  nindx <- 1:N
-
+#  if(is.null(list.tindx)) {
+    a <- kfoldcv(k, N)
+    # to reproduce results, either use `set.seed' or a fixed partition of
+    # the samples
+    if (random)
+      myindx <- sample(1:N, N)
+    else
+      myindx <- 1:N
+    nindx <- 1:N
+#  }
+  
   if (getmodels)
     models <- vector(k, mode="list")
 
   allpred <- rep(0, N)
   for(i in 1:k) {
-    if (i > 1)
-      tindx <- myindx[(sum(a[1:(i-1)])+1):sum(a[1:i])]
-    else
-      tindx <- myindx[1:a[1]]
-    
+    if(!is.null(list.tindx)) {
+      tindx <- list.tindx[[i]]
+    } else {
+      if (i > 1)
+        tindx <- myindx[(sum(a[1:(i-1)])+1):sum(a[1:i])]
+      else
+        tindx <- myindx[1:a[1]]
+    }
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)
     if (getmodels) models[[i]] <- mymodel
@@ -165,7 +179,7 @@ cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
 }
 
 cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
-                    predictions=FALSE, strat=FALSE, getmodels=NULL, ...) {
+                    predictions=FALSE, strat=FALSE, getmodels=NULL, list.tindx = NULL, ...) {
 
   # k-fold cross-validation of Brier's score
 
@@ -181,30 +195,36 @@ cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
   if(is.null(random)) random <- TRUE
   if(is.null(k)) k <- 10
   if (is.null(data)) data <- rep(1, N)
-  
-  if(is.null(k)) stop("k for k-fold cross-validation is missing")
 
+  if(!is.null(list.tindx)) k <- length(list.tindx)
+  if(is.null(k)) stop("k for k-fold cross-validation is missing")
+ 
   # determine an appropriate splitting for the sample size into
   # k roughly equally sized parts
 
-  a <- kfoldcv(k, N)
-
-  # to reproduce results, either use `set.seed' or a fixed partition of
-  # the samples
-  if (random)
-    myindx <- sample(1:N, N)
-  else
-    myindx <- 1:N
+ # if(is.null(list.tindx)) {
+    a <- kfoldcv(k, N)
+    # to reproduce results, either use `set.seed' or a fixed partition of
+    # the samples
+    if (random)
+      myindx <- sample(1:N, N)
+    else
+      myindx <- 1:N
+ # }
 
   if (getmodels)
     models <- vector(k, mode="list")
 
   cverr <- c()
   for(i in 1:k) {
-    if (i > 1)
-      tindx <- myindx[(sum(a[1:(i-1)])+1):sum(a[1:i])]
-    else
-      tindx <- myindx[1:a[1]]
+    if(!is.null(list.tindx)) {
+      tindx <- list.tindx[[i]]
+    } else {
+      if (i > 1)
+        tindx <- myindx[(sum(a[1:(i-1)])+1):sum(a[1:i])]
+      else
+        tindx <- myindx[1:a[1]]
+    }
 
     folddata <- subset(data, !(nindx %in% tindx))
     mymodel <- model(formula, data=folddata, ...)

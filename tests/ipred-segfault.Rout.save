@@ -1,13 +1,14 @@
 
-R : Copyright 2003, The R Development Core Team
-Version 1.8.0 Under development (unstable) (2003-07-23)
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 1.9.0 Under development (unstable) (2004-02-09), ISBN 3-900051-00-3
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
 
 R is a collaborative project with many contributors.
-Type 'contributors()' for more information.
+Type 'contributors()' for more information and
+'citation()' on how to cite R in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for a HTML browser interface to help.
@@ -20,7 +21,8 @@ Loading required package: mlbench
 Loading required package: survival 
 Loading required package: class 
 Loading required package: nnet 
-Loading required package: mvtnorm 
+Warning message: 
+package 'mva' has been merged into 'stats' 
 > 
 > actversion <- paste(R.version$major, R.version$minor, sep=".")
 > thisversion <- "1.7.0"
@@ -126,18 +128,20 @@ errorest.data.frame(formula = classes ~ ., data = learn, model = lda,
 Misclassification error:  0.035 
 
 > errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
-+ est.para=list(k=5, random=FALSE))
++   est.para=control.errorest(k=5, random=FALSE))
 
 Call:
 errorest.data.frame(formula = classes ~ ., data = learn, model = lda, 
-    predict = mypredict.lda, est.para = list(k = 5, random = FALSE))
+    predict = mypredict.lda, est.para = control.errorest(k = 5, 
+        random = FALSE))
 
 	 5-fold cross-validation estimator of misclassification error 
 
 Misclassification error:  0.04 
 
+> 
 > lapply(errorest(classes ~ ., data=learn, model=lda, predict=mypredict.lda,
-+ est.para=list(k=5, random=FALSE, getmodels=TRUE))$models, class)
++   est.para=control.errorest(k=5, random=FALSE, getmodels=TRUE))$models, class)
 [[1]]
 [1] "lda"
 
@@ -153,23 +157,23 @@ Misclassification error:  0.04
 [[5]]
 [1] "lda"
 
-> errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
-+ nbagg=10)
+> errorest(classes ~ ., data=learn, model=bagging,
++          est.para=control.errorest(k=2), nbagg=10)
 
 Call:
 errorest.data.frame(formula = classes ~ ., data = learn, model = bagging, 
-    est.para = list(k = 2), nbagg = 10)
+    est.para = control.errorest(k = 2), nbagg = 10)
 
 	 2-fold cross-validation estimator of misclassification error 
 
 Misclassification error:  0.13 
 
-> errorest(classes ~ ., data=learn, model=bagging, est.para=list(k=2),
-+ nbagg=10, comb=comb.lda)
+> errorest(classes ~ ., data=learn, model=bagging,
++          est.para=control.errorest(k=2), nbagg=10, comb=comb.lda)
 
 Call:
 errorest.data.frame(formula = classes ~ ., data = learn, model = bagging, 
-    est.para = list(k = 2), nbagg = 10, comb = comb.lda)
+    est.para = control.errorest(k = 2), nbagg = 10, comb = comb.lda)
 
 	 2-fold cross-validation estimator of misclassification error 
 
@@ -240,18 +244,19 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm)
 
 Root mean squared error:  2.8058 
 
-> errorest(y ~ ., data=learn, model=lm, est.para=list(k=5, random=FALSE))
+> errorest(y ~ ., data=learn, model=lm,
++          est.para=control.errorest(k=5, random=FALSE))
 
 Call:
 errorest.data.frame(formula = y ~ ., data = learn, model = lm, 
-    est.para = list(k = 5, random = FALSE))
+    est.para = control.errorest(k = 5, random = FALSE))
 
 	 5-fold cross-validation estimator of root mean squared error
 
 Root mean squared error:  2.7246 
 
-> lapply(errorest(y ~ ., data=learn, model=lm, est.para=list(k=5,
-+ random=FALSE, getmodels=TRUE))$models, class)
+> lapply(errorest(y ~ ., data=learn, model=lm,
++                 est.para=control.errorest(k=5, random=FALSE, getmodels=TRUE))$models, class)
 [[1]]
 [1] "lm"
 
@@ -355,12 +360,17 @@ Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
  1.35e+02  1.35e+02  3.44e-02  2.58e-03  2.84e-02  2.41e-02  3.42e-02 
 
 > 
+> #errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+> #         est.para=list(k=2, random=FALSE), nbagg=5)
+> #errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+> #         estimator="boot", nbagg=5, est.para=list(nboot=5))
+> #insert control.errorest
 > errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-+          est.para=list(k=2, random=FALSE), nbagg=5)
++          est.para=control.errorest(k=2, random=FALSE), nbagg=5)
 
 Call:
 errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn, 
-    model = bagging, est.para = list(k = 2, random = FALSE), 
+    model = bagging, est.para = control.errorest(k = 2, random = FALSE), 
     nbagg = 5)
 
 	 2-fold cross-validation estimator of Brier's score
@@ -368,11 +378,11 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 Brier's score:  0.0617 
 
 > errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-+          estimator="boot", nbagg=5, est.para=list(nboot=5))
++          estimator="boot", nbagg=5, est.para=control.errorest(nboot=5))
 
 Call:
 errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn, 
-    model = bagging, estimator = "boot", est.para = list(nboot = 5), 
+    model = bagging, estimator = "boot", est.para = control.errorest(nboot = 5), 
     nbagg = 5)
 
 	 Bootstrap estimator of Brier's score
@@ -380,8 +390,13 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 
 Brier's score:  0.095 
 
+> 
+> #lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
+> #         estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
+> #         getmodels=TRUE))$models, class)
+> #insert control.errorest
 > lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
-+          estimator="cv", nbagg=1, est.para=list(k=2, random=FALSE,
++          estimator="cv", nbagg=1, est.para=control.errorest(k=2, random=FALSE,
 +          getmodels=TRUE))$models, class)
 [[1]]
 [1] "survbagg"
@@ -413,7 +428,7 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 > # bundling for survival
 > 
 > data(GBSG2)
-> rcomb <- list(list(model=coxph, predict=predict.coxph))
+> rcomb <- list(list(model=coxph, predict=predict))
 > 
 > mods <- bagging(Surv(time,cens) ~ ., data=GBSG2, nbagg=10, 
 +                 comb=rcomb,  control=rpart.control(xval=0))

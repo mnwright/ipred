@@ -13,7 +13,7 @@ are normally not called by users.
 \usage{
 \method{cv}{factor}(y, formula, data, model, predict, k=10, random=TRUE, 
             strat=FALSE,
-            predictions=NULL, getmodels=NULL, \dots) 
+            predictions=NULL, getmodels=NULL, list.tindx = NULL, \dots) 
 }
 \arguments{
   \item{y}{response variable, either of class \code{factor}
@@ -36,6 +36,8 @@ order of the data should be used for sample splitting or not, defaults to
   \item{strat}{logical, stratified sampling or not, defaults to \code{FALSE}.}
   \item{predictions}{logical, return the prediction of each observation.}
   \item{getmodels}{logical, return a list of models for each fold.}
+  \item{list.tindx}{list of numeric vectors, indicating which
+    observations are included in each cross-validation sample.}
   \item{\dots}{additional arguments to \code{model}.}
 }
 \details{

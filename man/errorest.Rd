@@ -132,6 +132,24 @@ data(PimaIndiansDiabetes)
 errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
          estimator = "632plus", predict= mypredict.lda)
 
+#cv of a fixed partition of the data
+list.tindx <- list(1:100, 101:200, 201:300, 301:400, 401:500,
+        501:600, 601:700, 701:768)
+
+errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
+          estimator = "cv", predict = mypredict.lda,
+          est.para = control.errorest(list.tindx = list.tindx))
+
+#both bootstrap estimations based on fixed partitions
+
+list.tindx <- vector(mode = "list", length = 25)
+for(i in 1:25) {
+  list.tindx[[i]] <- sample(1:768, 768, TRUE)
+}
+
+errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
+          estimator = c("boot", "632plus"), predict= mypredict.lda,
+          est.para = control.errorest(list.tindx = list.tindx))
 
 data(Glass)
 

@@ -1,7 +1,7 @@
-# $Id: errorest.R,v 1.22 2003/04/02 14:43:03 hothorn Exp $
+# $Id: errorest.R,v 1.24 2004/02/11 09:13:52 peters Exp $
 
 control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
-                     random=TRUE, predictions=FALSE, getmodels=FALSE) {
+                     random=TRUE, predictions=FALSE, getmodels=FALSE, list.tindx = NULL) {
   if (k < 1) { 
     warning("k < 1, using k=10")
     k <- 10
@@ -29,7 +29,7 @@ control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
   }
 
   RET <- list(k=k, nboot=nboot, strat=strat, random=random, 
-              predictions=predictions, getmodels=getmodels)
+              predictions=predictions, getmodels=getmodels, list.tindx = list.tindx)
   return(RET)
 }
 
@@ -80,23 +80,37 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
     else
       data <- data[complete.cases(data),]
 
-    estimator <- match.arg(estimator)
-
+    if(all(estimator %in% c("boot", "632plus")) & all(c("boot", "632plus") %in% estimator)) {
+      estimator <- paste(sort(estimator), collapse = "_")
+    } else {
+      if(length(estimator) > 1)  {
+        estimator <- estimator[1]
+#        warning(paste("Multiple choice of estimators, only", estimator, "is performed"))
+      } else {
+        estimator <- match.arg(estimator)
+      } 
+    }
+    
     if(is.null(model)) 
       stop("no model specified")
 
-    switch(estimator, "cv" = {
-      RET <- cv(y, formula, data, model=model, predict=predict, 
-                k=est.para$k, random=est.para$random,
-                predictions=est.para$predictions, strat=est.para$strat,
-                getmodels=est.para$getmodels, ...)
-    }, "boot" = {
-      RET <- bootest(y, formula, data, model=model, predict=predict,
-                     nboot=est.para$nboot, ...)
-    }, "632plus" = {
-      RET <- bootest(y, formula, data, model=model, predict=predict,
-                     nboot=est.para$nboot, bc632plus=TRUE, ...)
-    })
+    switch(estimator,
+           "cv" = {
+             RET <- cv(y, formula, data, model=model, predict=predict, 
+                       k=est.para$k, random=est.para$random,
+                       predictions=est.para$predictions, strat=est.para$strat,
+                       getmodels=est.para$getmodels, list.tindx = est.para$list.tindx, ...)
+           }, "boot" = {
+             RET <- bootest(y, formula, data, model=model, predict=predict,
+                            nboot=est.para$nboot, list.tindx = est.para$list.tindx, predictions = est.para$predictions, ...)
+           }, "632plus" = {
+             RET <- bootest(y, formula, data, model=model, predict=predict,
+                            nboot=est.para$nboot, bc632plus=TRUE, list.tindx = est.para$list.tindx, predictions = est.para$predictions, ...)
+           }, "632plus_boot" = {
+             RET <- bootest(y, formula, data, model=model, predict=predict,
+                            nboot=est.para$nboot, bc632plus = TRUE, list.tindx = est.para$list.tindx, predictions = est.para$predictions, both.boot = TRUE, ...)
+           }
+           )
   }
   RET$call <- cl
   return(RET)
@@ -129,13 +143,13 @@ errorestinclass <- function(formula, data, subset=NULL, na.action=NULL,
 
   switch(estimator, "cv" = {
     RET <- cv(y, formula, data=X, model=model, predict=predict,
-              k=est.para$k, random=est.para$random, ...)
+              k=est.para$k, random=est.para$random, list.tindx = est.para$list.tindx, ...)
     }, "boot" = {
       RET <- bootest(y, formula, data=X, model=model, predict=predict,
-                     nboot=est.para$nboot, ...)
+                     nboot=est.para$nboot, list.tindx = est.para$list.tindx, ...)
     }, "632plus" = {
       RET <- bootest(y, formula, data=X, model=model, predict=predict,
-                     nboot=est.para$nboot, bc632plus=TRUE, ...)
+                     nboot=est.para$nboot, bc632plus=TRUE, list.tindx = est.para$list.tindx, ...)
   })
   RET
 }

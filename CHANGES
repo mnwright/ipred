@@ -1,4 +1,12 @@
-# $Id: CHANGES,v 1.37 2003/12/16 17:45:48 hothorn Exp $
+# $Id: CHANGES,v 1.39 2004/02/09 08:08:21 peters Exp $
+	0.7-7 (02.02.2004)
+	
+	-return predicted values for error estimations 
+	"boot" and "632plus" if required
+	-optional argument determining which observations 
+	are incuded in each sample within 'errorest'
+	-"boot" and "632plus" can be computed simultanously
+
 	0.7-6 (16.01.2004)
 
 	fix tests/ipred-segfault	
