@@ -8,7 +8,7 @@
 }
 \usage{
 \method{bagging}{default}(y, X=NULL, nbagg=25, method=c("standard","double"),
-        coob=TRUE, control= rpart.control(minsize=2, cp=0), \dots)
+        coob=FALSE, control= rpart.control(minsplit=2, cp=0), tol=1.0e-4, \dots)
 \method{bagging}{formula}(formula, data, subset, na.action=na.rpart, \dots)
 }
 \arguments{
@@ -21,6 +21,8 @@ Double-Bagging. }
 misclassification or mean-squared error.}
   \item{control}{options that control details of the \code{rpart}
 algorithm, see \code{\link[rpart]{rpart.control}}.}
+  \item{tol}{Tolerance to decide if a matrix is singular passed to
+\code{\link[MASS]{lda}}.}
   \item{formula}{ formula describing the model: \code{y ~ x + w + z}, where \code{y} is the response 
   and \code{x,w,z} are predictors, see \code{\link{lm}} for details.}
   \item{data}{ optional data frame containing the variables in the

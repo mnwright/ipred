@@ -1,10 +1,10 @@
-# $Id: bagging.R,v 1.11 2002/05/17 13:34:13 hothorn Exp $
+# $Id: bagging.R,v 1.14 2002/06/17 08:53:00 hothorn Exp $
 
 bagging <- function(y, ...) UseMethod("bagging")
 
 bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
-                            coob=FALSE, control=rpart.control(minsize=2, cp=0),
-                            ...) {
+                            coob=FALSE, control=rpart.control(minsplit=2, cp=0),
+                            tol=1.0e-4, ...) {
   method <- match.arg(method)
   class <- is.factor(y)
   if (class & coob) {
@@ -28,7 +28,7 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
         stop("cannot compute double-bagging with less than two predictors")
       lday <- y[-indx]
       ldap <- as.data.frame(X[-indx,])
-      lmod <- lda(lday ~ ., data=ldap) # OOB !!!
+      lmod <- lda(lday ~ ., data=ldap, tol=tol) # OOB !!!
       ldasc <- c(ldasc, list(lmod))
       ldap <- as.data.frame(X[indx,])
       rpartp <- cbind(ldap, predict(lmod, newdata=ldap)$x)

@@ -32,10 +32,10 @@ with 25 bootstrap replications
 
 Data:  Class by Cl.thickness + Cell.size + Cell.shape + Marg.adhesion + Epith.c.size + Bare.nuclei + Bl.cromatin + Normal.nucleoli + Mitoses 
 
-Out-of-bag misclassification error: 0.0351 
+Out-of-bag misclassification error: 0.0425 
 > 
 > print(predict(mod, newdata=BreastCancer))
-  [1] benign    malignant benign    malignant benign    malignant benign   
+  [1] benign    benign    benign    benign    benign    malignant benign   
   [8] benign    benign    benign    benign    benign    malignant benign   
  [15] malignant malignant benign    benign    malignant benign    malignant
  [22] malignant benign    malignant benign    malignant benign    benign   
@@ -43,8 +43,8 @@ Out-of-bag misclassification error: 0.0351
  [36] benign    malignant benign    malignant malignant malignant malignant
  [43] malignant malignant malignant benign    malignant benign    benign   
  [50] malignant malignant malignant malignant malignant malignant malignant
- [57] malignant benign    malignant malignant malignant benign    malignant
- [64] benign    benign    malignant benign    malignant malignant benign   
+ [57] malignant malignant malignant malignant malignant benign    malignant
+ [64] malignant benign    malignant benign    malignant malignant benign   
  [71] benign    malignant benign    malignant malignant benign    benign   
  [78] benign    benign    benign    benign    benign    benign    benign   
  [85] malignant malignant malignant malignant benign    benign    benign   
@@ -63,30 +63,30 @@ Out-of-bag misclassification error: 0.0351
 [176] malignant benign    malignant benign    malignant benign    benign   
 [183] benign    malignant malignant benign    malignant malignant malignant
 [190] benign    malignant malignant benign    benign    benign    benign   
-[197] malignant benign    benign    benign    malignant malignant benign   
+[197] benign    benign    benign    benign    malignant malignant benign   
 [204] benign    benign    malignant malignant benign    benign    benign   
 [211] malignant malignant benign    malignant malignant malignant benign   
-[218] benign    malignant benign    benign    malignant benign    malignant
+[218] benign    malignant benign    benign    malignant malignant malignant
 [225] malignant benign    malignant malignant benign    malignant malignant
-[232] malignant malignant malignant benign    benign    malignant malignant
+[232] malignant benign    malignant benign    benign    malignant malignant
 [239] malignant malignant benign    benign    benign    benign    benign   
 [246] benign    malignant malignant benign    benign    benign    malignant
-[253] malignant malignant malignant malignant benign    benign    benign   
-[260] malignant malignant malignant malignant malignant malignant benign   
+[253] benign    malignant malignant malignant benign    benign    benign   
+[260] benign    malignant malignant malignant malignant malignant benign   
 [267] malignant malignant malignant benign    malignant benign    malignant
 [274] malignant benign    benign    benign    benign    benign    malignant
 [281] benign    benign    malignant malignant malignant malignant malignant
 [288] benign    malignant malignant benign    benign    malignant malignant
-[295] benign    malignant malignant malignant benign    malignant malignant
+[295] benign    malignant benign    benign    benign    malignant malignant
 [302] benign    malignant benign    malignant malignant benign    benign   
 [309] malignant benign    benign    benign    malignant benign    benign   
-[316] malignant malignant malignant benign    malignant malignant benign   
+[316] malignant malignant malignant benign    benign    malignant benign   
 [323] benign    malignant benign    benign    malignant benign    malignant
 [330] malignant malignant benign    benign    malignant malignant benign   
 [337] malignant benign    benign    malignant malignant benign    benign   
 [344] benign    malignant benign    benign    benign    malignant malignant
-[351] benign    benign    malignant malignant benign    benign    benign   
-[358] malignant malignant malignant malignant malignant benign    malignant
+[351] benign    benign    benign    malignant benign    benign    malignant
+[358] malignant malignant malignant malignant malignant benign    benign   
 [365] benign    benign    malignant malignant benign    benign    benign   
 [372] benign    benign    benign    benign    benign    benign    benign   
 [379] benign    benign    benign    malignant benign    benign    benign   
@@ -97,14 +97,14 @@ Out-of-bag misclassification error: 0.0351
 [414] benign    malignant benign    malignant benign    benign    benign   
 [421] benign    malignant benign    benign    benign    malignant benign   
 [428] malignant benign    benign    benign    benign    benign    benign   
-[435] malignant malignant malignant benign    benign    benign    malignant
+[435] benign    malignant malignant benign    benign    benign    malignant
 [442] benign    benign    benign    benign    benign    benign    benign   
 [449] benign    malignant benign    benign    benign    malignant benign   
 [456] malignant malignant malignant benign    benign    benign    benign   
 [463] benign    benign    benign    malignant malignant malignant benign   
 [470] benign    benign    benign    benign    benign    benign    benign   
 [477] benign    benign    benign    malignant benign    benign    malignant
-[484] malignant benign    benign    benign    malignant malignant benign   
+[484] malignant benign    benign    benign    malignant malignant malignant
 [491] benign    malignant benign    malignant benign    benign    benign   
 [498] benign    benign    benign    benign    benign    benign    benign   
 [505] benign    benign    malignant benign    benign    benign    benign   

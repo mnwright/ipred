@@ -169,7 +169,7 @@ Error 0.3593
 
 Data:  y on . 
 
-Error 0.36 
+Error 0.26 
 > 
 > data(Glass)
 > 
@@ -327,7 +327,7 @@ Error 0.3273
 > cls <- predict(mt, X)
 > 
 > cat("error: ", sum(y != cls)/length(cls), "\n")
-error:  0.27 
+error:  0.23 
 > 
 > 
 > ## Keywords: 'tree'.
@@ -439,7 +439,7 @@ Levels:  0 1
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  43.51 0.56 44.11 0 0 
+Time elapsed:  30.58 0.37 31.39 0 0 
 > dev.off(); quit('no')
 null device 
           1 
