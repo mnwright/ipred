@@ -1,34 +1,35 @@
-DLBCL                   Diffuse Large B-Cell Lymphoma
-GBSG2                   German Breast Cancer Study Group 2
-GBSG4                   German Breast Cancer Study Group 4
-GlaucomaM               Glaucoma Database
-GlaucomaMVF             Glaucoma Database
+DLBCL                   Diffuse Large B-Cell Lymphoma 
+GBSG2                   German Breast Cancer Study Group 2 
+GBSG4                   German Breast Cancer Study Group 4 
+GlaucomaM               Glaucoma Database 
+GlaucomaMVF             Glaucoma Database 
 Smoking                 Smoking Styles
-bagging                 Bagging Classification, Regression and
-                        Survival Trees
+bagging                 Bagging Classification, Regression and Survival
+                        Trees 
 bootest                 Bootstrap Error Rate Estimators
-control.errorest        Control Error Rate Estimators
+control.errorest        Control Error Rate Estimators 
 cv                      Cross-validated Error Rate Estimators.
-errorest                Estimators of Prediction Error
-flist                   Create an Object of Class flist
+errorest                Estimators of Prediction Error 
+flist                   Create an Object of Class flist 
 inclass                 Indirect Classification
-ipredknn                k-Nearest Neighbour Classification
-kfoldcv                 Subsamples for k-fold Cross-Validation
-mycomb                  My Combined Classifier
+ipred-internal          Internal ipred functions
+ipredknn                k-Nearest Neighbour Classification 
+kfoldcv                 Subsamples for k-fold Cross-Validation 
+mycomb                  My Combined Classifier 
 mypredict.lm            Predictions Based on Linear Models
-predict.classbagg       Predictions from Bagging Trees
+predict.classbagg       Predictions from Bagging Trees 
 predict.inclass         Predictions from an Inclass Object
-predict.ipredknn        Predictions from k-Nearest Neighbors
-predict.slda            Predictions from Stabilised Linear
-                        Discriminant Analysis
+predict.ipredknn        Predictions from k-Nearest Neighbors 
+predict.slda            Predictions from Stabilised Linear Discriminant
+                        Analysis 
 print.classbagg         Print Method for Bagging Trees
 print.cvclass           Print Method for Error Rate Estimators
 print.inclass           Print Method for Inclass Object
-prune.classbagg         Pruning for Bagging
-rsurv                   Simulate Survival Data
-sbrier                  Model Fit for Survival Data
-sim1                    Simulation Model
-slda                    Stabilised Linear Discriminant Analysis
+prune.classbagg         Pruning for Bagging 
+rsurv                   Simulate Survival Data 
+sbrier                  Model Fit for Survival Data 
+sim1                    Simulation Model 
+slda                    Stabilised Linear Discriminant Analysis 
 summary.classbagg       Summarising Bagging
 summary.inclass         Summarising Inclass
 varset                  Simulation Model

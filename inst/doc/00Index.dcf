@@ -1,1 +1,2 @@
-ipred-examples.pdf: Some more or less useful examples for illustration.
+inst/doc/ipred-examples.pdf: Some more or less useful examples for
+    illustration.

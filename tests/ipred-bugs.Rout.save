@@ -1,6 +1,6 @@
 
-R : Copyright 2002, The R Development Core Team
-Version 1.6.0 beta (2002-09-25)
+R : Copyright 2003, The R Development Core Team
+Version 1.6.2  (2003-01-10)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -40,7 +40,7 @@ Call: bagging.data.frame(formula = Class ~ Cl.thickness + Cell.size +
 Out-of-bag estimate of misclassification error:  0.0439 
 
 > 
-> print(predict(mod, newdata=BreastCancer))
+> print(a <- predict(mod, newdata=BreastCancer))
   [1] benign    benign    benign    benign    benign    malignant benign   
   [8] benign    benign    benign    benign    benign    malignant benign   
  [15] malignant malignant benign    benign    malignant benign    malignant
@@ -142,6 +142,7 @@ Out-of-bag estimate of misclassification error:  0.0439
 [687] benign    benign    benign    benign    benign    malignant benign   
 [694] benign    benign    benign    malignant malignant malignant
 Levels: benign malignant
+> stopifnot(length(a) == nrow(BreastCancer))
 > 
 > # bagging failed if only one predictor was specified
 > # by Christoph M. Friedrich <chris@uni-wh.de>, April 29th, 2002
