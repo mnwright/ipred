@@ -100,7 +100,7 @@ the estimation of the covariance matrix in \code{\link{lda}} fails due to a
 limited out-of-bag sample size, one can use \code{\link{slda}} instead.
 See the example section for an example of double-bagging. The methodology is
 not limited to a combination with LDA: bundling (Hothorn and Lausen, 2002b) 
-can be used with arbritrary classifiers.
+can be used with arbitrary classifiers.
 
 }
 

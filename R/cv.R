@@ -1,14 +1,13 @@
-#$Id: cv.R,v 1.9 2002/12/03 11:41:56 hothorn Exp $
+#$Id: cv.R,v 1.11 2003/02/04 17:41:13 hothorn Exp $
 
-cv <- function(y, ...) UseMethod("cv")
+cv <- function(y, ...) {
+  if(is.null(class(y)))
+    class(y) <- data.class(y)
+  UseMethod("cv", y, ...)
+}
 
 cv.default <- function(y, ...) {
-  if (is.numeric(y)) {
-    class(y) <- "numeric"
-    return(cv(y, ...))
-  } else {
-    stop(paste("Do not know how to handle objects of class", class(y)))
-  }
+  stop(paste("Do not know how to handle objects of class", class(y)))
 }
 
 cv.factor <- function(y, X, model, predict, k=10, random=TRUE, 

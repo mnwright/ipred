@@ -9,7 +9,8 @@ mod <- bagging(Class ~ Cl.thickness + Cell.size
                 + Mitoses, data=BreastCancer, coob=TRUE)
 print(mod)
 
-print(predict(mod, newdata=BreastCancer))
+print(a <- predict(mod, newdata=BreastCancer))
+stopifnot(length(a) == nrow(BreastCancer))
 
 # bagging failed if only one predictor was specified
 # by Christoph M. Friedrich <chris@uni-wh.de>, April 29th, 2002

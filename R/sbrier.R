@@ -1,11 +1,13 @@
-# $Id: sbrier.R,v 1.2 2002/09/12 08:59:13 hothorn Exp $
+# $Id: sbrier.R,v 1.3 2003/01/20 16:06:09 hothorn Exp $
 
 getsurv <- function(obj, times)
 {
     # get the survival probability for times from KM curve `obj'
 
     if (!inherits(obj, "survfit")) stop("obj is not of class survfit")
+    # <FIXME: methods may have problems with that>
     class(obj) <- NULL
+    # </FIXME>
     lt <- length(times)
     nsurv <- times
 
@@ -39,7 +41,9 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
 
     # check for right censoring
 
+    # <FIXME>
     class(obj) <- NULL
+    # </FIXME>
     if (attr(obj, "type") != "right")
         stop("only right-censoring allowed")
     N <- nrow(obj)	
@@ -60,12 +64,15 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
                                           btime[2]]
 
     ptype <- class(pred)
-    if(is.null(ptype)) {
-        if (is.vector(pred)) ptype <- "vector"
-        if (is.list(pred)) ptype <- "list"
+    # <begin> S3 workaround
+    if (is.null(ptype)) {
+      if (is.vector(pred)) ptype <- "vector"
+      if (is.list(pred)) ptype <- "list"
     }
-    if (is.null(ptype)) stop("unknown type of pred")
+    # <end>
+    if (ptype == "numeric" && is.vector(pred)) ptype <- "vector"
 
+    survs <- NULL
     switch(ptype, survfit = {
         survs <- getsurv(pred, btime)
         survs <- matrix(rep(survs, N), nrow=length(btime))
@@ -87,6 +94,7 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
             stop("wrong dimensions of pred")
         # </FIXME>
     })
+    if (is.null(survs)) stop("unknown type of pred")
 
     # reverse Kaplan-Meier: estimate censoring distribution
 

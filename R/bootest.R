@@ -1,14 +1,13 @@
-# $Id: bootest.R,v 1.5 2002/09/26 15:21:47 peters Exp $
+# $Id: bootest.R,v 1.7 2003/02/04 17:41:13 hothorn Exp $
 
-bootest <- function(y, ...) UseMethod("bootest")
+bootest <- function(y, ...) {
+  if(is.null(class(y)))
+    class(y) <- data.class(y)
+  UseMethod("bootest", y, ...)
+}
 
 bootest.default <- function(y, ...) {
-  if (is.numeric(y)) {
-    class(y) <- "numeric"
-    return(bootest(y, ...))
-  } else {
-    stop(paste("Do not know how to handle objects of class", class(y)))
-  }
+  stop(paste("Do not know how to handle objects of class", class(y)))
 }
 
 

@@ -1,4 +1,4 @@
-#$Id: ipredbagg.R,v 1.6 2002/09/24 12:31:49 hothorn Exp $
+#$Id: ipredbagg.R,v 1.8 2003/02/04 17:41:13 hothorn Exp $
 
 workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
   # This is double-bagging (comb is lda) or bundling (any arbritrary
@@ -79,17 +79,14 @@ workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
 }
 
 
-ipredbagg <- function(y, ...) UseMethod("ipredbagg")
+ipredbagg <- function(y, ...) {
+  if(is.null(class(y))) 
+    class(y) <- data.class(y)
+  UseMethod("ipredbagg", y, ...)
+}
 
 ipredbagg.default <- function(y, ...) {
-  # "numeric" is not an S3 class: check for regression problems and
-  # the method dispatch should work for class(y) == "numeric"
-  if (is.numeric(y)) { 
-    class(y) <- "numeric"
-    return(ipredbagg(y, ...))
-  } else {
-    stop(paste("Do not know how to handle objects of class", class(y)))
-  }
+  stop(paste("Do not know how to handle objects of class", class(y)))
 }
 
 ipredbagg.factor <- function(y, X=NULL, nbagg=25, control=
