@@ -1,10 +1,14 @@
-#$Id: ipredbagg.R,v 1.8 2003/02/04 17:41:13 hothorn Exp $
+#$Id: ipredbagg.R,v 1.10 2003/02/14 10:55:41 hothorn Exp $
 
 workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
   # This is double-bagging (comb is lda) or bundling (any arbritrary
   # model in comb)
   if (!is.data.frame(X)) X <- as.data.frame(X)
+
+  # check user supplied functions
   if (!is.list(comb)) stop("comb not a list")
+
+  N <- nrow(X)
 
   mydata <- cbind(data.frame(y), X)
   mtrees <- vector(mode="list", length=bcontrol$nbagg)
@@ -14,7 +18,7 @@ workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
     # comb is a list of lists, each of them having two elements:
     # model and predict
 
-    bindx <- sample(1:length(y), bcontrol$ns, replace=bcontrol$replace)
+    bindx <- sample(1:N, bcontrol$ns, replace=bcontrol$replace)
 
     objs <- vector(mode="list", length=length(comb))
     addclass <- function() {

@@ -1,4 +1,4 @@
-#$Id: cv.R,v 1.11 2003/02/04 17:41:13 hothorn Exp $
+#$Id: cv.R,v 1.16 2003/02/17 13:15:19 hothorn Exp $
 
 cv <- function(y, ...) {
   if(is.null(class(y)))
@@ -10,30 +10,21 @@ cv.default <- function(y, ...) {
   stop(paste("Do not know how to handle objects of class", class(y)))
 }
 
-cv.factor <- function(y, X, model, predict, k=10, random=TRUE, 
-                      strat=FALSE, predictions=NULL, iformula=NULL, ...) {
+cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE, 
+                      strat=FALSE, predictions=NULL, ...) {
 
   # k-fold cross-validation of misclassification error
+
+  if (!is.data.frame(data)) stop("data is not of class data.frame")
 
   N <- length(y)
   classes <- levels(y)
 
-  if (!is.data.frame(X)) X <- as.data.frame(X)
   if (is.null(k)) k <- 10
   if (is.null(random)) random <- TRUE
   if (is.null(strat)) strat <- FALSE
   if (is.null(predictions)) predictions <- FALSE
-
-  # handle indirect classification with formula w
-  # the y,X framework will not work without it
-  if (!is.null(iformula)) {
-    if (inherits(iformula, "formula") || inherits(iformula, "flist"))
-      INCLASS <- TRUE
-    else
-      stop("iformula must be of class formula or flist") 
-  } else { 
-    INCLASS <- FALSE
-  }
+  USEPM <- FALSE
 
   # to reproduce results, either use `set.seed' or a fixed partition of 
   # the samples
@@ -43,7 +34,7 @@ cv.factor <- function(y, X, model, predict, k=10, random=TRUE,
     myindx <- 1:N
 
   y <- y[myindx]
-  X <- X[myindx,]
+  data <- data[myindx,]
 
   # determine an appropriate splitting for the sample size into
   # k roughly equally sized parts
@@ -52,16 +43,28 @@ cv.factor <- function(y, X, model, predict, k=10, random=TRUE,
 
   allpred <- vector(mode="character", length=N)
   fu <- function(x) levels(x)[as.integer(x)]
-  mydata <- cbind(y,X)
+  nindx <- 1:N
   for(i in 1:k) {
     tindx <- mysplit[[i]]
-    if (INCLASS) 
-      mymodel <- model(iformula, data=X[-tindx,], ...)
-    else
-      mymodel <- model(y ~ ., data=mydata[-tindx,], ...)
+    folddata <- subset(data, !(nindx %in% tindx))
+    mymodel <- model(formula, data=folddata, ...)
+
+    # check of mymodel is a function which should be used instead of
+    # predict
+    if (is.function(mymodel)) {
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel
+      USEPM <- TRUE
+    }
 
     # we assume predict to return factor levels
-    pred <- factor(predict(mymodel, newdata = X), levels=classes)
+    if (USEPM)
+      pred <- predict(newdata=data)
+    else 
+      pred <- predict(mymodel, newdata = data)
+    if (!is.factor(pred)) stop("predict does not return factor values")
+    pred <- factor(pred, levels=classes)
     
     # <FIXME>
     # there is no c() for factors which preserves the levels, isn't it?
@@ -80,18 +83,18 @@ cv.factor <- function(y, X, model, predict, k=10, random=TRUE,
   RET
 }
 
-cv.numeric <- function(y, X, model, predict, k=10, random=TRUE,
+cv.numeric <- function(y, formula, data, model, predict, k=10, random=TRUE,
                        predictions=NULL, strat=NULL, ...) {
 
   # k-fold cross-validation of mean squared error 
 
+  if (!is.data.frame(data)) stop("data is not of class data.frame");
   N <- length(y)
 
-  if (!is.data.frame(X)) X <- as.data.frame(X)
   if (is.null(k)) k <- 10
   if (is.null(random)) random <- TRUE
   if (is.null(predictions)) predictions <- FALSE
-
+  USEPM <- FALSE
   # determine an appropriate splitting for the sample size into
   # k roughly equally sized parts
 
@@ -103,6 +106,7 @@ cv.numeric <- function(y, X, model, predict, k=10, random=TRUE,
     myindx <- sample(1:N, N)
   else
     myindx <- 1:N
+  nindx <- 1:N
 
   allpred <- rep(0, N)
   for(i in 1:k) {
@@ -111,14 +115,27 @@ cv.numeric <- function(y, X, model, predict, k=10, random=TRUE,
     else
       tindx <- myindx[1:a[1]]
     
-    mymodel <- model(y ~ ., data=cbind(y, X)[-tindx,], ...)
+    folddata <- subset(data, !(nindx %in% tindx))
+    mymodel <- model(formula, data=folddata, ...)
 
-    pred <- predict(mymodel, newdata = X[tindx,])
+    # check of mymodel is a function which should be used instead of
+    # predict
+    if (is.function(mymodel)) {   
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel  
+      USEPM <- TRUE  
+    }  
+
+    outfolddata <- subset(data, nindx %in% tindx)
+    if (USEPM)
+      pred <- predict(newdata=outfolddata)
+    else
+      pred <- predict(mymodel, newdata = outfolddata)
     if (!is.numeric(pred)) stop("predict does not return numerical values")
-    allpred[tindx] <- pred
+    allpred[sort(tindx)] <- pred
   }
-  err <- sqrt(mean((pred - y[tindx])^2, na.rm = TRUE))
-  allpred <- allpred[order(myindx)]
+  err <- sqrt(mean((allpred - y)^2, na.rm = TRUE))
   if (predictions)
     RET <- list(error = err, k = k, predictions=allpred)
   else
@@ -127,7 +144,7 @@ cv.numeric <- function(y, X, model, predict, k=10, random=TRUE,
   RET  
 }
 
-cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
+cv.Surv <- function(y, formula, data=NULL, model, predict, k=10, random=TRUE,
                     predictions=FALSE, strat=FALSE, ...) {
 
   # k-fold cross-validation of Brier's score
@@ -136,25 +153,13 @@ cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
   if(is.null(random)) random <- TRUE
   if (is.null(predictions)) predictions <- FALSE
   if (is.null(strat)) strat <- FALSE
-
+  USEPM <- FALSE
 
   N <- length(y[,1])
+  nindx <- 1:N
   if(is.null(random)) random <- TRUE
   if(is.null(k)) k <- 10
-  if (is.null(X)) X <- rep(1, N)
-  # try to find out if model is "survfit"
-  options(show.error.messages = FALSE)
-  a <- try(model(y))
-  if (inherits(a, "survfit")) {
-    KM <- TRUE
-    if (length(X) != N) stop("only one covariable for survfit allowed")
-  } else {
-    KM <- FALSE
-  }
-  options(show.error.messages = TRUE)
-
-  if (!KM)
-    if (!is.data.frame(X)) X <- as.data.frame(X)
+  if (is.null(data)) data <- rep(1, N)
   
   if(is.null(k)) stop("k for k-fold cross-validation is missing")
 
@@ -177,12 +182,23 @@ cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
     else
       tindx <- myindx[1:a[1]]
 
-    if (KM)
-      mymodel <- survfit(y ~ X, subset=(-tindx), ...)
-    else 
-      mymodel <- model(y ~ ., data=cbind(y, X)[-tindx,], ...)
+    folddata <- subset(data, !(nindx %in% tindx))
+    mymodel <- model(formula, data=folddata, ...)
 
-    pred <- predict(mymodel, newdata = as.data.frame(X[tindx, ]))
+    # check if mymodel is a function which should be used instead of
+    # predict
+    if (is.function(mymodel)) {   
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel  
+      USEPM <- TRUE  
+    }  
+
+    outfolddata <- subset(data, (nindx %in% tindx))
+    if (USEPM)
+      pred <- predict(newdata=outfolddata)
+    else
+      pred <- predict(mymodel, newdata = outfolddata)
     if (is.list(pred)) {
       if (!inherits(pred[[1]], "survfit") && !inherits(pred, "survfit"))
         stop("predict does not return a list of survfit objects")
@@ -190,7 +206,7 @@ cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
       stop("predict does not return a list of survfit objects")
     }
 
-    err <- sbrier(y[tindx], pred)
+    err <- sbrier(y[sort(tindx)], pred)
     cverr <- c(cverr,rep(err, length(tindx)))
   }
   RET <- list(error = mean(cverr), k=k)

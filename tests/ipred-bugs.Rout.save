@@ -37,7 +37,7 @@ Call: bagging.data.frame(formula = Class ~ Cl.thickness + Cell.size +
     Bl.cromatin + Normal.nucleoli + Mitoses, data = BreastCancer, 
     coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.0439 
+Out-of-bag estimate of misclassification error:  0.0425 
 
 > 
 > print(a <- predict(mod, newdata=BreastCancer))
@@ -160,4 +160,19 @@ Levels: benign malignant
 > learn <- cbind(y, X)
 > mt <- bagging(y ~ V1, data=learn, coob=TRUE)
 > 
+> # cv.numeric and bootest.numeric were broken, check for reasonaly values
+> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+> y <- apply(X, 1, mean) + rnorm(nrow(X))
+> learn <- cbind(y, X)
+> newy <- apply(X, 1, mean) + rnorm(nrow(X))
+> mod <- lm(y ~ ., data=learn)
+> trueerr <- sqrt(mean((newy - fitted(mod))^2))
+> cverr <- rep(0,5)
+> for (i in 1:5) cverr[i] <- errorest(y ~., data=learn, model=lm)$error
+> booterr <- errorest(y ~., data=learn, model=lm,
++                     estimator="boot",est.para=control.errorest(nboot=50))$error
+> print(trueerr/mean(cverr))
+[1] 1.288265
+> print(trueerr/booterr)
+[1] 1.216717
 > 

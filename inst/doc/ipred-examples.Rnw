@@ -16,7 +16,7 @@
 \SweaveOpts{engine=R,eps=TRUE}
 
 <<preliminaries,echo=FALSE>>=
-options(prompt=">", width=60)
+options(prompt=">", width=50)
 set.seed(210477)
 @
 
@@ -256,7 +256,7 @@ discriminant analysis and specify the error rate estimator
 by \texttt{estimator = "cv", "boot"} or \texttt{"632plus"}, 
 respectively. A 10-fold cross validation is performed by 
 choosing \texttt{estimator = "cv"} and 
-\texttt{est.para = list(k = 10)}. The options \texttt{estimator = "boot"} or 
+\texttt{est.para = control.errorest(k = 10)}. The options \texttt{estimator = "boot"} or 
 \texttt{estimator = "632plus"} deliver a bootstrap estimator 
 and its  bias corrected version {\sl .632+} \citep[see][]{efron:1997}, 
 we specify the number of bootstrap samples to be drawn by 
@@ -303,6 +303,51 @@ we must call the class membership variable. Hence, in contrast to the
 function \texttt{inclass} the data set \texttt{GlaucomaMVF} used in 
 \texttt{errorest} must contain explanatory, intermediate and response 
 variables. 
+
+Sometimes it may be necessary to reduce the number of predictors before
+training a classifier. Estimating the error rate after the variable
+selection leads to biased estimates of the misclassfication error and
+therefore one should estimate the error rate of the whole procedure. Within
+the \texttt{errorest} framework, this can be done as follows. First, we define
+a function which does both variable selection and training of the
+classifier. For illustration proposes, we select the predictors by comparing
+their univariate $P$-values of a two-sample $t$-test with a prespecified
+level and train a LDA using the selected variables only.
+
+<<varsel-def, echo=TRUE>>=
+mymod <- function(formula, data, level=0.05) {
+  # select all predictors that are associated with an
+  # univariate t.test p-value of less that level
+  sel <- which(lapply(data, function(x) {
+    if (!is.numeric(x))
+      return(1)
+    else 
+     return(t.test(x ~ data$Class)$p.value)
+    }) < level)
+  # make sure that the response is still there
+  sel <- c(which(colnames(data) %in% "Class"), sel)
+  # compute a LDA using the selected predictors only
+  mod <- lda(formula , data=data[,sel]) 
+  # and return a function for prediction
+  function(newdata) {
+    predict(mod, newdata=newdata[,sel])$class
+  }
+}
+@
+
+Note that \texttt{mymod} does not return 
+an object of class \texttt{lda} but a function
+with argument \texttt{newdata} only. Thanks to lexical scoping, this 
+function is used for computing
+predicted classes instead of a function \texttt{predict} passed to
+\texttt{errorest} as argument. Computing a $5$-fold cross-validated error rate
+estimator now is approximately a one-liner.
+
+<<varsel-comp, echo=TRUE>>=
+errorest(Class ~ . , data=GlaucomaM, model=mymod,
+est.para=control.errorest(k=5))
+@
+
 
 %%To summarize the performance of the different classification techniques in the considered example of glaucoma diagnosis, the 10-fold 
 %%cross-validated error estimator delivers the 

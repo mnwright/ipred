@@ -1,7 +1,8 @@
-# $Id: predict.bagging.R,v 1.11 2002/09/24 12:32:04 hothorn Exp $
+# $Id: predict.bagging.R,v 1.13 2003/02/13 16:37:48 hothorn Exp $
 
 uwhich.max <- function(x) {
-  wm <- which.max(x)
+  # need to determine all maxima in order to sample from them
+  wm <- (1:length(x))[x == max(x)]
   if (length(wm) > 1)
     wm <- wm[sample(length(wm), 1)]
   wm
@@ -200,7 +201,7 @@ predict.sreg <- function(object, newdata=NULL, ...) {
 
 predict.survbagg <- function(object, newdata=NULL, ...) {
   if (missing(newdata)) {
-  if (length(object$mtrees) < 10) 
+    if (length(object$mtrees) < 10) 
       stop("cannot compute out-of-bag predictions for small number of trees")
     OOB <- TRUE
     if (!is.null(object$X))
@@ -229,14 +230,15 @@ predict.survbagg <- function(object, newdata=NULL, ...) {
   }
   for (i in 1:length(object$mtrees)) {
     bdata <- object$y[object$mtrees[[i]]$bindx]
-    if (!is.null(object$mtrees[[i]]$bfct))
-          stop("cannot compute out-of-bag estimate for combined models!")
     newpart <- getpartition(object$mtrees[[i]], newdata)
     oldpart <- object$mtrees[[i]]$btree$where
-    if (OOB)
+    if (OOB) {
+      if (!is.null(object$mtrees[[i]]$bfct))
+        stop("cannot compute out-of-bag estimate for combined models!")
       tindx <- (1:N)[-object$mtrees[[i]]$bindx]
-    else
+    } else {
       tindx <- 1:N
+    }
     for (j in tindx) {
         aggobs <- bdata[oldpart == newpart[j],1]
         agglsample[[j]] <- c(agglsample[[j]], aggobs)

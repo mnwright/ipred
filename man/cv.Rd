@@ -10,15 +10,20 @@
 are normally not called by users.
 }
 \usage{
-\method{cv}{factor}(y, X, model, predict, k=10, random=TRUE, strat=TRUE,
-            predictions=FALSE, iformula=NULL, \dots) 
+\method{cv}{factor}(y, formula, data, model, predict, k=10, random=TRUE, strat=TRUE,
+            predictions=FALSE,  \dots) 
 }
 \arguments{
   \item{y}{response variable, either of class \code{factor}
 (classification), \code{numeric} (regression) or \code{Surv} (survival).}
-  \item{X}{data frame of predictors.}
+  \item{formula}{a formula object.}
+  \item{data}{data frame of predictors and response described in \code{formula}.}
   \item{model}{a function implementing the predictive model to be
-evaluated.}
+evaluated. The function \code{model} can either return an
+               object representing a fitted model or a function with
+               argument \code{newdata} which returns predicted values. In
+               this case, the \code{predict} argument to \code{errorest} is
+               ignored.}
   \item{predict}{a function with arguments \code{object} and \code{newdata}
 only which predicts the status of the observations in \code{newdata} based
 on the fitted model in \code{object}.}
@@ -27,7 +32,6 @@ on the fitted model in \code{object}.}
 order of the data should be used for sample splitting or not.}
   \item{strat}{logical, stratified sampling or not.}
   \item{predictions}{logical, return the prediction of each observation.}
-  \item{iformula}{formula for indirect classification.}
   \item{\dots}{additional arguments to \code{model}.}
 }
 \details{

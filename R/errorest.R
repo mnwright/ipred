@@ -1,4 +1,4 @@
-# $Id: errorest.R,v 1.14 2002/09/26 15:21:47 peters Exp $
+# $Id: errorest.R,v 1.18 2003/02/14 14:23:59 hothorn Exp $
 
 control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
                      random=TRUE, predictions=FALSE) {
@@ -45,6 +45,7 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
            model, predict, iclass, estimator, est.para, ...)
     RET$call <- cl
   } else { 
+
     if(missing(formula)
       || (length(formula) != 3)
       || (length(attr(terms(formula[-3]), "term.labels")) != 1))
@@ -62,31 +63,29 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
     mf <- eval(m, parent.frame())
 
     response <- attr(attr(mf, "terms"), "response")
-    # just extract the data.frame, no handling of contrasts or NA's here.
-    # this is done by rpart or the user supplied methods
-    DATA <- list(y = mf[,response], X = mf[,-response]) 
-    names(DATA) <- c("y", "X")
-    N <- nrow(DATA)
-
-    # y ~ 1 is needed for overall Kaplan-Meier, for example. *.Surv can deal
-    # with this
-    if (NOPRED)
-      DATA$X <- NULL
+    # just extract the data.frame, NA handling here
+    # make sure to leave the time and censoring variable here
+    # for "Surv(time, cens) ~ ." formulas
+    y <- mf[,response]
+    if (!NOPRED & !is.Surv(y))
+      data <- mf
+    else
+      data <- data[complete.cases(data),]
 
     estimator <- match.arg(estimator)
 
     if(is.null(model)) 
-      stop("no classifier specified")
+      stop("no model specified")
 
     switch(estimator, "cv" = {
-      RET <- cv(DATA$y, DATA$X, model=model, predict=predict, 
+      RET <- cv(y, formula, data, model=model, predict=predict, 
                 k=est.para$k, random=est.para$random,
                 predictions=est.para$predictions, strat=est.para$strat, ...)
     }, "boot" = {
-      RET <- bootest(DATA$y, DATA$X, model=model, predict=predict,
+      RET <- bootest(y, formula, data, model=model, predict=predict,
                      nboot=est.para$nboot, ...)
     }, "632plus" = {
-      RET <- bootest(DATA$y, DATA$X, model=model, predict=predict,
+      RET <- bootest(y, formula, data, model=model, predict=predict,
                      nboot=est.para$nboot, bc632plus=TRUE, ...)
     })
   }
@@ -118,14 +117,14 @@ errorestinclass <- function(formula, data, subset=NULL, na.action=NULL,
       stop("no classifier specified")
 
   switch(estimator, "cv" = {
-    RET <- cv(y, X, model=model, predict=predict,
-              k=est.para$k, random=est.para$random, iformula=formula, ...)
+    RET <- cv(y, formula, data=X, model=model, predict=predict,
+              k=est.para$k, random=est.para$random, ...)
     }, "boot" = {
-      RET <- bootest(y, X, model=model, predict=predict,
-                     nboot=est.para$nboot, iformula=formula, ...)
+      RET <- bootest(y, formula, data=X, model=model, predict=predict,
+                     nboot=est.para$nboot, ...)
     }, "632plus" = {
-      RET <- bootest(y, X, model=model, predict=predict,
-                     nboot=est.para$nboot, iformula=formula, bc632plus=TRUE, ...)
+      RET <- bootest(y, formula, data=X, model=model, predict=predict,
+                     nboot=est.para$nboot, bc632plus=TRUE, ...)
   })
   RET
 }

@@ -32,7 +32,11 @@ root mean squared error or Brier score for survival data.
   \item{na.action}{function which indicates what should happen when the data
                    contains \code{NA}'s, defaults to \code{\link{na.omit}}.} 
   \item{model}{function. Modelling technique whose error rate is to be 
-               estimated.}
+               estimated. The function \code{model} can either return an 
+               object representing a fitted model or a function with
+               argument \code{newdata} which returns predicted values. In
+               this case, the \code{predict} argument to \code{errorest} is
+               ignored.}
   \item{predict}{function. Prediction method to be used. The vector of 
                  predicted values must have the same length as the the 
                  number of to-be-predicted observations. Predictions 
@@ -211,7 +215,20 @@ errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
 data(BostonHousing)
 
 # 10-fold cv of lm for Boston Housing data
-errorest(medv ~ ., data=BostonHousing, model=lm)
+errorest(medv ~ ., data=BostonHousing, model=lm,
+         est.para=control.errorest(random=FALSE))
+
+# the same, with "model" returning a function for prediction
+# instead of an object of class "lm"
+
+mylm <- function(formula, data) {
+  mod <- lm(formula, data)
+  function(newdata) predict(mod, newdata)
+}
+
+errorest(medv ~ ., data=BostonHousing, model=mylm,
+est.para=control.errorest(random=FALSE))
+
 
 # Survival data
 
@@ -223,6 +240,7 @@ predict.survfit <- function(object, newdata) object
 # 5-fold cv of Kaplan-Meier for GBSG2 study
 errorest(Surv(time, cens) ~ 1, data=GBSG2, model=survfit,
          predict=predict.survfit, est.para=control.errorest(k=5))
+
 
 }
 

@@ -1,6 +1,6 @@
-# $Id: rsurv.R,v 1.2 2002/09/12 08:59:13 hothorn Exp $
+# $Id: rsurv.R,v 1.3 2003/02/13 10:49:41 hothorn Exp $
 
-rsurv <- function(N, model=c("A", "B", "C", "tree"), gamma=NULL, fact=1,
+rsurv <- function(N, model=c("A", "B", "C", "D", "tree"), gamma=NULL, fact=1,
                   pnon=10)
 {
     model <- match.arg(model)
@@ -17,6 +17,10 @@ rsurv <- function(N, model=c("A", "B", "C", "tree"), gamma=NULL, fact=1,
         },
         "C" = {
             hazard <- 3*X[,1] + X[,2]
+            time <- sapply(exp(hazard), rexp, n=1)
+        },
+        "D" = {
+            hazard <- 3*X[,1] - 3*X[,2] + 4*X[,3] - 2*X[,4]
             time <- sapply(exp(hazard), rexp, n=1)
         },
         "tree" = {

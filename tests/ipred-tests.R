@@ -338,7 +338,17 @@ errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
 data(BostonHousing)
 
 # 10-fold cv of lm for Boston Housing data
-errorest(medv ~ ., data=BostonHousing, model=lm)
+errorest(medv ~ ., data=BostonHousing, model=lm,
+est.para=control.errorest(random=FALSE))
+
+mylm <- function(formula, data) {
+  mod <- lm(formula, data)
+  function(newdata) predict(mod, newdata)
+}
+ 
+errorest(medv ~ ., data=BostonHousing, model=mylm,
+est.para=control.errorest(random=FALSE))
+
 
 # Survival data
 

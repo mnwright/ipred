@@ -18,7 +18,7 @@ rsurv(N, model=c("A", "B", "C", "tree"), gamma=1, fact=1, pnon=10)
 \details{
   Simulation setup similar to configurations used in LeBlanc and Crowley
 (1992) or Keles and Segal (2002) as well as a tree model used in Hothorn et
-al. (2002). See Hothorn et al. (2002) for the details.
+al. (2002). See Hothorn et al. (2002) for the details. 
 }
 \value{
   A data  frame with elements \code{time}, \code{cens}, \code{X1} ...

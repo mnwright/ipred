@@ -1,4 +1,23 @@
-# $Id: CHANGES,v 1.23 2003/02/07 15:54:26 hothorn Exp $
+# $Id: CHANGES,v 1.25 2003/02/17 13:44:16 hothorn Exp $
+
+	0.6-7 (17.02.2003)
+
+	use a formula / data framework in cv and bootest. 
+
+        "model" now deals with the original variable names 
+        (and formula) instead  of "y" and "X".
+
+	"model" is now allowed to return a function with newdata argument for
+        prediction. This is especially useful for estimating the error of
+        both variable selection and model building simultaneously, the
+        vignette gives a simple example.
+
+	cv.numeric and bootest.numeric were broken and gave faulty estimates
+        of MSE, both problems fixed
+
+	if the maximum of votes for any class is not unique, the class is
+        choosen by random in predict.classbagg now. Formerly, the class with
+	lowest level was choosen by mistake.
 
 	0.6-6 (06.02.2003)
 

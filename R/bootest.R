@@ -1,4 +1,4 @@
-# $Id: bootest.R,v 1.7 2003/02/04 17:41:13 hothorn Exp $
+# $Id: bootest.R,v 1.12 2003/02/17 13:15:19 hothorn Exp $
 
 bootest <- function(y, ...) {
   if(is.null(class(y)))
@@ -11,40 +11,40 @@ bootest.default <- function(y, ...) {
 }
 
 
-
-bootest.factor <- function(y, X, model, predict, 
-                           nboot=25, bc632plus=FALSE, iformula=NULL, ...) {
+bootest.factor <- function(y, formula, data, model, predict, 
+                           nboot=25, bc632plus=FALSE, ...) {
   
   # bootstrap estimator of misclassification error
 
   N <- length(y)
+  nindx <- 1:N
   bootindx <- matrix(NA, ncol=nboot, nrow=N)
   classes <- levels(y)
+  USEPM <- FALSE
   
-  if (!is.data.frame(X)) X <- as.data.frame(X)
-
+  if(!is.data.frame(data)) stop("data is not a data.frame")
+  if(nboot <=2) stop("to small number of bootstrap replications")
   if(is.null(nboot)) stop("number of bootstrap replications is missing")
 
-  # handle indirect classification
-  if (!is.null(iformula)) {
-    if (inherits(iformula, "formula") || inherits(iformula, "flist"))
-      INCLASS <- TRUE 
-    else
-      stop("iformula must be of class formula or flist")
-  } else {
-    INCLASS <- FALSE
-  }
-
-  mydata <- cbind(y,X)
-
   for(i in 1:nboot) {
-    tindx <- sample(1:N, N, replace = TRUE)
-    if (INCLASS)
-      mymodel <- model(iformula, data = X[tindx,], ...)
-    else
-      mymodel <- model(y ~ ., data = mydata[tindx,], ...)
+    tindx <- sample(nindx, N, replace = TRUE)
+    mymodel <- model(formula, data = data[tindx,], ...)
 
-    pred <- factor(predict(mymodel, newdata = X[-tindx, ]), levels=classes)
+    # check if mymodel is a function which should be used instead of   
+    # predict
+    if (is.function(mymodel)) {
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel
+      USEPM <- TRUE
+    }
+
+    if (USEPM) 
+      pred <- predict(newdata=data)
+    else 
+      pred <- predict(mymodel, newdata = data)
+    if (!is.factor(pred)) stop("predict does not return factor values")
+    pred <- factor(pred, levels=classes)[-tindx]
     if (length(pred) != length(y[-tindx]))
         stop("different length of data and prediction")
 
@@ -52,16 +52,24 @@ bootest.factor <- function(y, X, model, predict,
   }
 
   fun <- function(x)
-        ifelse(all(is.na(x)), 0, mean(as.integer(x), na.rm = TRUE))
+       ifelse(all(is.na(x)), NA, mean(as.integer(x), na.rm = TRUE))
 
-  one <- mean(apply(bootindx, 1, fun))
+  one <- mean(apply(bootindx, 1, fun), na.rm = TRUE)
 
   if (bc632plus) {
-    if(INCLASS)
-      full.model <- model(iformula, data = X, ...)
+    full.model <- model(formula, data = data, ...)
+    # check if full.model is a function which should be used instead of
+    # predict
+    if (is.function(full.model)) {
+      predict <- fullmodel
+      USEPM <- TRUE
+    }
+
+    if (USEPM)
+      full.pred <- predict(newdata=data)
     else
-      full.model <- model(y ~ ., data = X, ...)
-    full.pred <- predict(full.model, newdata = X)
+
+    full.pred <- predict(full.model, newdata = data)
     resubst <- mean(full.pred != y, na.rm = TRUE)
 
     y <- y[!is.na(y) & !is.na(full.pred)]
@@ -77,7 +85,7 @@ bootest.factor <- function(y, X, model, predict,
     err <- one
     expb <- rep(0, nboot)
     for(i in 1:nboot)
-      expb[i] <- mean(apply(bootindx[,-i], 1, fun))
+      expb[i] <- mean(apply(bootindx[,-i], 1, fun), na.rm = TRUE)
     sdint <- sqrt( ((nboot - 1)/nboot)*sum((expb - mean(expb))^2) )
     RET <- list(error = err, sd=sdint, bc632plus=FALSE, nboot=nboot)
   }
@@ -85,42 +93,58 @@ bootest.factor <- function(y, X, model, predict,
   RET
 }
 
-bootest.numeric <- function(y, X, model, predict, 
+bootest.numeric <- function(y, formula, data, model, predict, 
                            nboot=25, bc632plus=FALSE, ...) {
   
   # bootstrap estimator of root of mean squared error 
 
   if (bc632plus) stop("cannot compute 632+ estimator of mean squared error")
+  if (nboot <=2) stop("to small number of bootstrap replications")
 
   N <- length(y)
+  nindx <- 1:N
   bootindx <- matrix(NA, ncol=nboot, nrow=N)
+  USEPM <- FALSE
   
-  if (!is.data.frame(X)) X <- as.data.frame(X)
+  if (!is.data.frame(data)) stop("data is not a data.frame")
 
   if(is.null(nboot)) stop("number of bootstrap replications is missing")
 
 
   for(i in 1:nboot) {
-    tindx <- sample(1:N, N, replace = TRUE)
-    mymodel <- model(y ~ ., data = cbind(y, X)[tindx,], ...)
-    pred <- predict(mymodel, newdata = X[-tindx, ])
+    tindx <- sample(nindx, N, replace = TRUE)
+    mymodel <- model(formula, data = data[tindx,], ...)
+    outbootdata <- subset(data, !(nindx %in% tindx))
+    # check if mymodel is a function which should be used instead of
+    # predict
+    if (is.function(mymodel)) {
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel
+      USEPM <- TRUE
+    }
+
+    if (USEPM)
+      pred <- predict(newdata=outbootdata)
+    else
+      pred <- predict(mymodel, newdata = outbootdata)
     if (!is.numeric(pred)) stop("predict does not return numerical values")
     if (length(pred) != length(y[-tindx]))
         stop("different length of data and prediction")
 
-    bootindx[-tindx, i] <- sqrt((pred - y[-tindx])^2)
+    bootindx[-tindx, i] <- (pred - y[-tindx])^2
   }
 
   fun <- function(x)
-        ifelse(all(is.na(x)), 0, mean(x, na.rm = TRUE))
+        ifelse(all(is.na(x)), NA, mean(x, na.rm = TRUE))
 
-  err <- mean(apply(bootindx, 1, fun))
+  err <- sqrt(mean(apply(bootindx, 1, fun), na.rm = TRUE))
   RET <- list(error = err, nboot=nboot)
   class(RET) <- "bootestreg"
   RET
 }
 
-bootest.Surv <- function(y, X, model, predict, 
+bootest.Surv <- function(y, formula, data=NULL, model, predict, 
                            nboot=25, bc632plus=FALSE, ...) {
   
   # bootstrap estimator of Brier's score
@@ -128,34 +152,32 @@ bootest.Surv <- function(y, X, model, predict,
   if (bc632plus) stop("cannot compute 632+ estimator of Brier's score")
 
   N <- dim(y)[1]
+  nindx <- 1:N
   bootindx <- matrix(NA, ncol=nboot, nrow=N)
+  USEPM <- FALSE
 
   if(is.null(nboot)) stop("number of bootstrap replications is missing")
-
-  if (is.null(X)) X <- rep(1, N)
-  # try to find out if model estimates KM
-  options(show.error.messages = FALSE)
-  a <- try(model(y))
-  if (inherits(a, "survfit")) {
-    KM <- TRUE
-    if (length(X) != N) stop("only one covariable for survfit allowed")
-  } else {
-    KM <- FALSE
-  }
-  options(show.error.messages = TRUE)
-
-  if (!KM)
-    if (!is.data.frame(X)) X <- as.data.frame(X)
+  if (nboot <=2) stop("to small number of bootstrap replications")
+  if (is.null(data)) data <- as.data.frame(rep(1, N))
+  if (!is.data.frame(data)) stop("data is not a data.frame")
 
   for(i in 1:nboot) {
-    tindx <- sample(1:N, N, replace = TRUE)
+    tindx <- sample(nindx, N, replace = TRUE)
+    mymodel <- model(formula, data=data[tindx,], ...)
+    outbootdata <- subset(data, !(nindx %in% tindx))
+    # check if mymodel is a function which should be used instead of
+    # predict
+    if (is.function(mymodel)) {
+      if(!is.null(predict) & i == 1) 
+        warning("model returns a function and predict is specified, using models output")
+      predict <- mymodel
+      USEPM <- TRUE
+    }
 
-    if (KM)
-      mymodel <- survfit(y ~ X, subset=tindx, ...)
-    else 
-      mymodel <- model(y ~ ., data=cbind(y, X)[tindx, ], ...)
-
-    pred <- predict(mymodel, newdata = X[-tindx, ])
+    if (USEPM)
+      pred <- predict(newdata=outbootdata)
+    else
+      pred <- predict(mymodel, newdata = outbootdata)
 
     if (is.list(pred)) {
       if (!inherits(pred[[1]], "survfit") && !inherits(pred, "survfit"))
@@ -168,9 +190,9 @@ bootest.Surv <- function(y, X, model, predict,
   }
 
   fun <- function(x)
-        ifelse(all(is.na(x)), 0, mean(x, na.rm = TRUE))
+        ifelse(all(is.na(x)), NA, mean(x, na.rm = TRUE))
 
-  err <- mean(apply(bootindx, 1, fun))
+  err <- mean(apply(bootindx, 1, fun), na.rm = TRUE)
   RET <- list(error = err, nboot=nboot)
   class(RET) <- "bootestsurv"
   RET

@@ -136,7 +136,8 @@ Loading required package: nnet
 \end{Soutput}
 \begin{Sinput}
 >data(GlaucomaM)
->gbag <- bagging(Class ~ ., data = GlaucomaM, coob = TRUE)
+>gbag <- bagging(Class ~ ., data = GlaucomaM, 
++     coob = TRUE)
 \end{Sinput}
 where \texttt{GlaucomaM} contains explanatory HRT variables 
 and the response of glaucoma diagnosis (\texttt{Class}), 
@@ -153,7 +154,7 @@ Bagging classification trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = Class ~ ., data = GlaucomaM, coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.1633 
+Out-of-bag estimate of misclassification error:  0.1735 
 \end{Soutput}
 The out-of-bag estimate uses the observations which are left out in a
 bootstrap sample to estimate the misclassification error at almost no
@@ -172,12 +173,12 @@ computed along the following lines
 \texttt{predict} predicts future observations according to the 
 fitted model.
 \begin{Sinput}
->predict(gbagc, newdata = GlaucomaM[c(1:3, 99:102), 
-+     ])
+>predict(gbagc, newdata = GlaucomaM[c(1:3, 
++     99:102), ])
 \end{Sinput}
 \begin{Soutput}
-[1] normal   normal   normal   glaucoma glaucoma glaucoma
-[7] glaucoma
+[1] normal   normal   normal   glaucoma glaucoma
+[6] glaucoma glaucoma
 Levels: glaucoma normal
 \end{Soutput}
 Both \texttt{bagging} and \texttt{predict} rely on the \texttt{rpart}
@@ -219,14 +220,16 @@ sample \texttt{GlaucomaMVF}. We assign the given variables to explanatory
 and intermediate by specifying the input formula.
 \begin{Sinput}
 >data(GlaucomaMVF)
->formula.indirect <- clv + lora + cs ~ .
+>formula.indirect <- clv + lora + cs ~ 
++     .
 \end{Sinput}
 The variables on the left-hand side represent the intermediate variables, 
 modeled by the explanatory variables on the right-hand side. Almost each 
 modeling technique can be used to predict the intermediate variables. We 
 chose a linear model by \texttt{pFUN = lm}.
 \begin{Sinput}
->fit <- inclass(formula.indirect, pFUN = lm, data = GlaucomaMVF)
+>fit <- inclass(formula.indirect, pFUN = lm, 
++     data = GlaucomaMVF)
 \end{Sinput}
 \texttt{print} displays the subdivision of variables and the chosen 
 modeling technique
@@ -249,23 +252,28 @@ Figure \ref{diag} and implemented in the function \texttt{classify}.
 >classify <- function(data) {
 +     attach(data)
 +     res <- ifelse((!is.na(clv) & !is.na(lora) & 
-+         clv >= 5.1 & lora >= 49.23372) | (!is.na(clv) & 
-+         !is.na(lora) & !is.na(cs) & clv < 5.1 & 
-+         lora >= 58.55409 & cs < 1.405) | (is.na(clv) & 
-+         !is.na(lora) & !is.na(cs) & lora >= 58.55409 & 
-+         cs < 1.405) | (!is.na(clv) & is.na(lora) & 
-+         cs < 1.405), 0, 1)
++         clv >= 5.1 & lora >= 49.23372) | 
++         (!is.na(clv) & !is.na(lora) & 
++             !is.na(cs) & clv < 5.1 & lora >= 
++             58.55409 & cs < 1.405) | (is.na(clv) & 
++         !is.na(lora) & !is.na(cs) & lora >= 
++         58.55409 & cs < 1.405) | (!is.na(clv) & 
++         is.na(lora) & cs < 1.405), 0, 
++         1)
 +     detach(data)
-+     factor(res, labels = c("glaucoma", "normal"))
++     factor(res, labels = c("glaucoma", 
++         "normal"))
 + }
 \end{Sinput}
 Prediction of future observations is now performed by
 \begin{Sinput}
->predict(object = fit, cFUN = classify, newdata = GlaucomaMVF[c(1:3, 
-+     86:88), ])
+>predict(object = fit, cFUN = classify, 
++     newdata = GlaucomaMVF[c(1:3, 86:88), 
++         ])
 \end{Sinput}
 \begin{Soutput}
-[1] normal   normal   normal   glaucoma glaucoma glaucoma
+[1] normal   normal   normal   glaucoma glaucoma
+[6] glaucoma
 Levels: glaucoma normal
 \end{Soutput}
 We perform a bootstrap aggregated indirect classification approach by 
@@ -296,7 +304,7 @@ discriminant analysis and specify the error rate estimator
 by \texttt{estimator = "cv", "boot"} or \texttt{"632plus"}, 
 respectively. A 10-fold cross validation is performed by 
 choosing \texttt{estimator = "cv"} and 
-\texttt{est.para = list(k = 10)}. The options \texttt{estimator = "boot"} or 
+\texttt{est.para = control.errorest(k = 10)}. The options \texttt{estimator = "boot"} or 
 \texttt{estimator = "632plus"} deliver a bootstrap estimator 
 and its  bias corrected version {\sl .632+} \citep[see][]{efron:1997}, 
 we specify the number of bootstrap samples to be drawn by 
@@ -317,8 +325,8 @@ need to specify
 and calculate a 10-fold-cross-validated error rate estimator 
 for a linear discriminant analysis by calling 
 \begin{Sinput}
->errorest(Class ~ ., data = GlaucomaM, model = lda, 
-+     estimator = "cv", predict = mypredict.lda)
+>errorest(Class ~ ., data = GlaucomaM, 
++     model = lda, estimator = "cv", predict = mypredict.lda)
 \end{Sinput}
 \begin{Soutput}
 Call:
@@ -327,15 +335,16 @@ errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = lda,
 
 	 10-fold cross-validation estimator of misclassification error 
 
-Misclassification error:  0.2347 
+Misclassification error:  0.199 
 \end{Soutput}
 For the indirect approach the specification of the call becomes 
 slightly more complicated. Again for a unified interface a wrapper 
 function has to be used, which incorporates the fixed classification rule
 \begin{Sinput}
->mypredict.inclass <- function(object, newdata) {
-+     res <- predict.inclass(object = object, cFUN = classify, 
-+         newdata = newdata)
+>mypredict.inclass <- function(object, 
++     newdata) {
++     res <- predict.inclass(object = object, 
++         cFUN = classify, newdata = newdata)
 +     return(res)
 + }
 \end{Sinput}
@@ -343,7 +352,8 @@ The bias corrected estimator {\sl .632+} is computed by
 \begin{Sinput}
 >errorest(formula.indirect, data = GlaucomaMVF, 
 +     model = inclass, predict = mypredict.inclass, 
-+     estimator = "632plus", iclass = "Class", pFUN = lm)
++     estimator = "632plus", iclass = "Class", 
++     pFUN = lm)
 \end{Sinput}
 \begin{Soutput}
 Call:
@@ -354,7 +364,7 @@ errorest.data.frame(formula = formula.indirect, data = GlaucomaMVF,
 	 .632+ Bootstrap estimator of misclassification error 
 	 with 25 bootstrap replications
 
-Misclassification error:  0.2582 
+Misclassification error:  0.2537 
 \end{Soutput}
 Because of the subdivision of variables and a formula describing the 
 modeling between explanatory and intermediate variables only, 
@@ -362,6 +372,57 @@ we must call the class membership variable. Hence, in contrast to the
 function \texttt{inclass} the data set \texttt{GlaucomaMVF} used in 
 \texttt{errorest} must contain explanatory, intermediate and response 
 variables. 
+
+Sometimes it may be necessary to reduce the number of predictors before
+training a classifier. Estimating the error rate after the variable
+selection leads to biased estimates of the misclassfication error and
+therefore one should estimate the error rate of the whole procedure. Within
+the \texttt{errorest} framework, this can be done as follows. First, we define
+a function which does both variable selection and training of the
+classifier. For illustration proposes, we select the predictors by comparing
+their univariate $P$-values of a two-sample $t$-test with a prespecified
+level and train a LDA using the selected variables only.
+
+\begin{Sinput}
+>mymod <- function(formula, data, level = 0.05) {
++     sel <- which(lapply(data, function(x) {
++         if (!is.numeric(x)) 
++             return(1)
++         else return(t.test(x ~ data$Class)$p.value)
++     }) < level)
++     sel <- c(which(colnames(data) %in% 
++         "Class"), sel)
++     mod <- lda(formula, data = data[, 
++         sel])
++     function(newdata) {
++         predict(mod, newdata = newdata[, 
++             sel])$class
++     }
++ }
+\end{Sinput}
+
+Note that \texttt{mymod} does not return 
+an object of class \texttt{lda} but a function
+with argument \texttt{newdata} only. Thanks to lexical scoping, this 
+function is used for computing
+predicted classes instead of a function \texttt{predict} passed to
+\texttt{errorest} as argument. Computing a $5$-fold cross-validated error rate
+estimator now is approximately a one-liner.
+
+\begin{Sinput}
+>errorest(Class ~ ., data = GlaucomaM, 
++     model = mymod, est.para = control.errorest(k = 5))
+\end{Sinput}
+\begin{Soutput}
+Call:
+errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = mymod, 
+    est.para = control.errorest(k = 5))
+
+	 5-fold cross-validation estimator of misclassification error 
+
+Misclassification error:  0.1939 
+\end{Soutput}
+
 
 %%To summarize the performance of the different classification techniques in the considered example of glaucoma diagnosis, the 10-fold 
 %%cross-validated error estimator delivers the 

@@ -83,3 +83,12 @@ comb <- list(list(model=lm, predict=predict.lm))
 modc <- bagging(y ~ ., data=learn, nbagg=10, comb=comb)
 modc
 predict(modc, newdata=learn)[1:10]
+
+# bundling for survival
+
+data(GBSG2)
+rcomb <- list(list(model=coxph, predict=predict.coxph))
+
+mods <- bagging(Surv(time,cens) ~ ., data=GBSG2, nbagg=10, 
+                comb=rcomb,  control=rpart.control(xval=0))
+predict(mods, newdata=GBSG2[1:3,])

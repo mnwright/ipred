@@ -8,6 +8,7 @@
 \alias{ssubset}
 \alias{irpart}
 \alias{predict.irpart}
+\alias{checkfunArgs}
 \title{Internal ipred functions}
 \description{
  Internal ipred functions.
@@ -25,6 +26,7 @@ na.action=na.rpart, method, model=FALSE, x=FALSE, y=TRUE,
 parms, control, cost, bcontrol, ...)
 predict.irpart(object, newdata = list(),
 type = c("vector", "prob", "class", "matrix"), ...)
+checkfunArgs(fun, type=c("model", "predict"))
 }
 \details{
   This functions are not to be called by the user.

@@ -28,3 +28,16 @@ y <- apply(X, 1, mean) + rnorm(nrow(X))
 learn <- cbind(y, X)
 mt <- bagging(y ~ V1, data=learn, coob=TRUE)
 
+# cv.numeric and bootest.numeric were broken, check for reasonaly values
+X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+y <- apply(X, 1, mean) + rnorm(nrow(X))
+learn <- cbind(y, X)
+newy <- apply(X, 1, mean) + rnorm(nrow(X))
+mod <- lm(y ~ ., data=learn)
+trueerr <- sqrt(mean((newy - fitted(mod))^2))
+cverr <- rep(0,5)
+for (i in 1:5) cverr[i] <- errorest(y ~., data=learn, model=lm)$error
+booterr <- errorest(y ~., data=learn, model=lm,
+                    estimator="boot",est.para=control.errorest(nboot=50))$error
+print(trueerr/mean(cverr))
+print(trueerr/booterr)

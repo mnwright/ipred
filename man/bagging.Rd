@@ -91,7 +91,7 @@ If \code{coob} is TRUE, the out-of-bag sample (Breiman,
 corresponding to \code{class(y)}. Alternatively, the out-of-bag sample can
 be used for model combination, an ouf-of-bag error rate estimator is not 
 available in this case. Double-bagging (Hothorn and Lausen,
-2002a) computes a LDA on the out-of-bag sample and uses the discriminant
+2003) computes a LDA on the out-of-bag sample and uses the discriminant
 variables as additional predictors for the classification trees. \code{comb}
 is an optional list of lists with two elements \code{model} and \code{predict}. 
 \code{model} is a function with arguments \code{formula} and \code{data}. 
@@ -140,9 +140,9 @@ Leo Breiman (1998), Arcing Classifiers. \emph{The Annals of Statistics}
 Peter Buehlmann and Bin Yu (2002), Analyzing Bagging. \emph{The Annals of
 Statistics} \bold{30}(4), 927--961.
 
-Torsten Hothorn and Berthold Lausen (2002a), Double-Bagging: Combining
-classifiers by bootstrap aggregation. \emph{Pattern Recognition}, to appear.
-Preprint available from 
+Torsten Hothorn and Berthold Lausen (2003), Double-Bagging: Combining
+classifiers by bootstrap aggregation. \emph{Pattern Recognition},
+\bold{36}(6), 1303--1309. Preprint available from
 \url{http://www.mathpreprints.com/math/Preprint/hothorn/20020227.2/1}.
 
 Torsten Hothorn and Berthold Lausen (2002b), Bundling Classifiers by Bagging

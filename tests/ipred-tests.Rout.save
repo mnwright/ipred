@@ -182,7 +182,7 @@ Bagging classification trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = Class ~ ., data = GlaucomaM, coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.1378 
+Out-of-bag estimate of misclassification error:  0.1276 
 
 > 
 > 
@@ -281,7 +281,7 @@ Bagging classification trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = Class ~ ., data = Ionosphere, coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.0969 
+Out-of-bag estimate of misclassification error:  0.0912 
 
 > 
 > # Double-Bagging: combine LDA and classification trees
@@ -315,7 +315,7 @@ Bagging regression trees with 25 bootstrap replications
 Call: bagging.data.frame(formula = medv ~ ., data = BostonHousing, 
     coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  4.0154 
+Out-of-bag estimate of root mean squared error:  4.0209 
 
 > 
 > learn <- as.data.frame(mlbench.friedman1(200))
@@ -329,7 +329,7 @@ Bagging regression trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = y ~ ., data = learn, coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  2.7956 
+Out-of-bag estimate of root mean squared error:  2.8469 
 
 > 
 > # Survival data
@@ -351,7 +351,7 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 +
     MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
     MGEc.10 + IPI, data = DLBCL, coob = TRUE)
 
-Out-of-bag estimate of Brier's score:  0.1928 
+Out-of-bag estimate of Brier's score:  0.1968 
 
 > 
 > 
@@ -509,16 +509,35 @@ Misclassification error:  0.3273
 > data(BostonHousing)
 > 
 > # 10-fold cv of lm for Boston Housing data
-> errorest(medv ~ ., data=BostonHousing, model=lm)
+> errorest(medv ~ ., data=BostonHousing, model=lm,
++ est.para=control.errorest(random=FALSE))
 
 Call:
 errorest.data.frame(formula = medv ~ ., data = BostonHousing, 
-    model = lm)
+    model = lm, est.para = control.errorest(random = FALSE))
 
 	 10-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  5.2148 
+Root mean squared error:  5.877 
 
+> 
+> mylm <- function(formula, data) {
++   mod <- lm(formula, data)
++   function(newdata) predict(mod, newdata)
++ }
+>  
+> errorest(medv ~ ., data=BostonHousing, model=mylm,
++ est.para=control.errorest(random=FALSE))
+
+Call:
+errorest.data.frame(formula = medv ~ ., data = BostonHousing, 
+    model = mylm, est.para = control.errorest(random = FALSE))
+
+	 10-fold cross-validation estimator of root mean squared error
+
+Root mean squared error:  5.877 
+
+> 
 > 
 > # Survival data
 > 
@@ -537,7 +556,7 @@ errorest.data.frame(formula = Surv(time, cens) ~ 1, data = GBSG2,
 
 	 5-fold cross-validation estimator of Brier's score
 
-Brier's score:  0.1892 
+Brier's score:  0.1881 
 
 > 
 > 
@@ -830,7 +849,7 @@ Bagging classification trees with 10 bootstrap replications
 Call: bagging.data.frame(formula = Type ~ ., data = Glass, nbagg = 10, 
     coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.3131 
+Out-of-bag estimate of misclassification error:  0.3411 
 
 > 
 > 
@@ -1029,7 +1048,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  53.74 0.56 54.53 0 0 
+Time elapsed:  40.76 1.41 51.88 0 0 
 > dev.off(); quit('no')
 null device 
           1 

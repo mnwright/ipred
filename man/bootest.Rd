@@ -10,23 +10,26 @@
 are normally not called by users.
 }
 \usage{
-\method{bootest}{factor}(y, X, model, predict, nboot=25, bc632plus=FALSE,
-iformula=NULL, \dots)
+\method{bootest}{factor}(y, formula, data, model, predict, nboot=25, bc632plus=FALSE, \dots)
 }
 \arguments{
   \item{y}{the response variable, either of class \code{factor}
 (classification), \code{numeric} (regression) or \code{Surv} (survival).}
-  \item{X}{the data frame of predictors.}
+  \item{formula}{a formula object.}
+  \item{data}{data frame of predictors and response described in
+\code{formula}.}   
   \item{model}{a function implementing the predictive model to be
-evaluated.}
+evaluated. The function \code{model} can either return an
+               object representing a fitted model or a function with
+               argument \code{newdata} which returns predicted values. In
+               this case, the \code{predict} argument to \code{errorest} is
+               ignored.}
   \item{predict}{a function with arguments \code{object} and \code{newdata}
 only which predicts the status of the observations in \code{newdata} based
 on the fitted model in \code{object}.}
   \item{nboot}{number of bootstrap replications to be used.}
   \item{bc632plus}{logical. Should the bias corrected version of misclassification
 error be computed?}
- \item{iformula}{formula for indirect classification.}
-
   \item{\dots}{additional arguments to \code{model}.}
 }
 
