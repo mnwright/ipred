@@ -90,6 +90,9 @@ learn <- cbind(y, X)
 mt <- bagging(y ~., data=learn, coob=TRUE)
 mt
 
+dmt <- bagging(y ~., data=learn, coob=FALSE, method="double")
+dmt
+
 X <- as.data.frame(matrix(rnorm(1000), ncol=10))
 y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
 
@@ -97,6 +100,10 @@ cls <- predict(mt, newdata=X)
 
 cat("Misclass error est: ", mean(y != cls), "\n")
 cat("Misclass error oob: ", mt$err, "\n")
+
+cls <- predict(dmt, newdata=X)
+
+cat("Misclass error est double-bagging: ", mean(y != cls), "\n")
 
 X <- as.data.frame(matrix(rnorm(1000), ncol=10))
 y <- apply(X, 1, mean) + rnorm(nrow(X))
@@ -118,12 +125,23 @@ BreastCancer$Id <- NULL
 
 # Test set error bagging (nbagg = 50): 3.7\% (Breiman, 1998, Table 5)
 
-bagging(Class ~ Cl.thickness + Cell.size 
+mod <- bagging(Class ~ Cl.thickness + Cell.size 
                 + Cell.shape + Marg.adhesion
                 + Epith.c.size + Bare.nuclei
                 + Bl.cromatin + Normal.nucleoli
                 + Mitoses, data=BreastCancer, coob=TRUE)
+mod
+# Do not cross-validate for performance reasons ;-)
+print(mean(BreastCancer$Class != predict(mod, newdata=BreastCancer)))
 
+mod <- bagging(Class ~ Cl.thickness + Cell.size 
+                + Cell.shape + Marg.adhesion
+                + Epith.c.size + Bare.nuclei
+                + Bl.cromatin + Normal.nucleoli
+                + Mitoses, data=BreastCancer, method="double")
+mod
+# Do not cross-validate for performance reasons ;-)
+print(mean(BreastCancer$Class != predict(mod, newdata=BreastCancer)))
 
 }
 \keyword{tree}

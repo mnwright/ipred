@@ -1,9 +1,9 @@
-# $Id: bagging.R,v 1.8 2002/05/07 14:56:07 hothorn Exp $
+# $Id: bagging.R,v 1.11 2002/05/17 13:34:13 hothorn Exp $
 
 bagging <- function(y, ...) UseMethod("bagging")
 
 bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
-                            coob=TRUE, control=rpart.control(minsize=2, cp=0),
+                            coob=FALSE, control=rpart.control(minsize=2, cp=0),
                             ...) {
   method <- match.arg(method)
   class <- is.factor(y)
@@ -23,11 +23,17 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
       mt <- c(mt, list(rpart(y[indx] ~., data=as.data.frame(X[indx,]),
                              control = control,...)))
     if (method == "double") {
-      lmod <- lda(y[-indx] ~., data=as.data.frame(X[-indx,])) # OOB !!!
-      ldasc <- c(ldasc, list(lmod$scaling))
-      mt <- c(mt, list(rpart(y[indx] ~.,
-                  data=as.data.frame(cbind(as.matrix(X[indx,])%*%lmod$scaling,
-                                           X[indx,])), control=control, ...)))
+      # there are some problems with predict.lda for only one predictor.
+      if (ncol(X) < 2) 
+        stop("cannot compute double-bagging with less than two predictors")
+      lday <- y[-indx]
+      ldap <- as.data.frame(X[-indx,])
+      lmod <- lda(lday ~ ., data=ldap) # OOB !!!
+      ldasc <- c(ldasc, list(lmod))
+      ldap <- as.data.frame(X[indx,])
+      rpartp <- cbind(ldap, predict(lmod, newdata=ldap)$x)
+      mt <- c(mt, list(rpart(y[indx] ~ ., data=as.data.frame(rpartp), 
+                             control=control, ...)))
     }
     if (coob & method != "double") {
       if (class) {
@@ -61,17 +67,18 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
     pred <- NA
   }
   if (method =="double")
-    method <- "Double-Bagging"
+    mmethod <- "Double-Bagging"
   else
-    method <- "Bagging"
+    mmethod <- "Bagging"
   if (class)
-    method <- paste(method, "classification trees")
+    mmethod <- paste(mmethod, "classification trees")
   else 
-    method <- paste(method, "regression trees")
-  RET <- list(mt=mt, oob=pred, err=err, nbagg=nbagg, method=method)
+    mmethod <- paste(mmethod, "regression trees")
+  RET <- list(mt=mt, oob=pred, err=err, nbagg=nbagg, method=mmethod)
   if (method == "double") RET <- list(mt=mt, oob=pred, err=err, ldasc = ldasc,
-                                      nbagg=nbagg, method=method)
+                                      nbagg=nbagg, method=mmethod)
   class(RET) <- "bagging"
+
   return(RET)
 }
 
@@ -99,7 +106,7 @@ function(formula, data, subset, na.action=na.rpart, ...)
     response <- attr(attr(mf, "terms"), "response")
     X <- rpart.matrix(mf)
     class(X) <- NULL
-    DATA <- list(y = mf[[response]], X = as.data.frame(X))
+    DATA <- list(y = mf[[response]], X = as.data.frame(X)) # mf[,-1]))
     names(DATA) <- c("y", "X")
     y <- do.call("bagging", c(DATA, list(...)))
     y$data.name <- DNAME

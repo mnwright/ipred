@@ -149,8 +149,6 @@ data(Glass)
 # LDA has cross-validated misclassification error of 
 # 38\% (Ripley, 1996, page 98)
 
-errorest(Type ~ ., data=Glass, model=lda, estimator= "cv",
-predict=mypredict.lda)
 
 # Pruned trees about 32\% (Ripley, 1996, page 230)
 

@@ -1,4 +1,4 @@
-# $Id: predict.bagging.R,v 1.6 2002/04/12 08:17:48 hothorn Exp $
+# $Id: predict.bagging.R,v 1.7 2002/05/16 15:22:11 hothorn Exp $
 
 uwhich.max <- function(x) {
   wm <- which.max(x)
@@ -27,8 +27,10 @@ predict.bagging <- function(object, newdata=NULL, ...)
                                  ncol=length(classlevels))
             for (i in 1:length(mt)) {
                 if (LDA) { 
-                    test <- cbind(as.matrix(newdata)%*%ldasc[i][[1]], newdata)
-                    names(test)[1] <- "LD1"
+		    ldap <- rpart.matrix(newdata)
+                    class(ldap) <- NULL
+                    test <- cbind(newdata, predict(ldasc[[i]],
+                                           newdata=as.data.frame(ldap))$x)
                 } else {
                     test <- newdata
                 }

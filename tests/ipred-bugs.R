@@ -17,10 +17,13 @@ print(predict(mod, newdata=BreastCancer))
 X <- as.data.frame(matrix(rnorm(1000), ncol=10))
 y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
 learn <- cbind(y, X)
-mt <- bagging(y ~ V1, data=learn)
-mt <- bagging(y ~ V1, data=learn, method="double", coob=FALSE)
+mt <- bagging(y ~ V1, data=learn, coob=TRUE)
+# <FIXME>
+# This won't work because of some difficulties with predict.lda
+# mt <- bagging(y ~ V1, data=learn, method="double", coob=FALSE)
+# </FIXME>
 X <- as.data.frame(matrix(rnorm(1000), ncol=10))
 y <- apply(X, 1, mean) + rnorm(nrow(X))
 learn <- cbind(y, X)
-mt <- bagging(y ~ V1, data=learn)
+mt <- bagging(y ~ V1, data=learn, coob=TRUE)
 

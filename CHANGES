@@ -1,4 +1,9 @@
-# $Id: CHANGES,v 1.8 2002/05/08 10:56:37 hothorn Exp $
+# $Id: CHANGES,v 1.9 2002/05/17 13:33:56 hothorn Exp $
+
+	0.4-4 (17.05.2002)
+
+	use predict.lda in bagging and predict.bagging
+	bagging(..., method="double") did not work for factors.
 
 	0.4-3 (07.05.2002)
 
