@@ -1,0 +1,45 @@
+This is BibTeX, Version 0.99c (Web2C 7.3.7)
+The top-level auxiliary file: ipred-examples.aux
+The style file: plainnat.bst
+Database file #1: ipred.bib
+You've used 7 entries,
+            2633 wiz_defined-function locations,
+            624 strings with 5794 characters,
+and the built_in function-call counts, 3144 in all, are:
+= -- 303
+> -- 144
+< -- 4
++ -- 54
+- -- 45
+* -- 248
+:= -- 528
+add.period$ -- 23
+call.type$ -- 7
+change.case$ -- 44
+chr.to.int$ -- 5
+cite$ -- 7
+duplicate$ -- 139
+empty$ -- 253
+format.name$ -- 56
+if$ -- 646
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 6
+newline$ -- 42
+num.names$ -- 28
+pop$ -- 55
+preamble$ -- 1
+purify$ -- 36
+quote$ -- 0
+skip$ -- 100
+stack$ -- 0
+substring$ -- 151
+swap$ -- 12
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 77
+warning$ -- 0
+while$ -- 27
+width$ -- 0
+write$ -- 99
