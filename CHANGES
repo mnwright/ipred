@@ -1,4 +1,8 @@
 # $Id: CHANGES,v 1.37 2003/12/16 17:45:48 hothorn Exp $
+	0.7-6 (16.01.2004)
+
+	fix tests/ipred-segfault	
+
         0.7-5 (19.12.2003)
                
         examples of inbagg and predict.inbagg (don't use mvtnorm)
