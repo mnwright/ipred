@@ -1,9 +1,7 @@
-# SCCS  @(#)rpart.s	1.35 07/05/01
 #
-#  The recursive partitioning function, for S
+#  a modified version of `rpart.s' from the rpart package
+#  see COPYRIGHTS for details.
 #
-#  adapted for bagging by Torsten Hothorn
-#  
 irpart <- function(formula, data=NULL, weights, subset,
 		   na.action=na.rpart, method, model=FALSE, x=FALSE, y=TRUE,
 		   parms, control, cost, bcontrol, ...)

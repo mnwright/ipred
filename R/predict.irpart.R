@@ -1,7 +1,7 @@
-## SCCS @(#)predict.rpart.s	1.11 06/03/01
-# 
-# copied from rpart 3.1-8
-# 
+#
+#  a modified version of `predict.rpart.s' from the rpart package
+#  see COPYRIGHTS for details.
+#
 predict.irpart <-
 function(object, newdata = list(),
 	 type = c("vector", "prob", "class", "matrix"), ...) {

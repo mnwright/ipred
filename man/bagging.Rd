@@ -91,14 +91,16 @@ If \code{coob} is TRUE, the out-of-bag sample (Breiman,
 corresponding to \code{class(y)}. Alternatively, the out-of-bag sample can
 be used for model combination, an ouf-of-bag error rate estimator is not 
 available in this case. Double-bagging (Hothorn and Lausen,
-2002) computes a LDA on the out-of-bag sample and uses the discriminant
+2002a) computes a LDA on the out-of-bag sample and uses the discriminant
 variables as additional predictors for the classification trees. \code{comb}
 is an optional list of lists with two elements \code{model} and \code{predict}. 
 \code{model} is a function with arguments \code{formula} and \code{data}. 
 \code{predict} is a function with arguments \code{object, newdata} only. If
 the estimation of the covariance matrix in \code{\link{lda}} fails due to a
 limited out-of-bag sample size, one can use \code{\link{slda}} instead.
-See the example section for an example of double-bagging. 
+See the example section for an example of double-bagging. The methodology is
+not limited to a combination with LDA: bundling (Hothorn and Lausen, 2002b) 
+can be used with arbritrary classifiers.
 
 }
 
@@ -138,10 +140,15 @@ Leo Breiman (1998), Arcing Classifiers. \emph{The Annals of Statistics}
 Peter Buehlmann and Bin Yu (2002), Analyzing Bagging. \emph{The Annals of
 Statistics} \bold{30}(4).
 
-Torsten Hothorn and Berthold Lausen (2002), Double-Bagging: Combining
+Torsten Hothorn and Berthold Lausen (2002a), Double-Bagging: Combining
 classifiers by bootstrap aggregation. \emph{Pattern Recognition}, to appear.
 Preprint available from 
 \url{http://www.mathpreprints.com/math/Preprint/hothorn/20020227.2/1}.
+
+Torsten Hothorn and Berthold Lausen (2002a), Bundling Classifiers by Bagging
+Trees. \emph{submitted}.
+Preprint available from 
+\url{http://www.mathpreprints.com/math/Preprint/blausen/20021016/1}.
 
 Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
 Radespiel-Troeger (2002), Bagging Survival Trees. \emph{submitted}.
