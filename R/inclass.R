@@ -12,7 +12,7 @@ inclass.data.frame <- function(formula, data, pFUN = NULL, cFUN = NULL, ...)
 ##check formula
   if(missing(formula)
     || (length(formula) != 3)
-    || (length(attr(terms(formula[-2]), "term.labels")) < 1))
+    || (length(attr(terms(formula[-2], data = data), "term.labels")) < 1))
     stop("formula missing or incorrect")
 
   m <- match.call(expand.dots = FALSE)
@@ -28,8 +28,8 @@ inclass.data.frame <- function(formula, data, pFUN = NULL, cFUN = NULL, ...)
     w.formula[[3]] <- formula[[3]]
 
     response <-  paste(formula[[2]][[2]])
-    w.names <- attr(terms(as.formula(formula[[2]])), "term.labels")
-    x.names <- attr(terms(as.formula(formula)), "term.labels")
+    w.names <- attr(terms(as.formula(formula[[2]]), data = data), "term.labels")
+    x.names <- attr(terms(as.formula(formula), data = data), "term.labels")
 
     if(x.names[1] == ".") x.names <- colnames(data)[!(colnames(data) %in% c(response, w.names))]
   } else {
@@ -47,8 +47,8 @@ inclass.data.frame <- function(formula, data, pFUN = NULL, cFUN = NULL, ...)
   for(j in 1:Qi) {
     res <- list()
     res$formula <- w.formula
-    res$formula[[2]] <- as.name(attr(terms(res$formula[-3]), "term.labels")[j])
-    if(attr(terms(res$formula), "term.labels")[1] == ".") {
+    res$formula[[2]] <- as.name(attr(terms(res$formula[-3], data = data), "term.labels")[j])
+    if(res$formula[[3]] == ".") {
       res$formula <- as.formula(paste(res$formula[[2]], "~", paste(x.names, collapse= "+")))
     }
     for(i in 1:P) {  
@@ -57,7 +57,7 @@ inclass.data.frame <- function(formula, data, pFUN = NULL, cFUN = NULL, ...)
         if(is.null(formula.list[[w.names[j]]]$model)) formula.list[[w.names[j]]]$model <- pFUN[[i]]$model
         if(is.null(formula.list[[w.names[j]]]$predict)) formula.list[[w.names[j]]]$predict <- pFUN[[i]]$predict
       } else {
-        QQ <- attr(terms(pFUN[[i]]$formula[-3]), "term.labels")
+        QQ <- attr(terms(pFUN[[i]]$formula[-3], data = data), "term.labels")
         for(k in QQ) {
           if(w.names[j] == k) {
             res$formula[[3]] <- pFUN[[i]]$formula[[3]]
@@ -98,8 +98,8 @@ workhorse.inclass <- function(object, data, cFUN, subset, na.action, ...)
 ##check necessary?? >
     if(missing(formula)
       || (length(formula) != 3)
-      || (length(attr(terms(formula[-2]), "term.labels")) < 1)
-      || (length(attr(terms(formula[-3]), "term.labels")) != 1))
+      || (length(attr(terms(formula[-2], data = data), "term.labels")) < 1)
+      || (length(attr(terms(formula[-3], data = data), "term.labels")) != 1))
       stop("formula missing or incorrect")
 ## check necessary?? < 
     m <- match.call(expand.dots= FALSE)

@@ -1,4 +1,9 @@
-# $Id: CHANGES,v 1.42 2004/06/08 07:46:34 peters Exp $
+# $Id: CHANGES,v 1.43 2005/06/29 07:17:12 peters Exp $
+
+	0.8-3 (29.06.2005)
+
+        terms(formula, data) needs `data' argument (suggested by BDR).
+
 	0.8-2 (09.12.2004)
 
 	- slda: correct for one explanatory variable:

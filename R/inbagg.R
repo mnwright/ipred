@@ -16,7 +16,8 @@ workhorse.inbagg <- function(object, y, X, W,
 
     addclass <- function() {					##START addclass <- function()
       for (j in 1:length(formula.list)) {			##Fitting prediction models for intermediates
-        oX <- data[fit.vals, c(paste(formula.list[[j]]$formula[[2]]), attr(terms(formula.list[[j]]$formula), "term.labels"))]
+        oX <- data[fit.vals, c(paste(formula.list[[j]]$formula[[2]]), 
+                   attr(terms(formula.list[[j]]$formula, dataa = data), "term.labels"))]
         foo <- try(formula.list[[j]]$model(formula.list[[j]]$formula, data = oX))
         objs[[j]] <- foo
       }
@@ -27,7 +28,7 @@ workhorse.inbagg <- function(object, y, X, W,
         add.predictors <- rep(0, nrow(newdata))
 
         for (j in 1:length(formula.list)){			## predict additional intermediates using fitted models
-          oXnewdata <- newdata[,attr(terms(formula.list[[j]]$formula), "term.labels")]
+          oXnewdata <- newdata[,attr(terms(formula.list[[j]]$formula, data = data), "term.labels")]
           if(is.null(formula.list[[j]]$predict)) {
             res <- try(predict(objs[[j]], newdata  = oXnewdata))
           } else {
@@ -49,7 +50,7 @@ workhorse.inbagg <- function(object, y, X, W,
     bfct <- addclass()				###bfct is a function (addclass)
 
     if (!is.null(bfct)) {
-      expl.cFUN <- attr(terms(as.formula(cFUN$formula)), "term.labels")
+      expl.cFUN <- attr(terms(as.formula(cFUN$formula), data = data), "term.labels")
 
       if(!is.null(cFUN$fixed.function)) {
          btree <- cFUN
@@ -114,7 +115,7 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
 ##check formula
   if(missing(formula)
     || (length(formula) != 3)
-    || (length(attr(terms(formula[-2]), "term.labels")) < 1))
+    || (length(attr(terms(formula[-2], data = data), "term.labels")) < 1))
     stop("formula missing or incorrect")
 
   m <- match.call(expand.dots = FALSE)
@@ -130,8 +131,8 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
     w.formula[[3]] <- formula[[3]]
 
     response <-  paste(formula[[2]][[2]])
-    w.names <- attr(terms(as.formula(formula[[2]])), "term.labels")
-    x.names <- attr(terms(as.formula(formula)), "term.labels")
+    w.names <- attr(terms(as.formula(formula[[2]]), data = data), "term.labels")
+    x.names <- attr(terms(as.formula(formula), data = data), "term.labels")
 
     if(length(x.names == 1) && x.names == ".") x.names <- colnames(data)[!(colnames(data) %in% c(response, w.names))]
     y <- data[, response]
@@ -169,7 +170,9 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
   number.models <- c() 
   for(i in 1:P) {
     if(is.null(pFUN[[i]]$formula)) pFUN[[i]]$formula <- w.formula
-    number.models <- c(number.models, paste(attr(terms(pFUN[[i]]$formula[-3]), "term.labels"), ".", i, sep = ""))
+    number.models <- c(number.models, 
+                       paste(attr(terms(pFUN[[i]]$formula[-3], data = data), "term.labels"), 
+                             ".", i, sep = ""))
   }
 
   formula.list <- vector(mode = "list", length= length(number.models))
@@ -177,10 +180,10 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
 
   for(i in 1:P) {  
     res <- list()  
-    Qi <- length(attr(terms(pFUN[[i]]$formula[-3]), "term.labels"))
+    Qi <- length(attr(terms(pFUN[[i]]$formula[-3], data = data), "term.labels"))
     for(j in 1:Qi) {
       res$formula <- w.formula
-      res$formula[[2]] <- as.name(attr(terms(res$formula[-3]), "term.labels")[j])
+      res$formula[[2]] <- as.name(attr(terms(res$formula[-3], data = data), "term.labels")[j])
       res$formula[[3]] <- pFUN[[i]]$formula[[3]]
 
       if(res$formula[[3]] == ".") res$formula <- as.formula(paste(res$formula[[2]], "~", paste(x.names, collapse= "+")))

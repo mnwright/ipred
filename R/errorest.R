@@ -54,9 +54,9 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
 
     if(missing(formula)
       || (length(formula) != 3)
-      || (length(attr(terms(formula[-3]), "term.labels")) != 1))
+      || (length(attr(terms(formula[-3], data = data), "term.labels")) != 1))
     stop("formula missing or incorrect")
-    NOPRED <- (length(attr(terms(formula[-2]), "term.labels")) < 1) 
+    NOPRED <- (length(attr(terms(formula[-2], data = data), "term.labels")) < 1) 
     if(is.matrix(eval(m$data, parent.frame())))
     m$data <- as.data.frame(data)
     m[[1]] <- as.name("model.frame")

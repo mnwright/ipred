@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.7 2003/11/03 15:29:14 hothorn Exp $
+# $Id: slda.R,v 1.8 2005/06/29 07:17:12 peters Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 
@@ -11,8 +11,8 @@ slda.formula <- function(formula, data, subset, na.action=na.rpart, ...) {
    cl <- match.call()
    if(missing(formula)
        || (length(formula) != 3)
-       || (length(attr(terms(formula[-2]), "term.labels")) < 1)
-       || (length(attr(terms(formula[-3]), "term.labels")) != 1))
+       || (length(attr(terms(formula[-2], data = data), "term.labels")) < 1)
+       || (length(attr(terms(formula[-3], data = data), "term.labels")) != 1))
         stop("formula missing or incorrect")
     m <- match.call(expand.dots = FALSE)
     if(is.matrix(eval(m$data, parent.frame())))
