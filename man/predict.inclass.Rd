@@ -17,8 +17,8 @@ Predicts the class membership of new observations through indirect classificatio
   \item{cFUN}{ fixed function which classifies the predicted intermediates.}
   \item{intbag}{logical. If \code{pFUN = bagging} bagging either stabilises
 the prediction of the intermediate variables or the classifications. If
-\code{intbag = TRUE} intermediates are bagged, the whole classifying
-procedure is bagged otherwise.}
+\code{intbag = TRUE} intermediates are aggregated, bagging of the whole 
+classifying procedure is performed otherwise.}
   \item{newdata}{data frame to be classified.}
   \item{\dots}{additional arguments corresponding to the predictive models 
 specified in \code{\link{inclass}}. If the intermediate is nominal and
@@ -52,7 +52,7 @@ theta90 <- varset(N = 1000, sigma = 0.1, theta = 90, threshold = 0)
 dataset <- as.data.frame(cbind(theta90$explanatory, theta90$intermediate))
 names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
 
-classi <- function(Y, threshold = 0) {
+classify <- function(Y, threshold = 0) {
   z <- (Y > threshold)
   resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
   return(resp)
@@ -62,30 +62,50 @@ formula <- flist(y1+y2~x1+x2)
 
 fit <- inclass(formula, pFUN = lm, data = dataset)
 
-predict.inclass(object = fit, cFUN = classi, newdata = dataset)
+predict.inclass(object = fit, cFUN = classify, newdata = dataset)
 
 
-data(smoking)
+data(Smoking)
 
 # explanatory variables are: TarY, NicY, COY, Sex, Age
 # intermediate variables are: TVPS, BPNL, COHB
-# reponse (resp) ist defined by:
+# reponse is defined by:
 
-resp <- function(data){
+classify <- function(data){
   res <- t(t(data) > c(4438, 232.5, 58))
   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
   res
 }
 
-response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-smoking <- cbind(smoking, response)
+response <- classify(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(Smoking, response)
 
 formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
 fit <- inclass(formula, pFUN = lm, data = smoking)
 
-predict.inclass(object = fit, cFUN = resp, newdata = smoking)
+predict.inclass(object = fit, cFUN = classify, newdata = smoking)
 
+
+data(GlaucomaMVF)
+glaucoma <- GlaucomaMVF[,-67]
+# explanatory variables are derived by laser scanning image and intra occular pressure
+# intermediate variables are: clv, cs, lora
+# response is defined by
+
+classify <- function (data) {
+  attach(data) 
+  res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >= 
+        49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) & 
+        clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) & 
+        !is.na(lora) & !is.na(cs) & lora >= 58.55409 & cs < 1.405) | 
+        (!is.na(clv) & is.na(lora) & cs < 1.405), 0, 1)
+  detach(data)
+  factor (res, labels = c("glaucoma", "normal"))
+}
+
+fit <- inclass(clv+lora+cs~., data = glaucoma, pFUN = bagging)
+predict.inclass(object = fit, cFUN = classify, newdata = glaucoma)
 
 }
 

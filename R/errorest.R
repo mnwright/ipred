@@ -1,217 +1,131 @@
-# $Id: errorest.R,v 1.8 2002/04/08 15:41:40 peters Exp $
+# $Id: errorest.R,v 1.14 2002/09/26 15:21:47 peters Exp $
 
-errorest <- function(formula, data, subset, na.action,
+control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
+                     random=TRUE, predictions=FALSE) {
+  if (k < 1) { 
+    warning("k < 1, using k=10")
+    k <- 10
+  }
+  if (nboot < 1) {
+    warning("nboot < 1, using nboot=25")
+    nboot <- 25
+  }
+  if (!is.logical(strat)) {
+    warning("strat is not a logical, using strat=FALSE")
+    strat <- FALSE
+  }
+  if (!is.logical(random)) {
+    warning("random is not a logical, using random=TRUE")
+    random <- TRUE
+  }
+  if (!is.logical(predictions)) {
+    warning("predictions is not a logical, using predictions=FALSE")
+    predictions <- FALSE
+  }
+
+  RET <- list(k=k, nboot=nboot, strat=strat, random=random, 
+              predictions=predictions)
+  return(RET)
+}
+
+errorest <- function(formula, data, ...) UseMethod("errorest", data)
+
+errorest.default <- function(formula, data, ...)
+  stop(paste("Do not know how to handle objects of class", class(data)))
+
+errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
                      model=NULL, predict=NULL, iclass=NULL,
                      estimator = c("cv", "boot", "632plus"),
-                     est.para = list(k= 10, nboot = 25), ...) {
+                     est.para = control.errorest(), ...) {
 
+  cl <- match.call()
   m <- match.call(expand.dots = FALSE)
-  estimator <- match.arg(estimator)
-
-  # Check if model is "inclass"
-
   if(paste(m$model) == "inclass") {
-    INCLASS <- TRUE
-    if (is.null(iclass)) 
-      stop("no class membership variable for indirect classification given")
-    else
-      diagnosis <- iclass
-  } else {
-    INCLASS <- FALSE
-    diagnosis <- attr(terms(formula[-3]), "term.labels")
-    if (length(diagnosis) != 1)
-      stop("multiple responses not allowed")
-  } 
-    
-  # Check for correct arguments
-
-  if(!INCLASS && class(formula) == "flist") 
-    stop("class(formula) = flist is only specified for model = inclass")
-  if(INCLASS && is.null(predict)) 
-    stop("for model = inclass a prediction model has to be specified")
-  if(is.null(model)) 
-    stop("no classifier specified")
-
-  # we do not evaluated the formula here but inside "model"
-
-  if (missing(data) & !INCLASS) {
+    RET <- errorestinclass(flist(formula), data=data, subset, na.action,
+           model, predict, iclass, estimator, est.para, ...)
+    RET$call <- cl
+  } else { 
+    if(missing(formula)
+      || (length(formula) != 3)
+      || (length(attr(terms(formula[-3]), "term.labels")) != 1))
+    stop("formula missing or incorrect")
+    NOPRED <- (length(attr(terms(formula[-2]), "term.labels")) < 1) 
+    if(is.matrix(eval(m$data, parent.frame())))
+    m$data <- as.data.frame(data)
     m[[1]] <- as.name("model.frame")
     m$... <- NULL
     m$model <- NULL
     m$predict <- NULL
     m$estimator <- NULL
     m$est.para <- NULL
+
     mf <- eval(m, parent.frame())
+
     response <- attr(attr(mf, "terms"), "response")
-    y <- mf[[response]]
-    X <- as.data.frame(mf[-response])
-    data <- cbind(y, X)
-  } else {
-    if (INCLASS & missing(data))
-      stop("need data argument for indirect classification")
+    # just extract the data.frame, no handling of contrasts or NA's here.
+    # this is done by rpart or the user supplied methods
+    DATA <- list(y = mf[,response], X = mf[,-response]) 
+    names(DATA) <- c("y", "X")
+    N <- nrow(DATA)
+
+    # y ~ 1 is needed for overall Kaplan-Meier, for example. *.Surv can deal
+    # with this
+    if (NOPRED)
+      DATA$X <- NULL
+
+    estimator <- match.arg(estimator)
+
+    if(is.null(model)) 
+      stop("no classifier specified")
+
+    switch(estimator, "cv" = {
+      RET <- cv(DATA$y, DATA$X, model=model, predict=predict, 
+                k=est.para$k, random=est.para$random,
+                predictions=est.para$predictions, strat=est.para$strat, ...)
+    }, "boot" = {
+      RET <- bootest(DATA$y, DATA$X, model=model, predict=predict,
+                     nboot=est.para$nboot, ...)
+    }, "632plus" = {
+      RET <- bootest(DATA$y, DATA$X, model=model, predict=predict,
+                     nboot=est.para$nboot, bc632plus=TRUE, ...)
+    })
   }
-  if (!is.data.frame(data)) data <- as.data.frame(data)
-  if(!missing(subset)) data <- as.data.frame(data[subset, ])
-  N <- nrow(data)
-  y <- data[,diagnosis]
-  names(y) <- row.names(data)
-  if (!INCLASS)
-    DNAME <- paste(diagnosis, "on", attr(terms(formula[-2]), "term.labels"))
-  else 
-    DNAME <- diagnosis
-
-  # misclassification or mean squared error?
-
-  CLASS <- is.factor(y)
-
-  # k-fold cross-validation
-
-  if(estimator == "cv") {
-    if(is.null(est.para$k)) stop("k for k-fold cross-validation is missing")
-    k <- est.para$k
-    a <- kfoldcv(k, N)
-    myindx <- sample(1:N, N)
-
-    cverr <- c()
-    for(i in 1:k) {
-      if (i > 1)    
-        tindx <- myindx[(sum(a[1:(i-1)])+1):sum(a[1:i])]
-      else
-        tindx <- myindx[1:a[1]]
-      X <- as.data.frame(data[-tindx, ])
-      if (!missing(na.action))
-        mymodel <- model(formula, data = X, na.action = na.action, ...)
-      else
-        mymodel <- model(formula, data = X, ...)
-      if(CLASS)
-        pred <- factor(predict(mymodel, newdata = as.data.frame(data[tindx, ])), levels = levels(y))
-      if(!CLASS)
-        pred <- predict(mymodel, newdata = as.data.frame(data[tindx,]))
-      if (CLASS & !is.factor(pred)) 
-        stop("predict does not return predicted classes")
-      if (length(pred) != length(tindx)) 
-        stop("different length of data and prediction")
-      if(CLASS) {
-        err <- 1 - mean(pred == y[tindx], na.rm = TRUE)
-     } else {
-        err <- sqrt(mean((pred - y[tindx])^2, na.rm = TRUE))
-      }
-      cverr <- c(cverr,err)
-    }
-    err <- mean(cverr)
-  }
-
-
-  if(estimator == "boot" || estimator == "632plus") {
-    if(is.null(est.para$nboot)) 
-      stop("nboot has to be specified") 
-    else 
-      nboot <- est.para$nboot
-    
-    if(CLASS)
-      fun <- function(x)
-        ifelse(all(is.na(x)), 0, mean(as.integer(x), na.rm = TRUE))
-    else
-      fun <- function(x)
-        ifelse(all(is.na(x)), 0, mean(x, na.rm = TRUE))
-
-    bootindx <- c()
-
-    for(i in 1:nboot) {
-      tindx <- sample(1:N, N, replace = TRUE)
-      X <- as.data.frame(data[tindx, ])
-      if (!missing(na.action))
-        mymodel <- model(formula, data = X, na.action = na.action, ...)
-      else
-        mymodel <- model(formula, data = X,  ...)
-      if(CLASS)
-        pred <- factor(predict(mymodel, newdata = as.data.frame(data[-tindx, ])), levels = levels(y))
-      if(!CLASS)
-        pred <- predict(mymodel, newdata = as.data.frame(data[-tindx,]))                    
-      if (CLASS & !is.factor(pred)) 
-        stop("predict does not return predicted classes")
-      if (length(pred) != length(y[-tindx])) 
-        stop("different length of data and prediction")
-
-      bootindx <- cbind(bootindx, rep(NA, N))
-
-      if(CLASS)
-        bootindx[-tindx, ncol(bootindx)] <- (pred != y[-tindx])
-      else
-        bootindx[-tindx, ncol(bootindx)] <- sqrt((pred - y[-tindx])^2)
-    }
-    # mean ( mean deviation (MSE or misclassification rate) for each 
-    # observation over the bootstrap samples )
-    one <- mean(apply(bootindx, 1, fun))			 
-  								 
-    err <- one
-    expb <- rep(0, nboot)
-    for(i in 1:nboot)
-      expb[i] <- mean(apply(bootindx[,-i], 1, fun))
-    sdint <- sqrt( ((nboot - 1)/nboot)*sum((expb - mean(expb))^2) )
-  }
-
-  if(estimator == "632plus") {
-    if (!missing(na.action))
-      full.model <- model(formula, data = data, na.action = na.action, ...)
-    else
-      full.model <- model(formula, data = data, ...)
-    full.pred <- predict(full.model, newdata = data)
-    if (CLASS & !is.factor(full.pred)) 
-      stop("predict does not return predicted classes")
-    if (length(full.pred) != length(y)) 
-      stop("different length of data and prediction")
-
-    if(CLASS)
-      resubst <- mean(full.pred != y, na.rm = TRUE)
-    else
-      stop("632plus implemented for classification problems only")
-    
-    fun <- function(x, y) ifelse(x==y, 0, 1)
-    y <- y[!is.na(y) & !is.na(full.pred)]
-    full.pred <- full.pred[!is.na(y) & !is.na(full.pred)]
-    gamma <- sum(outer(y, full.pred, fun))/(length(y)^2)
-
-    r <- (one - resubst)/(gamma - resubst)
-    r <- ifelse(one > resubst & gamma > resubst, r, 0)
-    weight <- .632/(1-.368*r)
-    err <- (1-weight)*resubst + weight*one 
-    # res <- list(err = err, sdint = sdint) <- gilt hier nicht
-  }
-  res <- list(err = err, estimator=estimator,
-              para=est.para, data.name = DNAME, class = CLASS)
-  if(estimator == "boot")
-    res <- list(err = err, sd =sdint, estimator=estimator,
-                para=est.para, data.name = DNAME, class = CLASS)
-  class(res) <- "errorest"
-  return(res)
+  RET$call <- cl
+  return(RET)
 }
 
-print.errorest <- function(x, digits=4, ...)
-{
-    cat("\n")
-    if (x$estimator == "cv")
-      method <- paste(x$para$k, "-fold cross-validation", sep="")
-    if (x$estimator == "boot")
-      method <- "Bootstrap"
-    if (x$estimator == "632plus")
-      method <- ".632+ Bootstrap"
-    method <- paste(method, "estimator of")
-    if (x$class)
-      method <- paste(method, "misclassification error\n")
-    else
-      method <- paste(method, "mean squared error\n")
-    if (x$estimator == "boot" || x$estimator == "632plus")
-      method <- paste(method, "with", x$para$nboot, "bootstrap replications")
-  
-    cat(method, "\n")
-    cat("\n")
-    cat("Data: ", x$data.name, "\n")
-    cat("\n")
-    error <- "Error"
-    if (!is.na(x$err))
-        cat(error, round(x$err, digits), "\n")
-    if (!is.null(x$sdint))
-        cat("estimatated standard error", round(x$sdint, digits), "\n")
+errorestinclass <- function(formula, data, subset=NULL, na.action=NULL, 
+                     model=NULL, predict=NULL, iclass=NULL,
+                     estimator = c("cv", "boot", "632plus"),
+                     est.para = control.errorest(), ...) {
+  if (is.null(data)) stop("data argument required but not given")
+  if (is.null(iclass)) 
+    stop("no class membership variable for indirect classification given")
+  if (!(iclass %in% colnames(data))) 
+    stop("membership variable not in given data")
 
+  # <FIXME> 
+#  data <- data[complete.cases(data),]
+  # </FIXME>
+
+  iclassindx <- which(colnames(data) == iclass)
+
+  y <- data[,iclassindx]
+  if (!is.factor(y)) stop("iclass is not a factor")
+  X <- data[,-iclassindx]
+
+  if(is.null(model))
+      stop("no classifier specified")
+
+  switch(estimator, "cv" = {
+    RET <- cv(y, X, model=model, predict=predict,
+              k=est.para$k, random=est.para$random, iformula=formula, ...)
+    }, "boot" = {
+      RET <- bootest(y, X, model=model, predict=predict,
+                     nboot=est.para$nboot, iformula=formula, ...)
+    }, "632plus" = {
+      RET <- bootest(y, X, model=model, predict=predict,
+                     nboot=est.para$nboot, iformula=formula, bc632plus=TRUE, ...)
+  })
+  RET
 }

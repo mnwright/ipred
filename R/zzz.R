@@ -1,4 +1,4 @@
-# $Id: zzz.R,v 1.7 2002/03/26 16:29:15 hothorn Exp $
+# $Id: zzz.R,v 1.8 2002/09/12 08:59:13 hothorn Exp $
 
 .First.lib <- function(lib, pkg) {
     if(!require(rpart))
@@ -7,4 +7,10 @@
         warning("Could not load package MASS")
     if(!require(mlbench))
         warning("Could not load package mlbench")
+    if(!require(survival))
+        warning("Could not load package mlbench")
+    if(!require(class))
+        warning("Could not load package class")
+    if(!require(nnet))
+        warning("Could not load package nnet")
 }

@@ -1,4 +1,4 @@
-# $Id: predict.inclass.R,v 1.15 2002/04/05 14:36:09 peters Exp $
+# $Id: predict.inclass.R,v 1.17 2002/09/26 12:58:15 hothorn Exp $
 
 # Additional option type ="class", if intermediate is nominal
 
@@ -10,17 +10,18 @@ predict.inclass <- function(object, cFUN, intbag = NULL, newdata, ...)
   result <- c()
   res <- c()
 
-  if(!is.null(intbag) && !all(classes == "bagging")) {
+  if(!is.null(intbag) && !all(classes == "regbagg" | classes == "classbagg")) {
     stop("intbag is only specified for intermediates of class bagging")
   }			
 
-  if(!is.null(intbag) && intbag == FALSE && all(classes == "bagging")) {			
+  if(!is.null(intbag) && intbag == FALSE && all(classes == "regbagg" | classes == "classbagg")) {			
     # first classification, than bagging
     diagbag <- list()
     # Calculation of a matrix with estmations for each bootstrap sample and 
     # each intermediate variable 
     for(i in 1:q) {		# over intermediates
-      if(class(object[[i]])=="bagging") object[[i]] <- object[[i]]$mt  
+      if(classes == "regbagg" | classes == "classbagg") 
+        object[[i]] <- object[[i]]$mtrees  
       K <- length(object[[i]])	# number of bootstrap samples
       dummy <- list()  
       for(j in 1:K) {		# over bagging
@@ -62,7 +63,7 @@ predict.inclass <- function(object, cFUN, intbag = NULL, newdata, ...)
         else
           RET <- predict.rpart(object[[i]], newdata)
       }
-      if(inherits(object[[i]], "bagging")) {
+      if(inherits(object[[i]],  "regbagg") | inherits(object[[i]], "classbagg")) {
         RET <- predict(object[[i]], newdata = newdata, ...)
       }
       if(inherits(object[[i]], "lda")) {

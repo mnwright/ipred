@@ -1,6 +1,6 @@
 
 R : Copyright 2002, The R Development Core Team
-Version 1.5.0  (2002-04-29)
+Version 1.6.0 beta (2002-09-25)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -28,15 +28,17 @@ Type `q()' to quit R.
 +                      outer = outer, adj = 1, cex = .8, col = "orchid")
 + 	   }
 +        },
-+        env = .CheckExEnv)
++        env = environment(plot))
 > assign("cleanEx",
 +        function(env = .GlobalEnv) {
 + 	   rm(list = ls(envir = env, all.names = TRUE), envir = env)
 +            RNGkind("Wichmann-Hill", "default")
 + 	   assign(".Random.seed", c(0, rep(7654, 3)), pos = 1)
++ 	   assign("T", NULL, pos = 1);
++ 	   assign("F", NULL, pos = 1);
 +        },
 +        env = .CheckExEnv)
-> assign("..nameEx", "__{must remake R-ex/*.R}__", env = .CheckExEnv) #-- for now
+> assign("..nameEx", "__{must remake R-ex/*.R}__", env = .CheckExEnv) # for now
 > assign("ptime", proc.time(), env = .CheckExEnv)
 > postscript("ipred-Examples.ps")
 > assign("par.postscript", par(no.readonly = TRUE), env = .CheckExEnv)
@@ -45,163 +47,423 @@ Type `q()' to quit R.
 Loading required package: rpart 
 Loading required package: MASS 
 Loading required package: mlbench 
+Loading required package: survival 
+Loading required package: class 
+Loading required package: nnet 
+> cleanEx(); ..nameEx <- "DLBCL"
+> ###--- >>> `DLBCL' <<<----- Diffuse Large B-Cell Lymphoma
+> 
+> 	## alias	 help(DLBCL)
+> 
+> ##___ Examples ___:
+> 
+> data(DLBCL)
+> survfit(Surv(time, cens), data=DLBCL)
+Call: survfit(formula = Surv(time, cens), data = DLBCL)
+
+        n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
+    40.00     22.00     66.43      9.18     36.05     15.50       Inf 
+> 
+> 
+> ## Keywords: 'datasets'.
+> 
+> 
+> cleanEx(); ..nameEx <- "GBSG2"
+> ###--- >>> `GBSG2' <<<----- German Breast Cancer Study Group 2
+> 
+> 	## alias	 help(GBSG2)
+> 
+> ##___ Examples ___:
+> 
+> data(GBSG2)
+> 
+> thsum <- function(x) {
++   ret <- c(median(x), quantile(x, 0.25), quantile(x,0.75))
++   names(ret)[1] <- "Median"
++   ret
++ }
+> 
+> t(apply(GBSG2[,c("age", "tsize", "pnodes", 
++                  "progrec", "estrec")], 2, thsum))
+        Median 25%    75%
+age       53.0  46  61.00
+tsize     25.0  20  35.00
+pnodes     3.0   1   7.00
+progrec   32.5   7 131.75
+estrec    36.0   8 114.00
+> 
+> table(GBSG2$menostat)
+
+ Pre Post 
+ 290  396 
+> table(GBSG2$tgrade)
+
+  I  II III 
+ 81 444 161 
+> table(GBSG2$horTh)
+
+ no yes 
+440 246 
+> 
+> # pooled Kaplan-Meier
+> 
+> mod <- survfit(Surv(time, cens), data=GBSG2)
+> # integrated Brier score
+> sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
+integrated Brier score 
+             0.1919286 
+attr(,"time")
+[1]    8 2659
+> # Brier score at 5 years
+> sbrier(Surv(GBSG2$time, GBSG2$cens), mod, btime=1825)
+Brier score 
+  0.2499263 
+attr(,"time")
+[1] 1825
+> 
+> # Nottingham prognostic index
+> 
+> GBSG2 <- GBSG2[order(GBSG2$time),]
+> 
+> NPI <- 0.2*GBSG2$tsize/10 + 1 + as.integer(GBSG2$tgrade)
+> NPI[NPI < 3.4] <- 1
+> NPI[NPI >= 3.4 & NPI <=5.4] <- 2
+> NPI[NPI > 5.4] <- 3
+> 
+> mod <- survfit(Surv(time, cens) ~ NPI, data=GBSG2)
+> plot(mod)
+> 
+> pred <- c()
+> survs <- c()
+> for (i in sort(unique(NPI)))
++     survs <- c(survs, getsurv(mod[i], 1825))
+> 
+> for (i in 1:nrow(GBSG2))
++    pred <- c(pred, survs[NPI[i]])
+> 
+> # Brier score of NPI at t=5 years
+> sbrier(Surv(GBSG2$time, GBSG2$cens), pred, btime=1825)
+Brier score 
+  0.2337553 
+attr(,"time")
+[1] 1825
+> 
+> 
+> ## Keywords: 'datasets'.
+> 
+> 
+> cleanEx(); ..nameEx <- "GlaucomaM"
+> ###--- >>> `GlaucomaM' <<<----- Glaucoma Database
+> 
+> 	## alias	 help(GlaucomaM)
+> 
+> ##___ Examples ___:
+> 
+> data(GlaucomaM)
+> errorest(Class ~ ., data=GlaucomaM, model=rpart, 
++          predict=function(obj, newdata) 
++                    predict(obj, newdata, type="class"), 
++          control=rpart.control(xval=0))
+
+Call:
+errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = rpart, 
+    predict = function(obj, newdata) predict(obj, newdata, type = "class"), 
+    control = rpart.control(xval = 0))
+
+	 10-fold cross-validation estimator of misclassification error 
+
+Misclassification error:  0.2143 
+
+> glbagg <- bagging(Class ~ ., data=GlaucomaM, coob=TRUE)
+> glbagg
+
+Bagging classification trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = Class ~ ., data = GlaucomaM, coob = TRUE)
+
+Out-of-bag estimate of misclassification error:  0.2041 
+
+> 
+> 
+> ## Keywords: 'datasets'.
+> 
+> 
+> cleanEx(); ..nameEx <- "GlaucomaMVF"
+> ###--- >>> `GlaucomaMVF' <<<----- Glaucoma Database
+> 
+> 	## alias	 help(GlaucomaMVF)
+> 
+> ##___ Examples ___:
+> 
+> data(GlaucomaMVF)
+> 
+> response <- function (data) {
++   attach(data) 
++   res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >= 
++         49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) & 
++         clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) & 
++         !is.na(lora) & !is.na(cs) & lora >= 58.55409 & cs < 1.405) | 
++         (!is.na(clv) & is.na(lora) & cs < 1.405), 0, 1)
++   detach(data)
++   factor (res, labels = c("glaucoma", "normal"))
++ }
+> 
+> mypredict.inclass <- function(object, newdata){
++   res <- predict.inclass(object = object, cFUN = response, newdata = newdata)
++   return(res)
++ }
+> 
+> errorest(clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
++          predict=mypredict.inclass, iclass="Class", estimator="cv", 
++          pFUN = rpart)
+
+Call:
+errorest.data.frame(formula = clv + lora + cs ~ ., data = GlaucomaMVF, 
+    model = inclass, predict = mypredict.inclass, iclass = "Class", 
+    estimator = "cv", pFUN = rpart)
+
+	 10-fold cross-validation estimator of misclassification error 
+
+Misclassification error:  0.2588 
+
+> 
+> 
+> ## Keywords: 'datasets'.
+> 
+> 
 > cleanEx(); ..nameEx <- "bagging"
-> ###--- >>> `bagging' <<<----- Bagging Classification and Regression Trees
+> ###--- >>> `bagging' <<<----- Bagging Classification, Regression and Survival Trees
 > 
 > 	## alias	 help(bagging)
-> 	## alias	 help(bagging.formula)
+> 	## alias	 help(ipredbagg)
+> 	## alias	 help(ipredbagg.factor)
+> 	## alias	 help(ipredbagg.numeric)
+> 	## alias	 help(ipredbagg.Surv)
+> 	## alias	 help(ipredbagg.default)
+> 	## alias	 help(bagging.data.frame)
 > 	## alias	 help(bagging.default)
 > 
 > ##___ Examples ___:
+> 
+> 
+> # Classification: Breast Cancer data
+> 
+> data(BreastCancer)
+> 
+> # Test set error bagging (nbagg = 50): 3.7% (Breiman, 1998, Table 5)
+> 
+> mod <- bagging(Class ~ Cl.thickness + Cell.size
++                 + Cell.shape + Marg.adhesion   
++                 + Epith.c.size + Bare.nuclei   
++                 + Bl.cromatin + Normal.nucleoli
++                 + Mitoses, data=BreastCancer, coob=TRUE)
+> print(mod)
+
+Bagging classification trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = Class ~ Cl.thickness + Cell.size + 
+    Cell.shape + Marg.adhesion + Epith.c.size + Bare.nuclei + 
+    Bl.cromatin + Normal.nucleoli + Mitoses, data = BreastCancer, 
+    coob = TRUE)
+
+Out-of-bag estimate of misclassification error:  0.0512 
+
+> 
+> # Test set error bagging (nbagg=50): 7.9% (Breiman, 1996a, Table 2)
+> 
+> data(Ionosphere)
+> Ionosphere$V2 <- NULL # constant within groups
+> 
+> bagging(Class ~ ., data=Ionosphere, coob=TRUE)
+
+Bagging classification trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = Class ~ ., data = Ionosphere, coob = TRUE)
+
+Out-of-bag estimate of misclassification error:  0.0826 
+
+> 
+> # Double-Bagging: combine LDA and classification trees
+> 
+> # predict returns the linear discriminant values, i.e. linear combinations
+> # of the original predictors
+> 
+> comb.lda <- list(list(model=lda, predict=function(obj, newdata)
++                                  predict.lda(obj, newdata)$x))
+> 
+> # Note: out-of-bag estimator is not available in this situation, use
+> # errorest
+> 
+> mod <- bagging(Class ~ ., data=Ionosphere, comb=comb.lda) 
+> 
+> predict(mod, Ionosphere[1:10,])
+ [1] good bad  good bad  good bad  good bad  good bad 
+Levels: bad good
+> 
+> # Regression:
+> 
+> data(BostonHousing)
+> 
+> # Test set error (nbagg=25, trees pruned): 3.41 (Breiman, 1996a, Table 8)
+> 
+> mod <- bagging(medv ~ ., data=BostonHousing, coob=TRUE)
+> print(mod)
+
+Bagging regression trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = medv ~ ., data = BostonHousing, 
+    coob = TRUE)
+
+Out-of-bag estimate of root mean squared error:  4.182 
+
+> 
+> learn <- as.data.frame(mlbench.friedman1(200))
+> 
+> # Test set error (nbagg=25, trees pruned): 2.47 (Breiman, 1996a, Table 8)
+> 
+> mod <- bagging(y ~ ., data=learn, coob=TRUE)
+> print(mod)
+
+Bagging regression trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = y ~ ., data = learn, coob = TRUE)
+
+Out-of-bag estimate of root mean squared error:  3.0039 
+
+> 
+> # Survival data
+> 
+> # Brier score for censored data estimated by 
+> # 10 times 10-fold cross-validation: 0.2 (Hothorn et al,
+> # 2002)
+> 
+> data(DLBCL)
+> mod <- bagging(Surv(time,cens) ~ MGEc.1 + MGEc.2 + MGEc.3 + MGEc.4 + MGEc.5 +
++                                  MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 +
++                                  MGEc.10 + IPI, data=DLBCL, coob=TRUE)
+> 
+> print(mod)
+
+Bagging survival trees with 25 bootstrap replications 
+
+Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 + 
+    MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
+    MGEc.10 + IPI, data = DLBCL, coob = TRUE)
+
+Out-of-bag estimate of Brier's score:  0.1945 
+
 > 
 > 
 > ## Keywords: 'tree'.
 > 
 > 
 > cleanEx(); ..nameEx <- "errorest"
-> ###--- >>> `errorest' <<<----- Estimators for the Prediction Error
+> ###--- >>> `errorest' <<<----- Estimators of Prediction Error
 > 
 > 	## alias	 help(errorest)
+> 	## alias	 help(errorest.data.frame)
+> 	## alias	 help(errorest.default)
+> 	## alias	 help(errorestinclass)
 > 
 > ##___ Examples ___:
 > 
 > 
-> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
-> y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
-> learn <- cbind(y, X)
+> # Classification
 > 
+> data(iris)
+> 
+> # force predict to return class labels only
 > mypredict.lda <- function(object, newdata)
 +   predict(object, newdata = newdata)$class
 > 
-> errorest(y ~ ., data= learn, model=lda, 
+> # 10-fold cv of LDA for Iris data
+> errorest(Species ~ ., data=iris, model=lda, 
 +          estimator = "cv", predict= mypredict.lda)
 
-10-fold cross-validation estimator of misclassification error
- 
+Call:
+errorest.data.frame(formula = Species ~ ., data = iris, model = lda, 
+    predict = mypredict.lda, estimator = "cv")
 
-Data:  y on . 
+	 10-fold cross-validation estimator of misclassification error 
 
-Error 0.08 
+Misclassification error:  0.02 
+
 > 
-> # n-fold cv = leave-one-out.
+> data(PimaIndiansDiabetes)
 > 
-> errorest(y ~ ., data= learn, model=lda, 
-+          estimator = "cv", est.para=list(k = nrow(learn)), 
-+          predict= mypredict.lda)
-
-100-fold cross-validation estimator of misclassification error
- 
-
-Data:  y on . 
-
-Error 0.07 
-> 
-> errorest(y ~ ., data= learn, model=lda, 
-+          estimator = "boot", predict= mypredict.lda)
-
-Bootstrap estimator of misclassification error
- with 25 bootstrap replications 
-
-Data:  y on . 
-
-Error 0.0884 
-> 
-> errorest(y ~ ., data= learn, model=lda, 
+> # 632+ bootstrap of LDA for Diabetes data
+> errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
 +          estimator = "632plus", predict= mypredict.lda)
 
-.632+ Bootstrap estimator of misclassification error
- with 25 bootstrap replications 
+Call:
+errorest.data.frame(formula = diabetes ~ ., data = PimaIndiansDiabetes, 
+    model = lda, predict = mypredict.lda, estimator = "632plus")
 
-Data:  y on . 
+	 .632+ Bootstrap estimator of misclassification error 
+	 with 25 bootstrap replications
 
-Error 0.0885 
-> 
-> attach(learn)
-> errorest(y ~ V1 + V2 + V3, model=lda, estimator = "cv",
-+          predict= mypredict.lda)
+Misclassification error:  0.2277 
 
-10-fold cross-validation estimator of misclassification error
- 
-
-Data:  y on V1 y on V2 y on V3 
-
-Error 0.34 
-> detach(learn)
-> 
-> mypredict.rpart <- function(object, newdata)
-+   predict(object, newdata = newdata,type="class")
-> 
-> errorest(y ~ ., data= learn, model=rpart, estimator = "cv",
-+          predict=mypredict.rpart)
-
-10-fold cross-validation estimator of misclassification error
- 
-
-Data:  y on . 
-
-Error 0.42 
-> 
-> errorest(y ~ ., data= learn, model=rpart, estimator = "boot",
-+ predict=mypredict.rpart)
-
-Bootstrap estimator of misclassification error
- with 25 bootstrap replications 
-
-Data:  y on . 
-
-Error 0.3731 
-> 
-> errorest(y ~ ., data= learn, model=rpart, estimator = "632plus",
-+ predict=mypredict.rpart)
-
-.632+ Bootstrap estimator of misclassification error
- with 25 bootstrap replications 
-
-Data:  y on . 
-
-Error 0.3593 
-> 
-> errorest(y ~ ., data= learn, model=bagging, estimator = "cv",
-+ nbagg=10)
-
-10-fold cross-validation estimator of misclassification error
- 
-
-Data:  y on . 
-
-Error 0.26 
 > 
 > data(Glass)
 > 
-> # LDA has cross-validated misclassification error of 
+> # LDA has cross-validated misclassification error of
 > # 38% (Ripley, 1996, page 98)
 > 
-> errorest(Type ~ ., data=Glass, model=lda, estimator= "cv",
-+ predict=mypredict.lda)
-
-10-fold cross-validation estimator of misclassification error
- 
-
-Data:  Type on . 
-
-Error 0.3729 
-> 
 > # Pruned trees about 32% (Ripley, 1996, page 230)
+> 
+> # use stratified sampling here, i.e. preserve the class proportions
+> errorest(Type ~ ., data=Glass, model=lda, 
++          predict=mypredict.lda, est.para=control.errorest(strat=TRUE))
+
+Call:
+errorest.data.frame(formula = Type ~ ., data = Glass, model = lda, 
+    predict = mypredict.lda, est.para = control.errorest(strat = TRUE))
+
+	 10-fold cross-validation estimator of misclassification error 
+
+Misclassification error:  0.3645 
+
+> 
+> # force predict to return class labels
+> mypredict.rpart <- function(object, newdata)
++   predict(object, newdata = newdata,type="class")
 > 
 > pruneit <- function(formula, ...)
 +   prune(rpart(formula, ...), cp =0.01)
 > 
-> errorest(Type ~ ., data=Glass, model=pruneit, estimator= "cv",
-+ predict=mypredict.rpart)
+> errorest(Type ~ ., data=Glass, model=pruneit,
++          predict=mypredict.rpart, est.para=control.errorest(strat=TRUE))
 
-10-fold cross-validation estimator of misclassification error
- 
+Call:
+errorest.data.frame(formula = Type ~ ., data = Glass, model = pruneit, 
+    predict = mypredict.rpart, est.para = control.errorest(strat = TRUE))
 
-Data:  Type on . 
+	 10-fold cross-validation estimator of misclassification error 
 
-Error 0.337 
+Misclassification error:  0.3224 
+
 > 
-> data(smoking)
+> # compute sensitivity and specifity for stabilised LDA
+> 
+> data(GlaucomaM)
+> 
+> error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
++   predict=mypredict.lda, est.para=control.errorest(predictions=TRUE))
+> 
+> # sensitivity 
+> 
+> mean(error$predictions[GlaucomaM$Class == "glaucoma"] != "glaucoma")
+[1] 0.1530612
+> 
+> # specifity
+> 
+> mean(error$predictions[GlaucomaM$Class == "normal"] != "normal")
+[1] 0.1224490
+> 
+> # Indirect Classification: Smoking data
+> 
+> data(Smoking)
 > # Set three groups of variables:
 > # 1) explanatory variables are: TarY, NicY, COY, Sex, Age
 > # 2) intermediate variables are: TVPS, BPNL, COHB
@@ -213,8 +475,8 @@ Error 0.337
 +   res
 + }
 > 
-> response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-> smoking <- cbind(smoking, response)
+> response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+> smoking <- cbind(Smoking, response)
 > 
 > formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
@@ -229,14 +491,53 @@ Error 0.337
 > 
 > errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
 +          estimator = "cv", iclass = "response", pFUN = lm,
-+          est.para=list(k=nrow(smoking)))
++          est.para=control.errorest(k=nrow(smoking)))
 
-55-fold cross-validation estimator of misclassification error
- 
+Call:
+errorest.data.frame(formula = formula, data = smoking, model = inclass, 
+    predict = mypredict.inclass, iclass = "response", estimator = "cv", 
+    est.para = control.errorest(k = nrow(smoking)), pFUN = lm)
 
-Data:  response 
+	 55-fold cross-validation estimator of misclassification error 
 
-Error 0.3273 
+Misclassification error:  0.3273 
+
+> 
+> # Regression
+> 
+> data(BostonHousing)
+> 
+> # 10-fold cv of lm for Boston Housing data
+> errorest(medv ~ ., data=BostonHousing, model=lm)
+
+Call:
+errorest.data.frame(formula = medv ~ ., data = BostonHousing, 
+    model = lm)
+
+	 10-fold cross-validation estimator of root mean squared error
+
+Root mean squared error:  4.6881 
+
+> 
+> # Survival data
+> 
+> data(GBSG2)
+> 
+> # prediction is fitted Kaplan-Meier
+> predict.survfit <- function(object, newdata) object
+> 
+> # 5-fold cv of Kaplan-Meier for GBSG2 study
+> errorest(Surv(time, cens) ~ 1, data=GBSG2, model=survfit,
++          predict=predict.survfit, est.para=control.errorest(k=5))
+
+Call:
+errorest.data.frame(formula = Surv(time, cens) ~ 1, data = GBSG2, 
+    model = survfit, predict = predict.survfit, est.para = control.errorest(k = 5))
+
+	 5-fold cross-validation estimator of Brier's score
+
+Brier's score:  0.1917 
+
 > 
 > 
 > ## Keywords: 'misc'.
@@ -253,7 +554,7 @@ Error 0.3273
 > ##___ Examples ___:
 > 
 > 
-> data(smoking)
+> data(Smoking)
 > # Set three groups of variables:
 > # 1) explanatory variables are: TarY, NicY, COY, Sex, Age
 > # 2) intermediate variables are: TVPS, BPNL, COHB
@@ -265,8 +566,8 @@ Error 0.3273
 +   res
 + }
 > 
-> response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-> smoking <- cbind(smoking, response)
+> response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+> smoking <- cbind(Smoking, response)
 > 
 > formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
@@ -279,6 +580,35 @@ Error 0.3273
 > 
 > 
 > ## Keywords: 'misc'.
+> 
+> 
+> cleanEx(); ..nameEx <- "ipredknn"
+> ###--- >>> `ipredknn' <<<----- k-Nearest Neighbour Classification
+> 
+> 	## alias	 help(ipredknn)
+> 
+> ##___ Examples ___:
+> 
+> 
+> learn <- as.data.frame(mlbench.twonorm(300))
+> 
+> mypredict.knn <- function(object, newdata) 
++                    predict.ipredknn(object, newdata, type="class")
+> 
+> errorest(classes ~., data=learn, model=ipredknn, 
++          predict=mypredict.knn)
+
+Call:
+errorest.data.frame(formula = classes ~ ., data = learn, model = ipredknn, 
+    predict = mypredict.knn)
+
+	 10-fold cross-validation estimator of misclassification error 
+
+Misclassification error:  0.0567 
+
+> 
+> 
+> ## Keywords: 'multivariate'.
 > 
 > 
 > cleanEx(); ..nameEx <- "kfoldcv"
@@ -309,25 +639,44 @@ Error 0.3273
 > 
 > 
 > cleanEx(); ..nameEx <- "predict.bagging"
-> ###--- >>> `predict.bagging' <<<----- Predictions from a Bagging Object
+> ###--- >>> `predict.classbagg' <<<----- Predictions from Bagging Trees
 > 
-> 	## alias	 help(predict.bagging)
+> 	## alias	 help(predict.classbagg)
+> 	## alias	 help(predict.regbagg)
+> 	## alias	 help(predict.survbagg)
 > 
 > ##___ Examples ___:
 > 
 > 
-> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
-> y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+> data(Ionosphere)
+> Ionosphere$V2 <- NULL # constant within groups
 > 
-> mt <- bagging(y, X)
+> # nbagg = 10 for performance reasons here
+> mod <- bagging(Class ~ ., data=Ionosphere)
 > 
-> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
-> y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+> # out-of-bag estimate
 > 
-> cls <- predict(mt, X)
+> mean(predict(mod) != Ionosphere$Class)
+[1] 0.0968661
 > 
-> cat("error: ", sum(y != cls)/length(cls), "\n")
-error:  0.23 
+> # predictions for the first 10 observations
+> 
+> predict(mod, newdata=Ionosphere[1:10,])
+ [1] good bad  good bad  good bad  good bad  good bad 
+Levels: bad good
+> 
+> predict(mod, newdata=Ionosphere[1:10,], type="prob")
+       bad good
+ [1,] 0.00 1.00
+ [2,] 0.84 0.16
+ [3,] 0.00 1.00
+ [4,] 0.84 0.16
+ [5,] 0.00 1.00
+ [6,] 1.00 0.00
+ [7,] 0.00 1.00
+ [8,] 0.96 0.04
+ [9,] 0.08 0.92
+[10,] 1.00 0.00
 > 
 > 
 > ## Keywords: 'tree'.
@@ -347,7 +696,7 @@ error:  0.23
 > dataset <- as.data.frame(cbind(theta90$explanatory, theta90$intermediate))
 > names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
 > 
-> classi <- function(Y, threshold = 0) {
+> classify <- function(Y, threshold = 0) {
 +   z <- (Y > threshold)
 +   resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
 +   return(resp)
@@ -357,7 +706,7 @@ error:  0.23
 > 
 > fit <- inclass(formula, pFUN = lm, data = dataset)
 > 
-> predict.inclass(object = fit, cFUN = classi, newdata = dataset)
+> predict.inclass(object = fit, cFUN = classify, newdata = dataset)
    [1] 1 0 0 1 0 1 0 1 1 1 1 0 1 0 0 0 0 1 1 0 1 0 0 0 0 1 0 0 1 0 1 1 0 0 1 0 0
   [38] 0 0 1 0 1 1 1 1 1 0 0 0 0 0 1 1 0 0 0 1 1 1 0 0 0 1 0 0 0 0 0 1 0 1 1 0 1
   [75] 1 0 0 0 1 0 0 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 1 0 1 1 1 1 0 0 1 0 1 1 1 0 1
@@ -386,37 +735,277 @@ error:  0.23
  [926] 1 0 1 1 0 0 1 1 0 1 1 0 1 0 0 0 1 0 0 0 1 1 0 1 1 0 1 0 0 1 1 0 0 0 0 0 1
  [963] 0 0 0 1 0 1 0 0 1 1 1 0 1 1 0 0 1 0 1 1 0 0 1 0 0 1 1 1 0 0 0 1 0 0 1 1 0
 [1000] 1
-Levels:  0 1 
+Levels: 0 1
 > 
-> data(smoking)
+> data(Smoking)
 > 
 > # explanatory variables are: TarY, NicY, COY, Sex, Age
 > # intermediate variables are: TVPS, BPNL, COHB
-> # reponse (resp) ist defined by:
+> # reponse is defined by:
 > 
-> resp <- function(data){
+> classify <- function(data){
 +   res <- t(t(data) > c(4438, 232.5, 58))
 +   res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
 +   res
 + }
 > 
-> response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-> smoking <- cbind(smoking, response)
+> response <- classify(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+> smoking <- cbind(Smoking, response)
 > 
 > formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 > 
 > fit <- inclass(formula, pFUN = lm, data = smoking)
 > 
-> predict.inclass(object = fit, cFUN = resp, newdata = smoking)
+> predict.inclass(object = fit, cFUN = classify, newdata = smoking)
  [1] 1 1 0 1 0 1 1 0 0 0 1 1 1 1 1 0 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 [39] 1 1 0 1 1 1 1 1 1 0 0 1 1 1 1 1 1
-Levels:  0 1 
+Levels: 0 1
+> 
+> data(GlaucomaMVF)
+> glaucoma <- GlaucomaMVF[,-67]
+> # explanatory variables are derived by laser scanning image and intra occular pressure
+> # intermediate variables are: clv, cs, lora
+> # response is defined by
+> 
+> classify <- function (data) {
++   attach(data) 
++   res <- ifelse((!is.na(clv) & !is.na(lora) & clv >= 5.1 & lora >= 
++         49.23372) | (!is.na(clv) & !is.na(lora) & !is.na(cs) & 
++         clv < 5.1 & lora >= 58.55409 & cs < 1.405) | (is.na(clv) & 
++         !is.na(lora) & !is.na(cs) & lora >= 58.55409 & cs < 1.405) | 
++         (!is.na(clv) & is.na(lora) & cs < 1.405), 0, 1)
++   detach(data)
++   factor (res, labels = c("glaucoma", "normal"))
++ }
+> 
+> fit <- inclass(clv+lora+cs~., data = glaucoma, pFUN = bagging)
+> predict.inclass(object = fit, cFUN = classify, newdata = glaucoma)
+  [1] normal   glaucoma normal   glaucoma normal   normal   normal   normal  
+  [9] glaucoma normal   normal   normal   normal   normal   glaucoma normal  
+ [17] glaucoma glaucoma normal   normal   normal   glaucoma normal   glaucoma
+ [25] glaucoma normal   normal   normal   normal   glaucoma normal   glaucoma
+ [33] normal   glaucoma glaucoma normal   normal   normal   glaucoma glaucoma
+ [41] normal   normal   normal   glaucoma normal   normal   normal   normal  
+ [49] normal   normal   normal   normal   normal   normal   normal   glaucoma
+ [57] normal   normal   glaucoma normal   normal   normal   glaucoma glaucoma
+ [65] normal   normal   normal   glaucoma normal   normal   normal   normal  
+ [73] glaucoma glaucoma glaucoma glaucoma normal   normal   normal   normal  
+ [81] normal   normal   normal   normal   glaucoma glaucoma glaucoma glaucoma
+ [89] glaucoma glaucoma glaucoma normal   glaucoma glaucoma glaucoma glaucoma
+ [97] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[105] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[113] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[121] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[129] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[137] glaucoma glaucoma glaucoma normal   glaucoma glaucoma glaucoma glaucoma
+[145] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[153] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[161] glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma glaucoma
+[169] glaucoma glaucoma
+Levels: glaucoma normal
 > 
 > 
 > ## Keywords: 'misc'.
 > 
 > 
 > cleanEx(); ..nameEx <- "prune.bagging"
+> ###--- >>> `prune.classbagg' <<<----- Pruning for Bagging
+> 
+> 	## alias	 help(prune.classbagg)
+> 	## alias	 help(prune.regbagg)
+> 	## alias	 help(prune.survbagg)
+> 
+> ##___ Examples ___:
+> 
+> 
+> data(Glass)
+> 
+> mod <- bagging(Type ~ ., data=Glass, nbagg=10, coob=TRUE)
+> pmod <- prune(mod)
+> print(pmod)
+
+Bagging classification trees with 10 bootstrap replications 
+
+Call: bagging.data.frame(formula = Type ~ ., data = Glass, nbagg = 10, 
+    coob = TRUE)
+
+Out-of-bag estimate of misclassification error:  0.3131 
+
+> 
+> 
+> ## Keywords: 'tree'.
+> 
+> 
+> cleanEx(); ..nameEx <- "rsurv"
+> ###--- >>> `rsurv' <<<----- Simulate Survival Data
+> 
+> 	## alias	 help(rsurv)
+> 
+> ##___ Examples ___:
+> 
+> 
+> # 3*X1 + X2
+> simdat <- rsurv(500, model="C")
+> coxph(Surv(time, cens) ~ ., data=simdat)
+Call:
+coxph(formula = Surv(time, cens) ~ ., data = simdat)
+
+
+      coef exp(coef) se(coef)      z       p
+X1  2.7132    15.077    0.196 13.820 0.0e+00
+X2  0.8401     2.317    0.157  5.346 9.0e-08
+X3  0.2292     1.258    0.162  1.418 1.6e-01
+X4 -0.0544     0.947    0.169 -0.322 7.5e-01
+X5  0.2734     1.314    0.150  1.822 6.8e-02
+
+Likelihood ratio test=217  on 5 df, p=0  n= 500 
+> 
+> 
+> ## Keywords: 'survival'.
+> 
+> 
+> cleanEx(); ..nameEx <- "sbrier"
+> ###--- >>> `sbrier' <<<----- Model Fit for Survival Data
+> 
+> 	## alias	 help(sbrier)
+> 
+> ##___ Examples ___:
+> 
+> 
+> data(DLBCL)
+> smod <- Surv(DLBCL$time, DLBCL$cens)
+> 
+> KM <- survfit(smod)
+> # integrated Brier score up to max(DLBCL$time)
+> sbrier(smod, KM)
+integrated Brier score 
+             0.2076454 
+attr(,"time")
+[1]   1.3 129.9
+> 
+> # integrated Brier score up to time=50
+> sbrier(smod, KM, btime=c(0, 50))
+integrated Brier score 
+             0.2141826 
+attr(,"time")
+[1]  1.3 39.6
+> 
+> # Brier score for time=50
+> sbrier(smod, KM, btime=50)
+Brier score 
+   0.249375 
+attr(,"time")
+[1] 50
+> 
+> # a "real" model: one single survival tree with Intern. Prognostic Index
+> # and mean gene expression in the first cluster as predictors
+> mod <- bagging(Surv(time, cens) ~ MGEc.1 + IPI, data=DLBCL, nbagg=1)
+> 
+> # this is a list of survfit objects (==KM-curves), one for each observation
+> # in DLBCL
+> pred <- predict(mod, newdata=DLBCL)
+> 
+> # integrated Brier score up to max(time)
+> sbrier(smod, pred)
+integrated Brier score 
+             0.1408247 
+attr(,"time")
+[1]   1.3 129.9
+> 
+> # Brier score at time=50
+> sbrier(smod, pred, btime=50)
+Brier score 
+  0.1774478 
+attr(,"time")
+[1] 50
+> # artificial examples and illustrations
+> 
+> cleans <- function(x) { attr(x, "time") <- NULL; names(x) <- NULL; x }
+> 
+> n <- 100
+> time <- rpois(n, 20)
+> cens <- rep(1, n)
+> 
+> # checks, Graf et al. page 2536, no censoring at all!
+> # no information: \pi(t) = 0.5 
+> 
+> a <- sbrier(Surv(time, cens), rep(0.5, n), time[50])
+> stopifnot(all.equal(cleans(a),0.25))
+> 
+> # some information: \pi(t) = S(t)
+> 
+> n <- 100
+> time <- 1:100
+> mod <- survfit(Surv(time, cens))
+> a <- sbrier(Surv(time, cens), rep(list(mod), n))
+> mymin <- mod$surv * (1 - mod$surv)
+> stopifnot(all.equal(cleans(a),sum(mymin)/max(time)))
+> 
+> # independent of ordering
+> rand <- sample(1:100)
+> b <- sbrier(Surv(time, cens)[rand], rep(list(mod), n)[rand])
+> stopifnot(all.equal(cleans(a), cleans(b)))
+> 
+> 
+>   # total information: \pi(t | X) known for every obs
+> 
+>   time <- 1:10
+>   cens <- rep(1,10)
+>   pred <- diag(10)
+>   pred[upper.tri(pred)] <- 1
+>   diag(pred) <- 0
+>   # <FIXME>
+>   # a <- sbrier(Surv(time, cens), pred)
+>   # stopifnot(all.equal(a, 0))
+>   # </FIXME>
+> 
+> 
+> # 2 groups at different risk
+> 
+> time <- c(1:10, 21:30)
+> strata <- c(rep(1, 10), rep(2, 10))
+> cens <- rep(1, length(time))
+> 
+> # no information about the groups
+> 
+> a <- sbrier(Surv(time, cens), survfit(Surv(time, cens)))
+> b <- sbrier(Surv(time, cens), rep(list(survfit(Surv(time, cens))), 20))
+> stopifnot(all.equal(a, b))
+> 
+> # risk groups known
+> 
+> mod <- survfit(Surv(time, cens) ~ strata)
+> b <- sbrier(Surv(time, cens), c(rep(list(mod[1]), 10), rep(list(mod[2]), 10)))
+> stopifnot(a > b)
+> 
+> 
+> ## Keywords: 'survival'.
+> 
+> 
+> cleanEx(); ..nameEx <- "slda"
+> ###--- >>> `slda' <<<----- Stabilised Linear Discriminant Analysis
+> 
+> 	## alias	 help(slda)
+> 	## alias	 help(slda.default)
+> 	## alias	 help(slda.formula)
+> 	## alias	 help(slda.factor)
+> 
+> ##___ Examples ___:
+> 
+> 
+> learn <- as.data.frame(mlbench.twonorm(100))
+> test <- as.data.frame(mlbench.twonorm(1000))
+> 
+> mlda <- lda(classes ~ ., data=learn)
+> mslda <- slda(classes ~ ., data=learn)
+> 
+> print(mean(predict(mlda, newdata=test)$class != test$classes))
+[1] 0.041
+> print(mean(predict(mslda, newdata=test)$class != test$classes))
+[1] 0.036
+> 
+> 
+> ## Keywords: 'multivariate'.
 > 
 > 
 > cleanEx(); ..nameEx <- "varset"
@@ -439,7 +1028,7 @@ Levels:  0 1
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  30.58 0.37 31.39 0 0 
+Time elapsed:  120.14 2.09 124.75 0 0 
 > dev.off(); quit('no')
 null device 
           1 

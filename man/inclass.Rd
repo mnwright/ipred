@@ -21,13 +21,14 @@ A framework for the indirect classification approach.
 is transformed into a list of formulas, where each vector \code{x, y, z} is modelled with formula
 \code{a+b+c}. \code{object} is of class \code{\link{flist}}. }
   \item{pFUN}{function to be used to compute predictive models. Evaluated functions are: \code{rpart} - regression or classification trees (see
-\code{\link[rpart]{rpart}}); \code{lm} - linear models (see \code{\link{lm}}); \code{bagging} - bagged regression or classification trees (see \code{\link{bagging}}).}
+\code{\link[rpart]{rpart}}); \code{lm} - linear models (see \code{\link{lm}}); \code{bagging} - 
+bagging regression or classification trees (see \code{\link{bagging}}).}
   \item{data}{data frame of explanatory and intermediate variables.}
   \item{subset}{optional vector specifying a subset of observations to be
 used.}
   \item{na.action}{function which indicates what should happen when the data
 contain \code{NA}s. Defaults to \code{getOption("na.action")}}
-  \item{\dots}{additional arguments. For example \code{nbaggs} for \code{pFUN=bagging}, \ cr
+  \item{\dots}{additional arguments. For example \code{nbaggs} for \code{pFUN=bagging}, \cr
           or \code{na.action=na.exclude} for
 \code{pFUN = lm}.}
   \item{object}{ object of class \code{\link{flist}}.}
@@ -63,7 +64,7 @@ Supervised classification with structured class definitions.
 
 \examples{
 
-data(smoking)
+data(Smoking)
 # Set three groups of variables:
 # 1) explanatory variables are: TarY, NicY, COY, Sex, Age
 # 2) intermediate variables are: TVPS, BPNL, COHB
@@ -75,8 +76,8 @@ resp <- function(data){
   res
 }
 
-response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-smoking <- cbind(smoking, response)
+response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(Smoking, response)
 
 formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 

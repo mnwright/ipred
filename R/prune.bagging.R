@@ -1,8 +1,23 @@
-# $Id: prune.bagging.R,v 1.1 2002/03/02 14:21:15 hothorn Exp $
+# $Id: prune.bagging.R,v 1.2 2002/09/12 08:59:13 hothorn Exp $
 
-prune.bagging <- function(tree, cp=0.01,...)
+prune.classbagg <- function(tree, cp=0.01,...)
 {
-  for(i in 1:length(tree$mt))
-    tree$mt[i][[1]] <- prune(tree$mt[i][[1]], cp=cp, ...)
+  for(i in 1:length(tree$mtrees))
+    tree$mtrees[[i]]$btree <- prune( tree$mtrees[[i]]$btree, cp=cp, ...)
+  tree
+}
+
+prune.regbagg <- function(tree, cp=0.01,...)
+{
+  for(i in 1:length(tree$mtrees))
+    tree$mtrees[[i]]$btree <- prune( tree$mtrees[[i]]$btree, cp=cp, ...)
+  tree
+}
+
+
+prune.survbagg <- function(tree, cp=0.01,...)
+{
+  for(i in 1:length(tree$mtrees))
+    tree$mtrees[[i]]$btree <- prune( tree$mtrees[[i]]$btree, cp=cp, ...)
   tree
 }

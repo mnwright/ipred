@@ -1,6 +1,49 @@
-# $Id: CHANGES,v 1.11 2002/06/27 08:52:45 hothorn Exp $
+# $Id: CHANGES,v 1.17 2002/09/27 09:06:27 hothorn Exp $
 
-	0.4-6 (27.07.2002)
+	0.6-0 (27.09.2002)
+
+	added vignette
+	documentation updates
+	
+	0.5-7 (23.09.2002)
+
+	add internal functions irpart and predict.irpart 
+        for speeding up standard bagging
+
+	use error.control for the specification of control
+	parameters
+
+	cv can be used to caculcate an "honest" prediction for each
+        observation
+
+	0.5-6 (12.09.2002)
+
+	code factors in GBSG2 data as factors. Documentation update. Add
+        keepX argument to ipredbagg
+
+	0.5-5 (10.09.2002)
+
+	set rpart.control(..., xval=0) by default
+
+	0.5-4 (05.08.2002)
+
+	added k-NN with formula interface and stabilized LDA
+
+	0.5-3 (01.08.2002)
+
+	use rpart.control() for regression and survival
+        new documentation for bagging and friends
+
+	0.5-2 (30.07.2002)
+
+	new low-level functions cv and bootest for error rate estimators
+        (misclassification, mse, brier score)
+
+	0.5-1 (25.07.2002)
+
+	bagging code completely rewritten
+
+	0.4-6 (27.06.2002)
 
 	out-of-bag error for regression trees fixed.
 

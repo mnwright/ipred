@@ -1,6 +1,6 @@
 \name{mypredict.lm}
 \alias{mypredict.lm}
-\title{Predictions based on Linear Models}
+\title{Predictions Based on Linear Models}
 \description{
 Function to predict a vector of full length (number of observations), where predictions according to missing
 explanatory values are replaced by \code{NA}.

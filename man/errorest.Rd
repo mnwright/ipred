@@ -1,35 +1,38 @@
 \name{errorest}
 \alias{errorest}
-
-\title{Estimators for the Prediction Error}
+\alias{errorest.data.frame}
+\alias{errorest.default}
+\alias{errorestinclass}
+\title{ Estimators of Prediction Error }
 \description{
-Resampling based estimates of prediction error (misclassification or 
-mean squared error). 
+Resampling based estimates of prediction error: misclassification error, 
+root mean squared error or Brier score for survival data.
 }
 \usage{
-errorest(formula, data, subset, na.action, model=NULL, predict=NULL,
-         iclass=NULL, estimator=c("cv", "boot", "632plus"), 
-         est.para=list(k = 10, nboot = 25), ...)
+\method{errorest}{data.frame}(formula, data, subset, na.action=na.omit, 
+         model=NULL, predict=NULL, iclass=NULL, 
+         estimator=c("cv", "boot", "632plus"), 
+         est.para=control.errorest(), ...)
 }
 
 \arguments{
-  \item{formula}{formula. Either describing the model of explanatory and 
+  \item{formula}{a formula of the form \code{lhs ~ rhs}. 
+                 Either describing the model of explanatory and 
                  response variables in the usual way (see \code{\link{lm}}) 
                  or the model between explanatory and intermediate variables
                  in the framework of indirect classification, 
                  see \code{\link{inclass}}.}
-  \item{data}{data frame containing the variables in the model formula 
+  \item{data}{a data frame containing the variables in the model formula 
               and additionally the class membership variable 
               if \code{model = inclass}. \code{data} is required for
               indirect classification, otherwise \code{formula} is evaluated
               in the calling environment.}
   \item{subset}{optional vector, specifying a subset of observations to 
                 be used.}
-  \item{na.action}{function. Indicates what should happen when the data 
-                   contain \code{NA}s.}
+  \item{na.action}{function which indicates what should happen when the data
+                   contains \code{NA}'s, defaults to \code{\link{na.omit}}.} 
   \item{model}{function. Modelling technique whose error rate is to be 
-               estimated. The parameter \code{na.action} is evaluated in 
-               the modelling process.}
+               estimated.}
   \item{predict}{function. Prediction method to be used. The vector of 
                  predicted values must have the same length as the the 
                  number of to-be-predicted observations. Predictions 
@@ -45,120 +48,134 @@ errorest(formula, data, subset, na.action, model=NULL, predict=NULL,
                    \code{cv} cross-validation, \code{boot} bootstrap or 
                    \code{632plus} bias corrected bootstrap (classification
                    only). }
-  \item{est.para}{a list of additional parameters for the estimator. \code{k} 
-                  for k-fold cross-validations or \code{nboot} for the number 
-                  of bootstrap replications.}
+  \item{est.para}{a list of additional parameters that control the
+                  calculation of the estimator, see 
+                  \code{\link{control.errorest}} for details.}
   \item{\dots}{additional parameters to \code{model}.}
 }
 \details{
-  The prediction error for classification and regression models using 
-cross-validation or the bootstrap can be computed by \code{errorest}. Any
-model can be specified as long as this is a function with arguments
-\code{model(formula, data, subset, na.action, ...)}. If \code{model} is
-generic and a \code{model.predict(object, newdata, ...)} is available,
-\code{predict} does not need to be specified. However, \code{predict} has to
-return predicted values directly comparable to the responses. See the
-examples below. 
+  The prediction error for classification and regression models as well as
+predictive models for censored data using cross-validation or the 
+bootstrap can be computed by \code{errorest}. For classification problems,
+the estimated misclassification error is returned. The root mean squared
+error is computed for regression problems and the Brier score for censored
+data (Graf et al., 1999) is reported if the response is censored. 
 
-k-fold cross-validation and the usual bootstrap estimator with
+Any model can be specified as long as it is a function with arguments
+\code{model(formula, data, subset, na.action, ...)}. If 
+a method \code{predict.model(object, newdata, ...)} is available,
+\code{predict} does not need to be specified. However, \code{predict} 
+has to return predicted values in the same order and of the same length
+corresponding to the response. See the examples below. 
+
+$k$-fold cross-validation and the usual bootstrap estimator with
 \code{est.para$nboot} bootstrap replications can be computed for
-classification and regression problems. The bias corrected .632+ bootstrap
+all kind of problems. The bias corrected .632+ bootstrap
 by Efron and Tibshirani (1997) is available for classification problems
-only. 
+only. Use \code{\link{control.errorest}} to specify additional arguments.
 
-\code{\link{print.errorest}} is available for inspection of the results.
+\code{errorest} is a formula based interface to the generic functions 
+\code{\link{cv}} or \code{\link{bootest}} which implement methods for
+classification, regression and survival problems. In addition, the function
+\code{errorestinclass} deals with estimation of the misclassification error
+for indirect classifiers (\code{\link{inclass}}, Hand et al., 2001).
 
 }
 
 \value{
- An object of class \code{errorest}, i.e. a list with arguments:
-  \item{err}{estimated misclassification error for a nominal or the square
-root of the estimated mean squared error for a continuous response.}
-  \item{estimator}{kind of estimator used.}
-  \item{para}{additional parameters for the estimator.}
-  \item{data.name}{names of the variables used.}
-  \item{class}{logical. \code{TRUE} for classification problems.}
-  \item{sd}{jackknife estimate of internal standard deviation of \code{err}
-(if \code{estimator = "boot"}).}
+ The class of the object returned depends on the class of the response
+variable and the estimator used. In each case, it is a list with an element
+\code{error} and additional information. \code{print} methods are available
+for the inspection of the results.
 }
 
 \references{
+
+Brian D. Ripley (1996), \emph{Pattern Recognition and Neural Networks}.
+Cambridge: Cambridge University Press.
+
 Bradley Efron and Robert Tibshirani (1997),
 Improvements on Cross-Validation: The .632+ Bootstrap Estimator.
 \emph{Journal of the American Statistical Association} \bold{92}(438),
 548--560.
 
-Brian D. Ripley (1996), \emph{Pattern Recognition and Neural Networks},
-Cambridge: Cambridge University Press.
+Erika Graf, Claudia Schmoor, Willi Sauerbrei and Martin Schumacher (1999), 
+Assessment and comparison of prognostic classification schemes for 
+survival data. \emph{Statistics in Medicine} \bold{18}(17-18), 2529--2545.
+
+Rosa A. Schiavo and David J. Hand (2000), Ten More Years of Error Rate
+Research. \emph{International Statistical Review} \bold{68}(3), 296-310. 
 
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
-Supervised classification with structured class definitions.
+Supervised Classification with Structured Class Definitions.
 \emph{Computational Statistics \& Data Analysis} \bold{36},
 209--225.
+
 
 }
 \author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de> and \cr
   Torsten Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de>}
 \examples{
 
-X <- as.data.frame(matrix(rnorm(1000), ncol=10))
-y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
-learn <- cbind(y, X)
+# Classification
 
+data(iris)
+
+# force predict to return class labels only
 mypredict.lda <- function(object, newdata)
   predict(object, newdata = newdata)$class
 
-errorest(y ~ ., data= learn, model=lda, 
+# 10-fold cv of LDA for Iris data
+errorest(Species ~ ., data=iris, model=lda, 
          estimator = "cv", predict= mypredict.lda)
 
-# n-fold cv = leave-one-out.
+data(PimaIndiansDiabetes)
 
-errorest(y ~ ., data= learn, model=lda, 
-         estimator = "cv", est.para=list(k = nrow(learn)), 
-         predict= mypredict.lda)
-
-errorest(y ~ ., data= learn, model=lda, 
-         estimator = "boot", predict= mypredict.lda)
-
-errorest(y ~ ., data= learn, model=lda, 
+# 632+ bootstrap of LDA for Diabetes data
+errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
          estimator = "632plus", predict= mypredict.lda)
 
-attach(learn)
-errorest(y ~ V1 + V2 + V3, model=lda, estimator = "cv",
-         predict= mypredict.lda)
-detach(learn)
-
-
-mypredict.rpart <- function(object, newdata)
-  predict(object, newdata = newdata,type="class")
-
-errorest(y ~ ., data= learn, model=rpart, estimator = "cv",
-         predict=mypredict.rpart)
-
-errorest(y ~ ., data= learn, model=rpart, estimator = "boot",
-predict=mypredict.rpart)
-
-errorest(y ~ ., data= learn, model=rpart, estimator = "632plus",
-predict=mypredict.rpart)
-
-errorest(y ~ ., data= learn, model=bagging, estimator = "cv",
-nbagg=10)
 
 data(Glass)
 
-# LDA has cross-validated misclassification error of 
+# LDA has cross-validated misclassification error of
 # 38\% (Ripley, 1996, page 98)
 
-
 # Pruned trees about 32\% (Ripley, 1996, page 230)
+
+# use stratified sampling here, i.e. preserve the class proportions
+errorest(Type ~ ., data=Glass, model=lda, 
+         predict=mypredict.lda, est.para=control.errorest(strat=TRUE))
+
+
+# force predict to return class labels
+mypredict.rpart <- function(object, newdata)
+  predict(object, newdata = newdata,type="class")
 
 pruneit <- function(formula, ...)
   prune(rpart(formula, ...), cp =0.01)
 
-errorest(Type ~ ., data=Glass, model=pruneit, estimator= "cv",
-predict=mypredict.rpart)
+errorest(Type ~ ., data=Glass, model=pruneit,
+         predict=mypredict.rpart, est.para=control.errorest(strat=TRUE))
 
-data(smoking)
+# compute sensitivity and specifity for stabilised LDA
+
+data(GlaucomaM)
+
+error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
+  predict=mypredict.lda, est.para=control.errorest(predictions=TRUE))
+
+# sensitivity 
+
+mean(error$predictions[GlaucomaM$Class == "glaucoma"] != "glaucoma")
+
+# specifity
+
+mean(error$predictions[GlaucomaM$Class == "normal"] != "normal")
+
+# Indirect Classification: Smoking data
+
+data(Smoking)
 # Set three groups of variables:
 # 1) explanatory variables are: TarY, NicY, COY, Sex, Age
 # 2) intermediate variables are: TVPS, BPNL, COHB
@@ -170,8 +187,8 @@ resp <- function(data){
   res
 }
 
-response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
-smoking <- cbind(smoking, response)
+response <- resp(Smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(Smoking, response)
 
 formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 
@@ -186,7 +203,26 @@ mypredict.inclass <- function(object, newdata){
 
 errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
          estimator = "cv", iclass = "response", pFUN = lm,
-         est.para=list(k=nrow(smoking)))
+         est.para=control.errorest(k=nrow(smoking)))
+
+
+# Regression
+
+data(BostonHousing)
+
+# 10-fold cv of lm for Boston Housing data
+errorest(medv ~ ., data=BostonHousing, model=lm)
+
+# Survival data
+
+data(GBSG2)
+
+# prediction is fitted Kaplan-Meier
+predict.survfit <- function(object, newdata) object
+
+# 5-fold cv of Kaplan-Meier for GBSG2 study
+errorest(Surv(time, cens) ~ 1, data=GBSG2, model=survfit,
+         predict=predict.survfit, est.para=control.errorest(k=5))
 
 }
 

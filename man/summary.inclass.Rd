@@ -12,10 +12,16 @@ Summary of inclass is returned.
   \item{object}{an object of class \code{inclass}.}
   \item{\dots}{additional arguments.}
 }
-\value{
-What are the intermediates variables, which modelling technique is used, how
-looks the exact prediction model.
+\details{
+A representation of an indirect classification model 
+(the intermediates variables, which modelling technique is used and the
+prediction model) is printed.
 }
+\value{
+none
+}
+
+
 \author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 

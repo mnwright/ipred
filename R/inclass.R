@@ -1,4 +1,4 @@
-# $Id: inclass.R,v 1.23 2002/04/08 09:50:01 peters Exp $
+# $Id: inclass.R,v 1.24 2002/09/24 15:22:20 peters Exp $
 
 ####################################################
 # options for predict.inclass are only: rpart, lm, bagging
@@ -10,6 +10,8 @@ inclass.default <- function(object, ...)
 {
   stop(paste("Do not know how to handle objects of class", class(object)))
 }
+
+
 
 flist <- function(formula, ...){
  if(missing(formula)) stop("formula missing")
@@ -65,15 +67,21 @@ inclass.formula <- function(formula, pFUN, data, subset, na.action, ...)
 }
 
 
-inclass.flist <- function(object, pFUN,  data, subset, na.action,...) 
+inclass.flist <- function(object, pFUN, data, subset, na.action, ...) 
 {
   formula.list <- object
   q <- length(formula.list)
+  responses <- c()
+  for(i in 1:q) {
+    responses <- c(responses, paste(formula.list[[i]][[2]]))
+  }
+
   result <- list()
   namen <- c()
 
   for(i in 1:q) {
     formula <- formula.list[[i]]
+    data.without <- data[,!(names(data) %in% responses[-i])]
     if(missing(formula)
       || (length(formula) != 3)
       || (length(attr(terms(formula[-2]), "term.labels")) < 1)
@@ -82,18 +90,14 @@ inclass.flist <- function(object, pFUN,  data, subset, na.action,...)
     m <- match.call(expand.dots= FALSE)
     if(missing(subset)) {
       if(missing(na.action))
-        #  res <- pFUN(formula = formula, data = data, ...)
-        res <- pFUN(formula, data, ...)
+        res <- pFUN(formula = formula, data = data.without, ...)
       else 
-        #  res <- pFUN(formula = formula, data = data, na.action = na.action, ...)
-        res <- pFUN(formula, data, na.action = na.action, ...)
+        res <- pFUN(formula = formula, data = data.without, na.action = na.action, ...)
     } else {
       if(missing(na.action))
-        # res <- pFUN(formula = formula, data = data, subset = subset, ...)
-        res <- pFUN(formula, data, subset = subset, ...)
+        res <- pFUN(formula = formula, data = data.without, subset = subset, ...)
       else
-        # res <- pFUN(formula = formula, data = data, subset = subset, na.action = na.action, ...)
-        res <- pFUN(formula, data, subset = subset, na.action = na.action, ...)
+        res <- pFUN(formula = formula, data = data.without, subset = subset, na.action = na.action, ...)
     }
     namen <- c(namen, as.character(formula[[2]]))
     result <- c(result, list(res))

@@ -1,4 +1,4 @@
-# $Id: predict.bagging.R,v 1.7 2002/05/16 15:22:11 hothorn Exp $
+# $Id: predict.bagging.R,v 1.11 2002/09/24 12:32:04 hothorn Exp $
 
 uwhich.max <- function(x) {
   wm <- which.max(x)
@@ -7,49 +7,259 @@ uwhich.max <- function(x) {
   wm
 }
 
-predict.bagging <- function(object, newdata=NULL, ...) 
-{
-    if (!inherits(object, "bagging")) {
-        if(inherits(object,"rpart")) {
-            if (object$method == "class")
-                RET <- predict.rpart(object, newdata, type="class") 
-            else
-                RET <- predict.rpart(object, newdata)
-        }
+predict.classbagg <- function(object, newdata=NULL, type=c("class", "prob"),
+                              aggregation=c("majority", "average", "weighted"), ...) {
+  type <- match.arg(type)
+  agg <- match.arg(aggregation)
+  if (missing(newdata)) {
+    if (length(object$mtrees) < 10) 
+      stop("cannot compute out-of-bag predictions for small number of trees")
+    OOB <- TRUE
+    if (!is.null(object$X))
+      newdata <- object$X
+    else
+      stop("cannot compute out-of-bag predictions without object$X!")
+  } else {
+    OOB <- FALSE
+  }
+  if (!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
+  N <- nrow(newdata)
+  if (!object$comb) {
+    tree <- object$mtrees[[1]]$btree
+    Terms <- delete.response(tree$terms)
+    act <- (tree$call)$na.action
+    if (is.null(act)) act<- na.rpart
+    newdata <- model.frame(Terms, newdata, na.action = act,
+                           xlev=attr(tree, "xlevels"))
+    newdata <- rpart.matrix(newdata)
+  }
+  classes <- levels(object$y)
+  switch(agg, "majority" = {
+    vote <- matrix(0, nrow=N, ncol=length(classes))
+    for (i in 1:length(object$mtrees)) {
+      if (OOB) {
+        bindx <- object$mtrees[[i]]$bindx
+        if (!is.null(object$mtrees[[i]]$bfct)) 
+          stop("cannot compute out-of-bag estimate for combined models!")
+        pred <- predict(object$mtrees[[i]], newdata, type="class")
+        tindx <- cbind((1:N), pred)[-bindx,]
+      } else {
+        tindx <- cbind(1:N, predict(object$mtrees[[i]], newdata,
+                                    type="class"))
+      }
+      vote[tindx] <- vote[tindx] + 1
+    }
+    if (type=="class") {
+      RET <- factor(classes[apply(vote, 1, uwhich.max)])
     } else {
-        LDA <- FALSE
-        if (is.null(newdata)) stop("newdata missing")
-        if (!is.null(object$mt)) mt <- object$mt
-        if (!is.null(object$ldasc)) { LDA <- TRUE; ldasc <- object$ldasc; }
-        if (mt[[1]]$method == "class") {
-            classlevels <- attr(mt[[1]], "ylevels")
-            votenew <- matrix(0, nrow=nrow(newdata),
-                                 ncol=length(classlevels))
-            for (i in 1:length(mt)) {
-                if (LDA) { 
-		    ldap <- rpart.matrix(newdata)
-                    class(ldap) <- NULL
-                    test <- cbind(newdata, predict(ldasc[[i]],
-                                           newdata=as.data.frame(ldap))$x)
-                } else {
-                    test <- newdata
-                }
-                pr <- predict.rpart(mt[[i]], test, type="class")
-                votenew[cbind(1:nrow(votenew), as.integer(pr))] <-
-                    votenew[cbind(1:nrow(votenew), as.integer(pr))] + 1
-            }
-            RET <- apply(votenew, 1, uwhich.max)
-            RET <- as.factor(RET)
-            levels(RET) <- classlevels
-        } else {
-            if (!is.null(object$mt)) mt <- object$mt
-            if (!is.null(object$ldasc)) 
-              stop("cannot predict with lda for regression trees!")
-            a <- predict.rpart(mt[[1]], newdata)
-            for (i in 2:length(mt))
-                a <- a + predict.rpart(mt[[i]], newdata)
-            RET <- a/length(mt)
-        }
-    }  
-    RET
+      RET <- vote/apply(vote, 1, sum)
+      colnames(RET) <- classes
+    }
+  }, 
+  "average" = {
+    cprob <- matrix(0, nrow=N, ncol=length(classes))
+    if (OOB) ncount <- rep(0,N) else ncount <- length(object$mtrees)
+    for (i in 1:length(object$mtrees)) {
+      if (OOB) {
+        bindx <- object$mtrees[[i]]$bindx
+        pred <- predict(object$mtrees[[i]], newdata, type="prob")[-bindx,]
+        tindx <- (1:N)[-bindx]
+        ncount[tindx] <- ncount[tindx] + 1
+      } else {
+        pred <- predict(object$mtrees[[i]], newdata, type="prob")
+        tindx <- 1:N
+      }
+      cprob[tindx,] <- cprob[tindx,] + pred
+    }
+    switch(type, "class" = {
+      RET <- as.factor(apply(cprob, 1, uwhich.max))
+      levels(RET) <- classes
+    }, 
+    "prob" = {
+      ncount[ncount < 1] <- NA
+      RET <- cprob / ncount
+      colnames(RET) <- classes
+    })
+  },
+  "weighted" = {
+    agglsample <- matrix(0, ncol=length(classes), nrow=N)
+    for (i in 1:length(object$mtrees)) {
+      bdata <- object$y[object$mtrees[[i]]$bindx]
+      newpart <- getpartition(object$mtrees[[i]], newdata)
+      oldpart <- object$mtrees[[i]]$btree$where
+      if (OOB)
+        tindx <- (1:N)[-object$mtrees[[i]]$bindx]
+      else
+        tindx <- 1:N
+      for (j in tindx) {
+        aggobs <- table(bdata[oldpart == newpart[j]])
+        agglsample[j,] <- agglsample[j,] + aggobs
+      }
+    }
+    switch(type, "class" = {
+      RET <- c()
+      for (j in 1:N)
+        RET <- as.factor(c(RET, uwhich.max(agglsample[j,])))
+      levels(RET) <- classes
+    },
+    "prob" = {
+      RET <- agglsample / apply(agglsample, 1, sum)
+      colnames(RET) <- classes
+    })
+  })
+  RET
 }
+
+predict.sclass <- function(object, newdata=NULL, type=c("class", "prob"),
+...) {
+  if (!is.null(object$bfct))
+    newdata <- cbind(newdata, object$bfct(newdata))
+  pred <- predict.irpart(object$btree, newdata, type=type)
+  RET <- pred
+  if (type == "class") RET <- as.integer(pred)
+  if (type == "prob" && is.vector(pred)) RET <- cbind(pred, 1 - pred)
+  RET
+}
+
+
+predict.regbagg <- function(object, newdata=NULL, aggregation=c("average",
+"weighted"), ...) {
+  agg <- match.arg(aggregation)
+  if (missing(newdata)) {
+    if (length(object$mtrees) < 10) 
+      stop("cannot compute out-of-bag predictions for small number of trees")
+    OOB <- TRUE
+    if (!is.null(object$X))
+      newdata <- object$X
+    else 
+      stop("cannot compute out-of-bag predictions without object$X!")
+  } else {
+    OOB <- FALSE
+  }
+  if (!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
+  N <- nrow(newdata)
+  if (!object$comb) {
+    tree <- object$mtrees[[1]]$btree
+    Terms <- delete.response(tree$terms)
+    act <- (tree$call)$na.action
+    if (is.null(act)) act<- na.rpart
+    newdata <- model.frame(Terms, newdata, na.action = act,
+                           xlev=attr(tree, "xlevels"))
+    newdata <- rpart.matrix(newdata)
+  }
+  switch(agg, "average" = {
+    cprob <- rep(0, N)
+    if (OOB) ncount <- rep(0,N) else ncount <- length(object$mtrees)
+    for (i in 1:length(object$mtrees)) {
+      if (OOB) {
+        bindx <- object$mtrees[[i]]$bindx
+        if (!is.null(object$mtrees[[i]]$bfct))
+          stop("cannot compute out-of-bag estimate for combined models!")
+        pred <- predict(object$mtrees[[i]], newdata)[-bindx]
+        tindx <- (1:N)[-bindx]
+        ncount[tindx] <- ncount[tindx] + 1
+      } else {
+        pred <- predict(object$mtrees[[i]], newdata)
+        tindx <- 1:N
+      }
+      cprob[tindx] <- cprob[tindx] + pred
+    }
+    ncount[ncount < 1] <- NA
+    RET <- cprob / ncount
+  },
+  "weighted" = {
+    agglsample <- rep(0, N)
+    ncount <- rep(0, N)
+    for (i in 1:length(object$mtrees)) {
+      bdata <- object$y[object$mtrees[[i]]$bindx]
+      newpart <- getpartition(object$mtrees[[i]], newdata)
+      oldpart <- object$mtrees[[i]]$btree$where
+      if (OOB)
+        tindx <- (1:N)[-object$mtrees[[i]]$bindx]
+      else
+        tindx <- 1:N
+      for (j in tindx) {
+        aggobs <- bdata[oldpart == newpart[j]]
+        agglsample[j] <-  agglsample[j] + sum(aggobs)
+        ncount[j] <- ncount[j] + length(aggobs)
+      }
+    }
+    ncount[ncount < 1] <- NA
+    RET <- agglsample / ncount
+  })
+  RET
+}
+
+
+predict.sreg <- function(object, newdata=NULL, ...) {
+  if (!is.null(object$bfct))
+    newdata <- cbind(newdata, object$bfct(newdata))
+  predict.irpart(object$btree, newdata)
+}
+
+
+predict.survbagg <- function(object, newdata=NULL, ...) {
+  if (missing(newdata)) {
+  if (length(object$mtrees) < 10) 
+      stop("cannot compute out-of-bag predictions for small number of trees")
+    OOB <- TRUE
+    if (!is.null(object$X))
+      newdata <- object$X
+    else 
+      stop("cannot compute out-of-bag predictions without object$X!")
+  } else {
+    OOB <- FALSE
+  }
+  if (!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
+  N <- nrow(newdata)
+  if (!object$comb) {
+    tree <- object$mtrees[[1]]$btree
+    Terms <- delete.response(tree$terms)
+    act <- (tree$call)$na.action
+    if (is.null(act)) act<- na.rpart
+    newdata <- model.frame(Terms, newdata, na.action = act,
+                           xlev=attr(tree, "xlevels"))
+    newdata <- rpart.matrix(newdata)
+  }
+  agglsample <- list()
+  aggcens <- list()
+  for (j in 1:N) { 
+    agglsample <- c(agglsample, list(c()))
+    aggcens <- c(aggcens, list(c()))
+  }
+  for (i in 1:length(object$mtrees)) {
+    bdata <- object$y[object$mtrees[[i]]$bindx]
+    if (!is.null(object$mtrees[[i]]$bfct))
+          stop("cannot compute out-of-bag estimate for combined models!")
+    newpart <- getpartition(object$mtrees[[i]], newdata)
+    oldpart <- object$mtrees[[i]]$btree$where
+    if (OOB)
+      tindx <- (1:N)[-object$mtrees[[i]]$bindx]
+    else
+      tindx <- 1:N
+    for (j in tindx) {
+        aggobs <- bdata[oldpart == newpart[j],1]
+        agglsample[[j]] <- c(agglsample[[j]], aggobs)
+        aggobs <- bdata[oldpart == newpart[j],2]
+        aggcens[[j]] <- c(aggcens[[j]], aggobs)
+    }
+  }
+  RET <- list()
+  for (j in 1:N)
+    RET <- c(RET, list(survfit(Surv(agglsample[[j]], aggcens[[j]]))))
+  RET
+}
+
+getpartition <- function(object, newdata=NULL) {
+  if (!is.null(object$bfct)) {
+    newdata <- cbind(newdata, object$bfct(newdata))
+    Terms <- delete.response(object$btree$terms)
+    act <- (object$btree$call)$na.action
+    if (is.null(act)) act<- na.rpart
+    newdata <- model.frame(Terms, newdata, na.action = act,
+                             xlev=attr(object$btree, "xlevels"))
+    newdata <- rpart.matrix(newdata)
+  }
+  pred.rpart(object$btree, newdata)
+}
+

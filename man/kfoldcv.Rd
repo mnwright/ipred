@@ -2,18 +2,19 @@
 \alias{kfoldcv}
 \title{ Subsamples for k-fold Cross-Validation }
 \description{
-  Computes feasible sample sizes for the k groups in k-fold CV if N/k is not
+  Computes feasible sample sizes for the k groups in k-fold cv if N/k is not
 an integer.
 }
 \usage{
-kfoldcv(k, N)
+kfoldcv(k, N, nlevel=NULL)
 }
 \arguments{
   \item{k}{ number of groups. }
   \item{N}{ total sample size. }
+  \item{nlevel}{ a vector of sample sizes for stratified sampling.}
 }
 \details{
-  If N/k is not an integer, k-fold CV is not unique. Determine meaningful
+  If N/k is not an integer, k-fold cv is not unique. Determine meaningful
   sample sizes.
 }
 \value{

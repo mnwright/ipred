@@ -1,6 +1,6 @@
 
 R : Copyright 2002, The R Development Core Team
-Version 1.5.0  (2002-04-29)
+Version 1.6.0 beta (2002-09-25)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -17,6 +17,9 @@ Type `q()' to quit R.
 Loading required package: rpart 
 Loading required package: MASS 
 Loading required package: mlbench 
+Loading required package: survival 
+Loading required package: class 
+Loading required package: nnet 
 > data(BreastCancer)
 > set.seed(29081975)
 > 
@@ -27,12 +30,15 @@ Loading required package: mlbench
 +                 + Mitoses, data=BreastCancer, coob=TRUE)
 > print(mod)
 
-Bagging classification trees 
-with 25 bootstrap replications 
+Bagging classification trees with 25 bootstrap replications 
 
-Data:  Class by Cl.thickness + Cell.size + Cell.shape + Marg.adhesion + Epith.c.size + Bare.nuclei + Bl.cromatin + Normal.nucleoli + Mitoses 
+Call: bagging.data.frame(formula = Class ~ Cl.thickness + Cell.size + 
+    Cell.shape + Marg.adhesion + Epith.c.size + Bare.nuclei + 
+    Bl.cromatin + Normal.nucleoli + Mitoses, data = BreastCancer, 
+    coob = TRUE)
 
-Out-of-bag misclassification error: 0.0425 
+Out-of-bag estimate of misclassification error:  0.0439 
+
 > 
 > print(predict(mod, newdata=BreastCancer))
   [1] benign    benign    benign    benign    benign    malignant benign   
@@ -135,7 +141,7 @@ Out-of-bag misclassification error: 0.0425
 [680] benign    malignant malignant benign    benign    benign    benign   
 [687] benign    benign    benign    benign    benign    malignant benign   
 [694] benign    benign    benign    malignant malignant malignant
-Levels:  benign malignant 
+Levels: benign malignant
 > 
 > # bagging failed if only one predictor was specified
 > # by Christoph M. Friedrich <chris@uni-wh.de>, April 29th, 2002

@@ -1,15 +1,17 @@
-\name{summary.bagging}
-\alias{summary.bagging}
+\name{summary.classbagg}
+\alias{summary.classbagg}
+\alias{summary.regbagg}
+\alias{summary.survbagg}
 \alias{print.summary.bagging}
 \title{Summarising Bagging}
 \description{
-  \code{summary} method for class \code{bagging}.
+  \code{summary} method for objects returned by \code{\link{bagging}}.
 }
 \usage{
-\method{summary}{bagging}(object, \dots)
+\method{summary}{classbagg}(object, \dots)
 }
 \arguments{
-  \item{object}{Object of class \code{"bagging"}.}
+  \item{object}{object returned by \code{\link{bagging}}.}
   \item{\dots}{further arguments to be passed to or from methods.}  
 }
 \details{
@@ -17,7 +19,6 @@
 }
 \value{
   none
-}
 }
 \author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \keyword{tree}
