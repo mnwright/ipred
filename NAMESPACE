@@ -3,22 +3,45 @@ useDynLib(ipred)
 ### exported functions
 export(
 getsurv,
-bagging, bagging.default, bagging.data.frame, 
-ipredbagg.Surv, ipredbagg.factor, ipredbagg.numeric,
+bagging, 
+ipredbagg,
 control.errorest, 
-errorest, errorest.default, errorest.data.frame,
-bootest, bootest.default, bootest.integer,
-bootest.factor, bootest.numeric, bootest.Surv,
-cv, cv.default, cv.integer, cv.factor, cv.numeric, cv.Surv,
-inbagg, inbagg.default, inbagg.data.frame, 
-inclass, inclass.default, inclass.data.frame,
-ipredknn, predict.ipredknn,
+errorest, 
+bootest, 
+cv, 
+inbagg, 
+inclass, 
+ipredknn, 
+predict.ipredknn,
 kfoldcv, mypredict.lm, rsurv, sbrier, varset,
-slda, slda.default, slda.formula, slda.factor
-)
+slda)
 
 ### register S3 methods
 #S3method(print, bagging) 
+S3method(slda, default)
+S3method(slda, formula)
+S3method(slda, factor)
+S3method(bagging, default)
+S3method(bagging, data.frame)
+S3method(errorest, default)
+S3method(errorest, data.frame)
+S3method(bootest, default)
+S3method(bootest, integer)
+S3method(bootest, factor)
+S3method(bootest, numeric)
+S3method(bootest, Surv)
+S3method(inbagg, default)
+S3method(inbagg, data.frame)
+S3method(inclass, default)
+S3method(inclass, data.frame)
+S3method(cv, default)
+S3method(cv, integer)
+S3method(cv, factor)
+S3method(cv, numeric)
+S3method(cv, Surv)
+S3method(ipredbagg, Surv)
+S3method(ipredbagg, factor)
+S3method(ipredbagg, numeric)
 S3method(prune, classbagg)  
 S3method(prune, survbagg)   
 S3method(prune, classbagg)  
@@ -44,7 +67,8 @@ S3method(predict, inclass)
 S3method(predict, classbagg)
 S3method(predict, regbagg)
 S3method(predict, survbagg)  
-S3method(predict, slda) 
+S3method(predict, slda)
+#S3method(predict, ipredknn) 
 #S3method(predict, sclass)
 #S3method(predict, sreg)
 
