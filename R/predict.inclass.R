@@ -1,4 +1,4 @@
-# $Id: predict.inclass.R,v 1.14 2002/03/26 16:47:13 hothorn Exp $
+# $Id: predict.inclass.R,v 1.15 2002/04/05 14:36:09 peters Exp $
 
 # Additional option type ="class", if intermediate is nominal
 
@@ -14,7 +14,7 @@ predict.inclass <- function(object, cFUN, intbag = NULL, newdata, ...)
     stop("intbag is only specified for intermediates of class bagging")
   }			
 
-  if(intbag == FALSE && all(classes == "bagging")) {			
+  if(!is.null(intbag) && intbag == FALSE && all(classes == "bagging")) {			
     # first classification, than bagging
     diagbag <- list()
     # Calculation of a matrix with estmations for each bootstrap sample and 

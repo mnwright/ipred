@@ -1,0 +1,299 @@
+attach(NULL, name = "CheckExEnv")
+assign(".CheckExEnv", as.environment(2), pos = length(search())) # base
+## This plot.new() patch has no effect yet for persp();
+## layout() & filled.contour() are now ok
+assign("plot.new",
+       function() {
+	   .Internal(plot.new())
+	   pp <- par(c("mfg","mfcol","oma","mar"))
+	   if(all(pp$mfg[1:2] == c(1, pp$mfcol[2]))) {
+               outer <- (oma4 <- pp$oma[4]) > 0; mar4 <- pp$mar[4]
+               mtext(paste("help(", ..nameEx, ")"), side = 4,
+                     line = if(outer)max(1, oma4 - 1) else min(1, mar4 - 1),
+                     outer = outer, adj = 1, cex = .8, col = "orchid")
+	   }
+       },
+       env = .CheckExEnv)
+assign("cleanEx",
+       function(env = .GlobalEnv) {
+	   rm(list = ls(envir = env, all.names = TRUE), envir = env)
+           RNGkind("Wichmann-Hill", "default")
+	   assign(".Random.seed", c(0, rep(7654, 3)), pos = 1)
+       },
+       env = .CheckExEnv)
+assign("..nameEx", "__{must remake R-ex/*.R}__", env = .CheckExEnv) #-- for now
+assign("ptime", proc.time(), env = .CheckExEnv)
+postscript("ipred-Examples.ps")
+assign("par.postscript", par(no.readonly = TRUE), env = .CheckExEnv)
+options(contrasts = c(unordered = "contr.treatment", ordered = "contr.poly"))
+library('ipred')
+cleanEx(); ..nameEx <- "bagging"
+###--- >>> `bagging' <<<----- Bagging Classification and Regression Trees
+
+	## alias	 help(bagging)
+	## alias	 help(bagging.formula)
+	## alias	 help(bagging.default)
+
+##___ Examples ___:
+
+
+## Keywords: 'tree'.
+
+
+cleanEx(); ..nameEx <- "errorest"
+###--- >>> `errorest' <<<----- Estimators for the Prediction Error
+
+	## alias	 help(errorest)
+
+##___ Examples ___:
+
+
+X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+learn <- cbind(y, X)
+
+mypredict.lda <- function(object, newdata)
+  predict(object, newdata = newdata)$class
+
+errorest(y ~ ., data= learn, model=lda, 
+         estimator = "cv", predict= mypredict.lda)
+
+# n-fold cv = leave-one-out.
+
+errorest(y ~ ., data= learn, model=lda, 
+         estimator = "cv", est.para=list(k = nrow(learn)), 
+         predict= mypredict.lda)
+
+errorest(y ~ ., data= learn, model=lda, 
+         estimator = "boot", predict= mypredict.lda)
+
+errorest(y ~ ., data= learn, model=lda, 
+         estimator = "632plus", predict= mypredict.lda)
+
+attach(learn)
+errorest(y ~ V1 + V2 + V3, model=lda, estimator = "cv",
+         predict= mypredict.lda)
+detach(learn)
+
+mypredict.rpart <- function(object, newdata)
+  predict(object, newdata = newdata,type="class")
+
+errorest(y ~ ., data= learn, model=rpart, estimator = "cv",
+         predict=mypredict.rpart)
+
+errorest(y ~ ., data= learn, model=rpart, estimator = "boot",
+predict=mypredict.rpart)
+
+errorest(y ~ ., data= learn, model=rpart, estimator = "632plus",
+predict=mypredict.rpart)
+
+errorest(y ~ ., data= learn, model=bagging, estimator = "cv",
+nbagg=10)
+
+data(Glass)
+
+# LDA has cross-validated misclassification error of 
+# 38% (Ripley, 1996, page 98)
+
+errorest(Type ~ ., data=Glass, model=lda, estimator= "cv",
+predict=mypredict.lda)
+
+# Pruned trees about 32% (Ripley, 1996, page 230)
+
+pruneit <- function(formula, ...)
+  prune(rpart(formula, ...), cp =0.01)
+
+errorest(Type ~ ., data=Glass, model=pruneit, estimator= "cv",
+predict=mypredict.rpart)
+
+data(smoking)
+# Set three groups of variables:
+# 1) explanatory variables are: TarY, NicY, COY, Sex, Age
+# 2) intermediate variables are: TVPS, BPNL, COHB
+# 3) response (resp) is defined by:
+
+resp <- function(data){
+  res <- t(t(data) > c(4438, 232.5, 58))
+  res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
+  res
+}
+
+response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(smoking, response)
+
+formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+
+mypredict.inclass <- function(object, newdata){
+  res <- predict.inclass(object = object, cFUN = resp, newdata = newdata)
+  return(res)
+}
+
+# Estimation per leave-one-out estimate for the misclassification is 
+# 36.36% (Hand et al., 2001), using indirect classification with 
+# linear models
+
+errorest(formula, data = smoking, model = inclass, predict = mypredict.inclass,
+         estimator = "cv", iclass = "response", pFUN = lm,
+         est.para=list(k=nrow(smoking)))
+
+
+## Keywords: 'misc'.
+
+
+cleanEx(); ..nameEx <- "inclass"
+###--- >>> `inclass' <<<----- Indirect Classification
+
+	## alias	 help(inclass)
+	## alias	 help(inclass.formula)
+	## alias	 help(inclass.default)
+	## alias	 help(inclass.flist)
+
+##___ Examples ___:
+
+
+data(smoking)
+# Set three groups of variables:
+# 1) explanatory variables are: TarY, NicY, COY, Sex, Age
+# 2) intermediate variables are: TVPS, BPNL, COHB
+# 3) response (resp) is defined by:
+
+resp <- function(data){
+  res <- t(t(data) > c(4438, 232.5, 58))
+  res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
+  res
+}
+
+response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(smoking, response)
+
+formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+
+inclass(formula, pFUN = lm, data = smoking)
+
+
+## Keywords: 'misc'.
+
+
+cleanEx(); ..nameEx <- "kfoldcv"
+###--- >>> `kfoldcv' <<<----- Subsamples for k-fold Cross-Validation
+
+	## alias	 help(kfoldcv)
+
+##___ Examples ___:
+
+
+# 10-fold CV with N = 91
+
+kfoldcv(10, 91) 
+
+
+k <- sample(5:15, 1)
+k
+N <- sample(50:150, 1)
+N
+stopifnot(sum(kfoldcv(k, N)) == N)
+
+
+
+## Keywords: 'misc'.
+
+
+cleanEx(); ..nameEx <- "predict.bagging"
+###--- >>> `predict.bagging' <<<----- Predictions from a Bagging Object
+
+	## alias	 help(predict.bagging)
+
+##___ Examples ___:
+
+
+X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+
+mt <- bagging(y, X)
+
+X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+
+cls <- predict(mt, X)
+
+cat("error: ", sum(y != cls)/length(cls), "\n")
+
+
+## Keywords: 'tree'.
+
+
+cleanEx(); ..nameEx <- "predict.inclass"
+###--- >>> `predict.inclass' <<<----- Predictions from an Inclass Object
+
+	## alias	 help(predict.inclass)
+
+##___ Examples ___:
+
+# Simulation model, classification rule following Hand et al. (2001)
+
+theta90 <- varset(N = 1000, sigma = 0.1, theta = 90, threshold = 0)
+
+dataset <- as.data.frame(cbind(theta90$explanatory, theta90$intermediate))
+names(dataset) <- c(colnames(theta90$explanatory), colnames(theta90$intermediate))
+
+classi <- function(Y, threshold = 0) {
+  z <- (Y > threshold)
+  resp <- as.factor(ifelse((z[,1] + z[,2]) > 1, 1, 0))
+  return(resp)
+}
+
+formula <- flist(y1+y2~x1+x2)
+
+fit <- inclass(formula, pFUN = lm, data = dataset)
+
+predict.inclass(object = fit, cFUN = classi, newdata = dataset)
+
+data(smoking)
+
+# explanatory variables are: TarY, NicY, COY, Sex, Age
+# intermediate variables are: TVPS, BPNL, COHB
+# reponse (resp) ist defined by:
+
+resp <- function(data){
+  res <- t(t(data) > c(4438, 232.5, 58))
+  res <- as.factor(ifelse(apply(res, 1, sum) > 2, 1, 0))
+  res
+}
+
+response <- resp(smoking[ ,c("TVPS", "BPNL", "COHB")])
+smoking <- cbind(smoking, response)
+
+formula <- TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
+
+fit <- inclass(formula, pFUN = lm, data = smoking)
+
+predict.inclass(object = fit, cFUN = resp, newdata = smoking)
+
+
+## Keywords: 'misc'.
+
+
+cleanEx(); ..nameEx <- "prune.bagging"
+
+
+cleanEx(); ..nameEx <- "varset"
+###--- >>> `varset' <<<----- Simulation Model
+
+	## alias	 help(varset)
+
+##___ Examples ___:
+
+
+theta90 <- varset(N = 1000, sigma = 0.1, theta = 90, threshold = 0)
+theta0 <- varset(N = 1000, sigma = 0.1, theta = 0, threshold = 0)
+par(mfrow = c(1, 2))
+plot(theta0$intermediate)
+plot(theta90$intermediate)
+
+
+## Keywords: 'misc'.
+
+
+par(get("par.postscript", env = .CheckExEnv))
+cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
+dev.off(); quit('no')

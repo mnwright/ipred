@@ -1,4 +1,4 @@
-# $Id: errorest.R,v 1.7 2002/03/26 16:29:15 hothorn Exp $
+# $Id: errorest.R,v 1.8 2002/04/08 15:41:40 peters Exp $
 
 errorest <- function(formula, data, subset, na.action,
                      model=NULL, predict=NULL, iclass=NULL,
@@ -201,9 +201,7 @@ print.errorest <- function(x, digits=4, ...)
       method <- paste(method, "misclassification error\n")
     else
       method <- paste(method, "mean squared error\n")
-    if (x$estimator == "cv")
-      method <- paste(method, "with", x$para$k, "replications")
-    else 
+    if (x$estimator == "boot" || x$estimator == "632plus")
       method <- paste(method, "with", x$para$nboot, "bootstrap replications")
   
     cat(method, "\n")

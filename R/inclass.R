@@ -1,4 +1,4 @@
-# $Id: inclass.R,v 1.21 2002/03/26 16:47:13 hothorn Exp $
+# $Id: inclass.R,v 1.23 2002/04/08 09:50:01 peters Exp $
 
 ####################################################
 # options for predict.inclass are only: rpart, lm, bagging
@@ -113,7 +113,7 @@ print.inclass <- function(x, ...)
  
   text.intermediates <- paste("Indirect classification, with", q, "intermediate variables:")
   predictive  <- paste("Predictive model per intermediate is", classes)
-  predictive <- ifelse(classes == "bagging", paste(predictive, "with", length(x[[1]]), "bootstrap replications"), predictive)
+  predictive <- ifelse(classes == "bagging", paste(predictive, "with", x[[1]]$nbagg, "bootstrap replications"), predictive)
  
   cat("\n", text.intermediates, "\n", intermediates, "\n", "\n", predictive, "\n") 
 }
@@ -134,7 +134,7 @@ print.summary.inclass <- function(x, ...)
  
   text.intermediates <- paste("Indirect classification, with", q, "intermediate variables:")
   predictive  <- paste("Predictive model per intermediate is", classes)
-  predictive <- ifelse(classes == "bagging", paste(predictive, "with", length(x[[1]]), "bootstrap replications"), predictive)
+  predictive <- ifelse(classes == "bagging", paste(predictive, "with", x[[1]]$nbagg, "bootstrap replications"), predictive)
 
   cat("\n", text.intermediates, "\n", intermediates, "\n", "\n", predictive, "\n", "\n", "Models:", "\n")
   for(i in 1:length(x)) { 
