@@ -94,12 +94,9 @@ Diagnosis of glaucoma by indirect classifiers.
 
 
 \examples{
-
-library(mvtnorm)
 y <- as.factor(sample(1:2, 100, replace = TRUE))
-W <- rmvnorm(200, mean = rep(0, 3))
-
-X <- rmvnorm(200, mean = rep(2, 3))
+W <- mvrnorm(n = 200, mu = rep(0, 3), Sigma = diag(3))
+X <- mvrnorm(n = 200, mu = rep(2, 3), Sigma = diag(3))
 colnames(W) <- c("w1", "w2", "w3") 
 colnames(X) <- c("x1", "x2", "x3") 
 DATA <- data.frame(y, W, X)

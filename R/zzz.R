@@ -13,7 +13,5 @@
         warning("Could not load package class")
     if(!require(nnet))
         warning("Could not load package nnet")
-    if(!require(mvtnorm))
-        warning("Could not load package mvtnorm")
     library.dynam("ipred", pkg, lib)
 }

@@ -39,9 +39,8 @@ rates.
  survival analysis. \emph{Statistics in Medicine}, \bold{21}, 313--326.
 
  Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
- Radespiel-Troeger (2003), Bagging Survival Trees. \emph{Statistics in
- Medicine} (accepted). Preprint available from
- \url{http://www.mathpreprints.com/math/Preprint/blausen/20020518/2}.
+ Radespiel-Troeger (2004), Bagging Survival Trees.
+ \emph{Statistics in Medicine}, \bold{23}(1), 77--91.
  
 
 }

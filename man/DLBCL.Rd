@@ -40,10 +40,8 @@ B-cell lymphoma identified by gene
 expression profiling. \emph{Nature}, \bold{403}, 504--509.
 
 Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
-Radespiel-Troeger (2002), Bagging Survival Trees. 
-\emph{Statistics in Medicine} (accepted).
-Preprint available from
-\url{http://www.mathpreprints.com/math/Preprint/blausen/20020518/2}.
+Radespiel-Troeger (2004), Bagging Survival Trees. 
+\emph{Statistics in Medicine}, \bold{23}, 77--91.
 
 
 }
