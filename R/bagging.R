@@ -1,4 +1,4 @@
-# $Id: bagging.R,v 1.14 2002/06/17 08:53:00 hothorn Exp $
+# $Id: bagging.R,v 1.15 2002/06/27 08:53:05 hothorn Exp $
 
 bagging <- function(y, ...) UseMethod("bagging")
 
@@ -11,7 +11,8 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
     classlevels <- levels(y)
     votenew <- matrix(0, nrow=length(y), ncol=length(classlevels))
   }
-  oobsum <- 0
+  oobsum <- rep(0, length(y))
+  oobcount <- oobsum
   if (method=="double" & !class)
       stop("Cannot compute Double Bagging for regression problems")
   if (!is.data.frame(X)) stop("X is not a data.frame")
@@ -42,7 +43,8 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
           votenew[cbind((1:length(y))[-indx], as.integer(pr[-indx]))] + 1
       } else {
         pr <- predict.bagging(mt[[i]], newdata=X)
-        oobsum <- oobsum + pr 
+        oobsum[-indx] <- oobsum[-indx] + pr[-indx]
+        oobcount[-indx] <- oobcount[-indx] + 1
       }
       if (any(is.na(pr))) warning("NA in predict")
     }
@@ -59,8 +61,8 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
 	levels(pred) <- classlevels
         err <- mean(y != pred, na.rm=TRUE)
     } else {
-        pred <- oobsum/nbagg
-        err <- mean( (y - pred)^2, na.rm=TRUE)
+        pred <- oobsum/oobcount
+        err <- sqrt(mean((y - pred)^2, na.rm=TRUE))
     }
   } else { 
     err <- NA

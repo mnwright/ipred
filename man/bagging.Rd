@@ -61,7 +61,9 @@ tree growing is not stopped until the nodes are pure.
   \item{mt}{list of length \code{nbagg} containing \code{\link[rpart]{rpart}}
 trees.}
   \item{oob}{out-of-bag predictions for each observation.}
-  \item{err}{out-of-bag error estimate.}
+  \item{err}{out-of-bag error estimate: estimated misclassification error
+             for a nominal or the square root of the estimated mean 
+             squared error for a continuous response.}
   \item{nbagg}{number of bootstrap samples and trees used.}
   \item{method}{method used.}
   \item{ldasc}{discriminant functions of LDA (for Double-Bagging only).}
@@ -120,7 +122,7 @@ y <- apply(X, 1, mean) + rnorm(nrow(X))
 
 haty <- predict(mt, newdata=X)
 
-cat("MSE error: ", mean((haty - y)^2) , "\n")
+cat("MSE error: ", sqrt(mean((haty - y)^2)) , "\n")
 
 data(BreastCancer)
 BreastCancer$Id <- NULL
