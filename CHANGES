@@ -1,4 +1,12 @@
-# $Id: CHANGES,v 1.33 2003/03/31 08:44:00 peters Exp $
+# $Id: CHANGES,v 1.35 2003/10/29 15:40:53 hothorn Exp $
+
+	0.7-2 (xx.10.2003)
+
+	`rpart' is sensitive to compilers / optimization flags:
+	the results we compare `ipred's tests with are produced with
+	an optimized version of `rpart' (gcc -O2).
+
+	`eigen' in `slda' replaced by `svd'
 
 	0.7-1 (08.08.2003)
 	

@@ -1,6 +1,6 @@
 
 R : Copyright 2003, The R Development Core Team
-Version 1.8.0 Under development (unstable) (2003-07-23)
+Version 1.9.0 Under development (unstable) (2003-10-27)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -450,12 +450,12 @@ Misclassification error:  0.3131
 > # sensitivity 
 > 
 > mean(error$predictions[GlaucomaM$Class == "glaucoma"] != "glaucoma")
-[1] 0.1734694
+[1] 0.1938776
 > 
 > # specifity
 > 
 > mean(error$predictions[GlaucomaM$Class == "normal"] != "normal")
-[1] 0.1530612
+[1] 0.1326531
 > 
 > # Indirect Classification: Smoking data
 > 
@@ -1047,7 +1047,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  93.26 0.97 104.44 0 0 
+Time elapsed:  28.3 0.23 28.88 0 0 
 > dev.off(); quit('no')
 null device 
           1 

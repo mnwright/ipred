@@ -1,5 +1,6 @@
 DLBCL                   Diffuse Large B-Cell Lymphoma
 GBSG2                   German Breast Cancer Study Group 2
+GBSG4                   German Breast Cancer Study Group 4
 GlaucomaM               Glaucoma Database
 GlaucomaMVF             Glaucoma Database
 Smoking                 Smoking Styles
@@ -29,6 +30,7 @@ print.inclass           Print Method for Inclass Object
 prune.classbagg         Pruning for Bagging
 rsurv                   Simulate Survival Data
 sbrier                  Model Fit for Survival Data
+sim1                    Simulation Model
 slda                    Stabilised Linear Discriminant Analysis
 summary.classbagg       Summarising Bagging
 summary.inbagg          Summarising Inbagg

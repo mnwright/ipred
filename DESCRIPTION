@@ -1,7 +1,7 @@
 Package: ipred
 Title: Improved Predictors 
-Version: 0.7-1
-Date: $Date: 2003/08/08 14:56:00 $
+Version: 0.7-2
+Date: $Date: 2003/10/29 15:40:53 $
 Author: Andrea Peters <Andrea.Peters@imbe.imed.uni-erlangen.de> and 
   Torsten Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de>
 Maintainer: Andrea Peters <Andrea.Peters@imbe.imed.uni-erlangen.de>

@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.5 2003/08/08 12:13:42 hothorn Exp $
+# $Id: slda.R,v 1.6 2003/10/29 15:10:57 hothorn Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 
@@ -61,11 +61,11 @@ slda.factor <- function(y, X, q=NULL, ...) {
 
   # this is S_0 in Kropf (2000)
   Snull <- cov(Xnull)
-  ewp <- eigen(solve(diag(diag(Snull)))%*%Snull)
-  if (!is.complex(ewp$values)) {
+  ewp <- svd(solve(diag(diag(Snull)))%*%Snull)
+  if (!is.complex(ewp$d)) {
     # determine q by the number of eigenvalues > 1
-    if (is.null(q)) q <- length(ewp$values[ewp$values > 1])
-    D <- ewp$vectors[,1:q]
+    if (is.null(q)) q <- sum(ewp$d > 1)
+    D <- ewp$v[,1:q]
     if (q == 1) D <- as.matrix(D)
     # Xstab is still spherically distributed (Fang & Zhang, Laeuter, Kropf &
     # Glimm)!
