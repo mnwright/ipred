@@ -122,7 +122,7 @@ data.}
 available for inspection of the results and prediction, for example:
 \code{\link{print.classbagg}}, \code{\link{summary.classbagg}}, 
 \code{\link{predict.classbagg}}  and \code{\link{prune.classbagg}} for
-classification probems.
+classification problems.
 
 }
 
@@ -138,14 +138,14 @@ Leo Breiman (1998), Arcing Classifiers. \emph{The Annals of Statistics}
 \bold{26}(3), 801--824.
 
 Peter Buehlmann and Bin Yu (2002), Analyzing Bagging. \emph{The Annals of
-Statistics} \bold{30}(4).
+Statistics} \bold{30}(4), 927--961.
 
 Torsten Hothorn and Berthold Lausen (2002a), Double-Bagging: Combining
 classifiers by bootstrap aggregation. \emph{Pattern Recognition}, to appear.
 Preprint available from 
 \url{http://www.mathpreprints.com/math/Preprint/hothorn/20020227.2/1}.
 
-Torsten Hothorn and Berthold Lausen (2002a), Bundling Classifiers by Bagging
+Torsten Hothorn and Berthold Lausen (2002b), Bundling Classifiers by Bagging
 Trees. \emph{submitted}.
 Preprint available from 
 \url{http://www.mathpreprints.com/math/Preprint/blausen/20021016/1}.

@@ -1,4 +1,4 @@
-#$Id: cv.R,v 1.7 2002/09/26 13:05:01 hothorn Exp $
+#$Id: cv.R,v 1.9 2002/12/03 11:41:56 hothorn Exp $
 
 cv <- function(y, ...) UseMethod("cv")
 
@@ -51,7 +51,7 @@ cv.factor <- function(y, X, model, predict, k=10, random=TRUE,
 
   mysplit <- ssubset(y, k, strat=strat)
 
-  allpred <- vector(mode="character", length=k)
+  allpred <- vector(mode="character", length=N)
   fu <- function(x) levels(x)[as.integer(x)]
   mydata <- cbind(y,X)
   for(i in 1:k) {
@@ -114,12 +114,11 @@ cv.numeric <- function(y, X, model, predict, k=10, random=TRUE,
     
     mymodel <- model(y ~ ., data=cbind(y, X)[-tindx,], ...)
 
-    # we assume predict to return factor levels
-    pred <- predict(mymodel, newdata = X)
-    if (!is.numeric(pred)) stop("predict does not numerical values")
-    allpred[tindx] <- pred[tindx]
+    pred <- predict(mymodel, newdata = X[tindx,])
+    if (!is.numeric(pred)) stop("predict does not return numerical values")
+    allpred[tindx] <- pred
   }
-  err <- sqrt(mean((pred - y)^2, na.rm = TRUE))
+  err <- sqrt(mean((pred - y[tindx])^2, na.rm = TRUE))
   allpred <- allpred[order(myindx)]
   if (predictions)
     RET <- list(error = err, k = k, predictions=allpred)
@@ -165,7 +164,7 @@ cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
 
   a <- kfoldcv(k, N)
 
-  # to reproduce results, either use et.seed' or a fixed partition of
+  # to reproduce results, either use `set.seed' or a fixed partition of
   # the samples
   if (random)
     myindx <- sample(1:N, N)
@@ -184,7 +183,6 @@ cv.Surv <- function(y, X=NULL, model, predict, k=10, random=TRUE,
     else 
       mymodel <- model(y ~ ., data=cbind(y, X)[-tindx,], ...)
 
-    # we assume predict to return factor levels
     pred <- predict(mymodel, newdata = as.data.frame(X[tindx, ]))
     if (is.list(pred)) {
       if (!inherits(pred[[1]], "survfit") && !inherits(pred, "survfit"))

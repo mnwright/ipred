@@ -167,11 +167,11 @@ error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
 
 # sensitivity 
 
-mean(error$predictions[GlaucomaM$Class == "glaucoma"] != "glaucoma")
+mean(error$predictions[GlaucomaM$Class == "glaucoma"] == "glaucoma")
 
 # specifity
 
-mean(error$predictions[GlaucomaM$Class == "normal"] != "normal")
+mean(error$predictions[GlaucomaM$Class == "normal"] == "normal")
 
 # Indirect Classification: Smoking data
 

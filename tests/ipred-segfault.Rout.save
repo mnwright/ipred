@@ -1,6 +1,6 @@
 
 R : Copyright 2002, The R Development Core Team
-Version 1.6.0 beta (2002-09-25)
+Version 1.6.0 Patched (2002-10-14)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -212,7 +212,7 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm)
 
 	 10-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  2.2884 
+Root mean squared error:  3.4582 
 
 > errorest(y ~ ., data=learn, model=lm, est.para=list(k=5, random=FALSE))
 
@@ -222,7 +222,7 @@ errorest.data.frame(formula = y ~ ., data = learn, model = lm,
 
 	 5-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  2.2738 
+Root mean squared error:  2.5488 
 
 > errorest(y ~ ., data=learn, model=lm, estimator="boot")
 

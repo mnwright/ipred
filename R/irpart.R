@@ -173,7 +173,7 @@ irpart <- function(formula, data=NULL, weights, subset,
 		    wt = as.double(wt),
 		    as.integer(init$numy),
 		    as.double(cost),
-		    NAOK=TRUE )
+		    NAOK=TRUE, PACKAGE="rpart")
         if (rpfit$n == -1)  stop(rpfit$error)
 
         # rpfit$newX[1:n] contains the final sorted order of the observations
@@ -202,7 +202,8 @@ irpart <- function(formula, data=NULL, weights, subset,
 		       isplit =  matrix(integer(1), nsplit,3),
 		       csplit =  catmat,
 		       dnode  =  matrix(double(1),  nodes, 3+numresp),
-		       inode  =  matrix(integer(1), nodes, 6))
+		       inode  =  matrix(integer(1), nodes, 6),
+                       PACKAGE="rpart")
         tname <- c("<leaf>", dimnames(X)[[2]])
 
         if (cpcol==3) temp <- c("CP", "nsplit", "rel error")

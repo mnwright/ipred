@@ -1,6 +1,6 @@
 
 R : Copyright 2002, The R Development Core Team
-Version 1.6.0 beta (2002-09-25)
+Version 1.6.0 Patched (2002-10-14)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -314,7 +314,7 @@ Bagging regression trees with 25 bootstrap replications
 Call: bagging.data.frame(formula = medv ~ ., data = BostonHousing, 
     coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  4.182 
+Out-of-bag estimate of root mean squared error:  4.179 
 
 > 
 > learn <- as.data.frame(mlbench.friedman1(200))
@@ -516,7 +516,7 @@ errorest.data.frame(formula = medv ~ ., data = BostonHousing,
 
 	 10-fold cross-validation estimator of root mean squared error
 
-Root mean squared error:  4.6881 
+Root mean squared error:  5.986 
 
 > 
 > # Survival data
@@ -1028,7 +1028,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  120.14 2.09 124.75 0 0 
+Time elapsed:  40.86 1.23 46.24 0 0 
 > dev.off(); quit('no')
 null device 
           1 
