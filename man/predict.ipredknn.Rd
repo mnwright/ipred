@@ -10,8 +10,9 @@
 \arguments{
   \item{object}{object of class \code{ipredknn}.}
   \item{newdata}{a data frame of new observations. }
-  \item{type}{return either class probability estimates or the predicted
-class itself.}
+  \item{type}{return either the predicted class or the 
+              the proportion of the votes for the winning
+              class.}
   \item{...}{additional arguments.}
 }
 \details{
@@ -20,8 +21,8 @@ for class \code{ipredknn}. For the details see \code{\link[class]{knn}}.
 
 }
 \value{
-  Either a matrix of predicted class probabilities or the predicted classes
-itself.
+Either the predicted class or the
+the proportion of the votes for the winning class.
 }
 
 \author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }

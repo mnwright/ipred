@@ -46,10 +46,12 @@ Robert Tibshirani and Geoffry Hinton (1998), Coaching variables for regression a
 }
 
 \examples{
+\dontrun{
 data(dystrophy)
 errorest(Class~CK+H~AGE+PK+LD, data = dystrophy, model = inbagg, 
 pFUN = list(list(model = lm, predict = mypredict.lm), list(model = rpart)), 
 ns = 0.75, estimator = "cv")
+}
 }
 
 \keyword{datasets}

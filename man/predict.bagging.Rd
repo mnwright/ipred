@@ -62,8 +62,6 @@ Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
 Radespiel-Troeger (2004), Bagging Survival Trees.
 \emph{Statistics in Medicine}, \bold{23}(1), 77--91.
  
-
-
 }
 
 \examples{

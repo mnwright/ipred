@@ -111,6 +111,7 @@ to prevent for possible confounding.
 }
 
 \examples{
+\dontrun{
 data(GlaucomaMVF)
 
 response <- function (data) {
@@ -126,6 +127,6 @@ response <- function (data) {
 
 errorest(Class~clv+lora+cs~., data = GlaucomaMVF, model=inclass, 
        estimator="cv", pFUN = list(list(model = rpart)), cFUN = response)
-
+}
 }
 \keyword{datasets}

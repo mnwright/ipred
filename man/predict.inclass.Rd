@@ -42,6 +42,7 @@ Diagnosis of glaucoma by indirect classifiers.
 \seealso{\code{\link{inclass}}}
 
 \examples{
+\dontrun{
 # Simulation model, classification rule following Hand et al. (2001)
 
 theta90 <- varset(N = 1000, sigma = 0.1, theta = 90, threshold = 0)
@@ -88,7 +89,7 @@ fit <- inclass(formula, data = smoking,
 
 
 predict(object = fit, newdata = smoking)
-
+}
 
 data(GlaucomaMVF)
 glaucoma <- GlaucomaMVF[,(names(GlaucomaMVF) != "tension")]

@@ -1,5 +1,7 @@
+TestsEx <- TRUE
 attach(NULL, name = "CheckExEnv")
 assign(".CheckExEnv", as.environment(2), pos = length(search())) # base
+
 ## This plot.new() patch has no effect yet for persp();
 ## layout() & filled.contour() are now ok
 assign("plot.new",
@@ -24,6 +26,8 @@ assign("cleanEx",
        },
        env = .CheckExEnv)
 assign("..nameEx", "__{must remake R-ex/*.R}__", env = .CheckExEnv) # for now
+
+if(TestsEx) {
 assign("ptime", proc.time(), env = .CheckExEnv)
 postscript("ipred-Examples.ps")
 assign("par.postscript", par(no.readonly = TRUE), env = .CheckExEnv)
@@ -721,3 +725,4 @@ plot(theta90$intermediate)
 par(get("par.postscript", env = .CheckExEnv))
 cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
 dev.off(); quit('no')
+}

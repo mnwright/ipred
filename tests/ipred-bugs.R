@@ -1,4 +1,5 @@
 library(ipred)
+
 data(BreastCancer)
 
 actversion <- paste(R.version$major, R.version$minor, sep=".")

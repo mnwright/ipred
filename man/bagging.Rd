@@ -173,7 +173,6 @@ mod <- bagging(Class ~ Cl.thickness + Cell.size
 print(mod)
 
 # Test set error bagging (nbagg=50): 7.9\% (Breiman, 1996a, Table 2)
-
 data(Ionosphere)
 Ionosphere$V2 <- NULL # constant within groups
 
@@ -195,7 +194,6 @@ mod <- bagging(Class ~ ., data=Ionosphere, comb=comb.lda)
 predict(mod, Ionosphere[1:10,])
 
 # Regression:
-
 
 data(BostonHousing)
 

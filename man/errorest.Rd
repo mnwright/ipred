@@ -127,10 +127,11 @@ errorest(Species ~ ., data=iris, model=lda,
          estimator = "cv", predict= mypredict.lda)
 
 data(PimaIndiansDiabetes)
-
+\dontrun{
 # 632+ bootstrap of LDA for Diabetes data
 errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
          estimator = "632plus", predict= mypredict.lda)
+}
 
 #cv of a fixed partition of the data
 list.tindx <- list(1:100, 101:200, 201:300, 301:400, 401:500,
@@ -140,6 +141,7 @@ errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
           estimator = "cv", predict = mypredict.lda,
           est.para = control.errorest(list.tindx = list.tindx))
 
+\dontrun{
 #both bootstrap estimations based on fixed partitions
 
 list.tindx <- vector(mode = "list", length = 25)
@@ -151,6 +153,7 @@ errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
           estimator = c("boot", "632plus"), predict= mypredict.lda,
           est.para = control.errorest(list.tindx = list.tindx))
 
+}
 data(Glass)
 
 # LDA has cross-validated misclassification error of
@@ -161,7 +164,6 @@ data(Glass)
 # use stratified sampling here, i.e. preserve the class proportions
 errorest(Type ~ ., data=Glass, model=lda, 
          predict=mypredict.lda, est.para=control.errorest(strat=TRUE))
-
 
 # force predict to return class labels
 mypredict.rpart <- function(object, newdata)
@@ -211,11 +213,11 @@ formula <- response~TVPS+BPNL+COHB~TarY+NicY+COY+Sex+Age
 # Estimation per leave-one-out estimate for the misclassification is 
 # 36.36\% (Hand et al., 2001), using indirect classification with 
 # linear models
-
+\dontrun{
 errorest(formula, data = smoking, model = inclass,estimator = "cv", 
          pFUN = list(list(model=lm, predict = mypredict.lm)), cFUN = resp,  
          est.para=control.errorest(k=nrow(smoking)))
-
+}
 
 # Regression
 

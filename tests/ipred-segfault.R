@@ -129,4 +129,3 @@ mydata <- as.data.frame(cbind(y, x))
 cv(y, y ~ ., data=mydata, model=lm, predict=predict)
 bootest(y, y ~ ., data=mydata, model=lm, predict=predict)
 bagging(y ~., data=mydata, nbagg=10)
-
