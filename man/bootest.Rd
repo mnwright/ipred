@@ -3,6 +3,7 @@
 \alias{bootest.default}
 \alias{bootest.factor}
 \alias{bootest.numeric}
+\alias{bootest.integer}
 \alias{bootest.Surv}
 \title{Bootstrap Error Rate Estimators}
 \description{

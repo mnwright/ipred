@@ -1,4 +1,4 @@
-# $Id: bagging.R,v 1.16 2002/09/12 08:56:42 hothorn Exp $
+# $Id: bagging.R,v 1.17 2003/03/03 17:51:07 peters Exp $
 
 bagging <- function(formula, data, ...) UseMethod("bagging", data)
 
@@ -23,6 +23,7 @@ function(formula, data, subset, na.action=na.rpart, ...)
     response <- attr(attr(mf, "terms"), "response")
     # just extract the data.frame, no handling of contrasts or NA's here.
     # this is done by rpart or the user supplied methods
+
     DATA <- list(y = mf[,response], X = mf[,-response]) 
     names(DATA) <- c("y", "X")
     y <- do.call("ipredbagg", c(DATA, list(...)))

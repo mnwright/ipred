@@ -1,4 +1,4 @@
-# $Id: predict.inclass.R,v 1.17 2002/09/26 12:58:15 hothorn Exp $
+# $Id: predict.inclass.R,v 1.18 2003/03/12 17:06:25 hothorn Exp $
 
 # Additional option type ="class", if intermediate is nominal
 
@@ -27,9 +27,9 @@ predict.inclass <- function(object, cFUN, intbag = NULL, newdata, ...)
       for(j in 1:K) {		# over bagging
         if(inherits(object[[i]][[j]], "rpart")) {
           if(object[[i]][[j]]$method == "class")
-            RET <- predict.rpart(object[[i]][[j]], newdata, type="class")
+            RET <- predict(object[[i]][[j]], newdata, type="class")
           else
-            RET <- predict.rpart(object[[i]][[j]], newdata)
+            RET <- predict(object[[i]][[j]], newdata)
         }
         dummy <- c(dummy, list(RET))        
       }
@@ -59,9 +59,9 @@ predict.inclass <- function(object, cFUN, intbag = NULL, newdata, ...)
       }
       if(inherits(object[[i]], "rpart")) {
         if(object[[i]]$method == "class")
-          RET <- predict.rpart(object[[i]], newdata, type="class")
+          RET <- predict(object[[i]], newdata, type="class")
         else
-          RET <- predict.rpart(object[[i]], newdata)
+          RET <- predict(object[[i]], newdata)
       }
       if(inherits(object[[i]],  "regbagg") | inherits(object[[i]], "classbagg")) {
         RET <- predict(object[[i]], newdata = newdata, ...)

@@ -193,7 +193,7 @@ bagging(Class ~ ., data=Ionosphere, coob=TRUE)
 # of the original predictors
 
 comb.lda <- list(list(model=lda, predict=function(obj, newdata)
-                                 predict.lda(obj, newdata)$x))
+                                 predict(obj, newdata)$x))
 
 # Note: out-of-bag estimator is not available in this situation, use
 # errorest

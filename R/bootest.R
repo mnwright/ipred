@@ -1,4 +1,4 @@
-# $Id: bootest.R,v 1.13 2003/03/03 15:23:43 hothorn Exp $
+# $Id: bootest.R,v 1.14 2003/03/12 17:06:40 hothorn Exp $
 
 bootest <- function(y, ...) {
   if(is.null(class(y)))
@@ -10,6 +10,9 @@ bootest.default <- function(y, ...) {
   stop(paste("Do not know how to handle objects of class", class(y)))
 }
 
+bootest.integer <- function(y, ...) {
+  bootest.numeric(y, ...)
+}
 
 bootest.factor <- function(y, formula, data, model, predict, 
                            nboot=25, bc632plus=FALSE, ...) {

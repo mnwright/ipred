@@ -289,7 +289,7 @@ Out-of-bag estimate of misclassification error:  0.0912
 > # of the original predictors
 > 
 > comb.lda <- list(list(model=lda, predict=function(obj, newdata)
-+                                  predict.lda(obj, newdata)$x))
++                                  predict(obj, newdata)$x))
 > 
 > # Note: out-of-bag estimator is not available in this situation, use
 > # errorest
@@ -1047,7 +1047,7 @@ attr(,"time")
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  55.22 1 57.52 0 0 
+Time elapsed:  48.35 1.3 58.34 0 0 
 > dev.off(); quit('no')
 null device 
           1 

@@ -1,4 +1,15 @@
-# $Id: CHANGES,v 1.28 2003/03/03 15:23:20 hothorn Exp $
+# $Id: CHANGES,v 1.31 2003/03/13 09:58:42 hothorn Exp $
+
+	0.6-14 (13.03.2003)
+
+	clean up bagging.Rd
+
+	0.6-12 (12.03.2003)
+
+	methods for "integer" for the generics "bagging", "cv" and "bootest"
+
+	do not call methods to generics directly, since they may be hidded
+	(because not exported: predict.lda)
 
 	0.6-11 (05.03.2003)
 

@@ -1,4 +1,4 @@
-#$Id: cv.R,v 1.16 2003/02/17 13:15:19 hothorn Exp $
+#$Id: cv.R,v 1.17 2003/03/12 17:06:40 hothorn Exp $
 
 cv <- function(y, ...) {
   if(is.null(class(y)))
@@ -8,6 +8,10 @@ cv <- function(y, ...) {
 
 cv.default <- function(y, ...) {
   stop(paste("Do not know how to handle objects of class", class(y)))
+}
+
+cv.integer <- function(y, ...) {
+  cv.numeric(y, ...)
 }
 
 cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE, 

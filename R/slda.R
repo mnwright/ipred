@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.2 2002/09/12 08:59:13 hothorn Exp $
+# $Id: slda.R,v 1.3 2003/03/12 17:06:05 hothorn Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 
@@ -103,5 +103,9 @@ predict.slda <- function(object, newdata, ...) {
 #         warning("Variable names in newdata do not match those in object")
 #   </FIXME>
     X <- x %*% object$scores
-    predict.lda(object$mylda, newdata=as.data.frame(X), ...)
+    if (inherits(object$mylda, "lda"))
+      return(predict(object$mylda, newdata=as.data.frame(X), ...))
+    else
+      stop(paste("Do not know how to predict from objects of class", class(object$mylda)))
+
 }

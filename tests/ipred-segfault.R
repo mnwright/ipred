@@ -23,7 +23,7 @@ predict(mod)[1:10]
 # Double-Bagging
 
 comb.lda <- list(list(model=lda, predict=function(obj, newdata)
-                      predict.lda(obj, newdata)$x))
+                      predict(obj, newdata)$x))
 
 mod <- bagging(classes ~ ., data=learn, comb=comb.lda, nbagg=10)
 mod
@@ -100,3 +100,14 @@ rcomb <- list(list(model=coxph, predict=predict.coxph))
 mods <- bagging(Surv(time,cens) ~ ., data=GBSG2, nbagg=10, 
                 comb=rcomb,  control=rpart.control(xval=0))
 predict(mods, newdata=GBSG2[1:3,])
+
+# test for method dispatch on integer valued responses
+y <- sample(1:100, 100)
+class(y)
+x <- matrix(rnorm(100*5), ncol=5)
+mydata <- as.data.frame(cbind(y, x))
+
+cv(y, y ~ ., data=mydata, model=lm, predict=predict)
+bootest(y, y ~ ., data=mydata, model=lm, predict=predict)
+bagging(y ~., data=mydata, nbagg=10)
+

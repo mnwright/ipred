@@ -3,6 +3,7 @@
 \alias{cv.default}
 \alias{cv.factor}
 \alias{cv.numeric}
+\alias{cv.integer}
 \alias{cv.Surv}
 \title{Cross-validated Error Rate Estimators.}
 \description{

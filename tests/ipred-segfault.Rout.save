@@ -54,7 +54,7 @@ Levels: 1 2
 > # Double-Bagging
 > 
 > comb.lda <- list(list(model=lda, predict=function(obj, newdata)
-+                       predict.lda(obj, newdata)$x))
++                       predict(obj, newdata)$x))
 > 
 > mod <- bagging(classes ~ ., data=learn, comb=comb.lda, nbagg=10)
 > mod
@@ -392,4 +392,33 @@ Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]))
         n    events     rmean se(rmean)    median   0.95LCL   0.95UCL 
     580.0     352.0    1270.3      36.2     918.0     859.0    1090.0 
 
+> 
+> # test for method dispatch on integer valued responses
+> y <- sample(1:100, 100)
+> class(y)
+NULL
+> x <- matrix(rnorm(100*5), ncol=5)
+> mydata <- as.data.frame(cbind(y, x))
+> 
+> cv(y, y ~ ., data=mydata, model=lm, predict=predict)
+
+	 10-fold cross-validation estimator of root mean squared error
+
+Root mean squared error:  30.332 
+
+> bootest(y, y ~ ., data=mydata, model=lm, predict=predict)
+
+	 Bootstrap estimator of root mean squared error 
+	 with 25 bootstrap replications
+
+Root mean squared error:  31.1361 
+
+> bagging(y ~., data=mydata, nbagg=10)
+
+Bagging regression trees with 10 bootstrap replications 
+
+Call: bagging.data.frame(formula = y ~ ., data = mydata, nbagg = 10)
+
+
+> 
 > 

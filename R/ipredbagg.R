@@ -1,4 +1,4 @@
-#$Id: ipredbagg.R,v 1.10 2003/02/14 10:55:41 hothorn Exp $
+#$Id: ipredbagg.R,v 1.11 2003/03/12 17:06:40 hothorn Exp $
 
 workhorse <- function(y, X, control, comb, bcontrol, thisclass, ...) {
   # This is double-bagging (comb is lda) or bundling (any arbritrary
@@ -92,6 +92,11 @@ ipredbagg <- function(y, ...) {
 ipredbagg.default <- function(y, ...) {
   stop(paste("Do not know how to handle objects of class", class(y)))
 }
+
+ipredbagg.integer <- function(y, ...) {
+  ipredbagg.numeric(y,...)
+}
+
 
 ipredbagg.factor <- function(y, X=NULL, nbagg=25, control=
                              rpart.control(minsplit=2, cp=0, xval=0), 
