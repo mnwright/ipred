@@ -89,7 +89,7 @@ computed for the whole learning sample without bootstrapping.
 If \code{coob} is TRUE, the out-of-bag sample (Breiman,
 1996b) is used to estimate the prediction error 
 corresponding to \code{class(y)}. Alternatively, the out-of-bag sample can
-be used for model combination, an ouf-of-bag error rate estimator is not 
+be used for model combination, an out-of-bag error rate estimator is not 
 available in this case. Double-bagging (Hothorn and Lausen,
 2003) computes a LDA on the out-of-bag sample and uses the discriminant
 variables as additional predictors for the classification trees. \code{comb}
@@ -142,8 +142,7 @@ Statistics} \bold{30}(4), 927--961.
 
 Torsten Hothorn and Berthold Lausen (2003), Double-Bagging: Combining
 classifiers by bootstrap aggregation. \emph{Pattern Recognition},
-\bold{36}(6), 1303--1309. Preprint available from
-\url{http://www.mathpreprints.com/math/Preprint/hothorn/20020227.2/1}.
+\bold{36}(6), 1303--1309. 
 
 Torsten Hothorn and Berthold Lausen (2002b), Bundling Classifiers by Bagging
 Trees. \emph{submitted}.

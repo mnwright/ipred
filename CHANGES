@@ -1,4 +1,9 @@
-# $Id: CHANGES,v 1.25 2003/02/17 13:44:16 hothorn Exp $
+# $Id: CHANGES,v 1.26 2003/02/25 15:45:01 hothorn Exp $
+
+	0.6-9 (25.02.2003)
+
+	the terms attribute of data in errorest.data.frame may cause problems
+	with some predict methods -> deleted
 
 	0.6-7 (17.02.2003)
 

@@ -92,8 +92,7 @@ bias.
 \source{
  Torsten Hothorn and Berthold Lausen (2003), Double-Bagging: Combining
 classifiers by bootstrap aggregation. \emph{Pattern Recognition},
-\bold{36}(6), 1303--1309}. Preprint available from
-\url{http://www.mathpreprints.com/math/Preprint/hothorn/20020227.2/1}.
+\bold{36}(6), 1303--1309. 
 
 }
 

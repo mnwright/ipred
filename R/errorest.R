@@ -1,4 +1,4 @@
-# $Id: errorest.R,v 1.18 2003/02/14 14:23:59 hothorn Exp $
+# $Id: errorest.R,v 1.19 2003/02/25 15:41:40 hothorn Exp $
 
 control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
                      random=TRUE, predictions=FALSE) {
@@ -66,6 +66,8 @@ errorest.data.frame <- function(formula, data, subset, na.action=na.omit,
     # just extract the data.frame, NA handling here
     # make sure to leave the time and censoring variable here
     # for "Surv(time, cens) ~ ." formulas
+    # delete terms attribute 
+    attr(mf, "terms") <- NULL
     y <- mf[,response]
     if (!NOPRED & !is.Surv(y))
       data <- mf
