@@ -1,6 +1,6 @@
 
 R : Copyright 2002, The R Development Core Team
-Version 1.5.0 Under development (unstable) (2002-04-07)
+Version 1.5.0  (2002-04-29)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -13,7 +13,6 @@ Type `demo()' for some demos, `help()' for on-line help, or
 `help.start()' for a HTML browser interface to help.
 Type `q()' to quit R.
 
-> invisible(options(echo = TRUE))
 > attach(NULL, name = "CheckExEnv")
 > assign(".CheckExEnv", as.environment(2), pos = length(search())) # base
 > ## This plot.new() patch has no effect yet for persp();
@@ -45,14 +44,6 @@ Type `q()' to quit R.
 > library('ipred')
 Loading required package: rpart 
 Loading required package: MASS 
-
-Attaching package `MASS':
-
-
-	The following object(s) are masked from package:base :
-
-	 nclass.FD nclass.scott 
-
 Loading required package: mlbench 
 > cleanEx(); ..nameEx <- "bagging"
 > ###--- >>> `bagging' <<<----- Bagging Classification and Regression Trees
@@ -86,7 +77,7 @@ Loading required package: mlbench
 +          estimator = "cv", predict= mypredict.lda)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  y on . 
 
@@ -99,7 +90,7 @@ Error 0.08
 +          predict= mypredict.lda)
 
 100-fold cross-validation estimator of misclassification error
- with 100 replications 
+ 
 
 Data:  y on . 
 
@@ -130,7 +121,7 @@ Error 0.0885
 +          predict= mypredict.lda)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  y on V1 y on V2 y on V3 
 
@@ -144,7 +135,7 @@ Error 0.34
 +          predict=mypredict.rpart)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  y on . 
 
@@ -174,7 +165,7 @@ Error 0.3593
 + nbagg=10)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  y on . 
 
@@ -189,7 +180,7 @@ Error 0.36
 + predict=mypredict.lda)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  Type on . 
 
@@ -204,7 +195,7 @@ Error 0.3729
 + predict=mypredict.rpart)
 
 10-fold cross-validation estimator of misclassification error
- with 10 replications 
+ 
 
 Data:  Type on . 
 
@@ -241,7 +232,7 @@ Error 0.337
 +          est.para=list(k=nrow(smoking)))
 
 55-fold cross-validation estimator of misclassification error
- with 55 replications 
+ 
 
 Data:  response 
 
@@ -448,7 +439,7 @@ Levels:  0 1
 > 
 > par(get("par.postscript", env = .CheckExEnv))
 > cat("Time elapsed: ", proc.time() - get("ptime", env = .CheckExEnv),"\n")
-Time elapsed:  78.18 1.53 160.72 0 0 
+Time elapsed:  43.51 0.56 44.11 0 0 
 > dev.off(); quit('no')
 null device 
           1 

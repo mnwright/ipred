@@ -1,0 +1,153 @@
+
+R : Copyright 2002, The R Development Core Team
+Version 1.5.0 Under development (unstable) (2002-04-23)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> library(ipred)
+Loading required package: rpart 
+Loading required package: MASS 
+Loading required package: mlbench 
+> data(BreastCancer)
+> set.seed(29081975)
+> 
+> mod <- bagging(Class ~ Cl.thickness + Cell.size
++                 + Cell.shape + Marg.adhesion
++                 + Epith.c.size + Bare.nuclei
++                 + Bl.cromatin + Normal.nucleoli
++                 + Mitoses, data=BreastCancer, coob=TRUE)
+> print(mod)
+
+Bagging classification trees 
+with 25 bootstrap replications 
+
+Data:  Class by Cl.thickness + Cell.size + Cell.shape + Marg.adhesion + Epith.c.size + Bare.nuclei + Bl.cromatin + Normal.nucleoli + Mitoses 
+
+Out-of-bag misclassification error: 0.0351 
+> 
+> print(predict(mod, newdata=BreastCancer))
+  [1] benign    malignant benign    malignant benign    malignant benign   
+  [8] benign    benign    benign    benign    benign    malignant benign   
+ [15] malignant malignant benign    benign    malignant benign    malignant
+ [22] malignant benign    malignant benign    malignant benign    benign   
+ [29] benign    benign    benign    benign    malignant benign    benign   
+ [36] benign    malignant benign    malignant malignant malignant malignant
+ [43] malignant malignant malignant benign    malignant benign    benign   
+ [50] malignant malignant malignant malignant malignant malignant malignant
+ [57] malignant benign    malignant malignant malignant benign    malignant
+ [64] benign    benign    malignant benign    malignant malignant benign   
+ [71] benign    malignant benign    malignant malignant benign    benign   
+ [78] benign    benign    benign    benign    benign    benign    benign   
+ [85] malignant malignant malignant malignant benign    benign    benign   
+ [92] benign    benign    benign    benign    benign    benign    benign   
+ [99] malignant malignant malignant malignant benign    malignant malignant
+[106] malignant malignant malignant benign    malignant benign    malignant
+[113] malignant malignant benign    benign    benign    malignant benign   
+[120] benign    benign    benign    malignant malignant malignant benign   
+[127] malignant benign    malignant benign    benign    benign    malignant
+[134] benign    benign    benign    benign    benign    benign    benign   
+[141] benign    benign    malignant benign    benign    benign    malignant
+[148] benign    benign    malignant benign    malignant malignant benign   
+[155] benign    malignant benign    benign    benign    malignant malignant
+[162] benign    benign    benign    benign    benign    malignant malignant
+[169] benign    benign    benign    benign    benign    malignant malignant
+[176] malignant benign    malignant benign    malignant benign    benign   
+[183] benign    malignant malignant benign    malignant malignant malignant
+[190] benign    malignant malignant benign    benign    benign    benign   
+[197] malignant benign    benign    benign    malignant malignant benign   
+[204] benign    benign    malignant malignant benign    benign    benign   
+[211] malignant malignant benign    malignant malignant malignant benign   
+[218] benign    malignant benign    benign    malignant benign    malignant
+[225] malignant benign    malignant malignant benign    malignant malignant
+[232] malignant malignant malignant benign    benign    malignant malignant
+[239] malignant malignant benign    benign    benign    benign    benign   
+[246] benign    malignant malignant benign    benign    benign    malignant
+[253] malignant malignant malignant malignant benign    benign    benign   
+[260] malignant malignant malignant malignant malignant malignant benign   
+[267] malignant malignant malignant benign    malignant benign    malignant
+[274] malignant benign    benign    benign    benign    benign    malignant
+[281] benign    benign    malignant malignant malignant malignant malignant
+[288] benign    malignant malignant benign    benign    malignant malignant
+[295] benign    malignant malignant malignant benign    malignant malignant
+[302] benign    malignant benign    malignant malignant benign    benign   
+[309] malignant benign    benign    benign    malignant benign    benign   
+[316] malignant malignant malignant benign    malignant malignant benign   
+[323] benign    malignant benign    benign    malignant benign    malignant
+[330] malignant malignant benign    benign    malignant malignant benign   
+[337] malignant benign    benign    malignant malignant benign    benign   
+[344] benign    malignant benign    benign    benign    malignant malignant
+[351] benign    benign    malignant malignant benign    benign    benign   
+[358] malignant malignant malignant malignant malignant benign    malignant
+[365] benign    benign    malignant malignant benign    benign    benign   
+[372] benign    benign    benign    benign    benign    benign    benign   
+[379] benign    benign    benign    malignant benign    benign    benign   
+[386] benign    malignant benign    benign    benign    benign    malignant
+[393] benign    benign    benign    benign    benign    benign    benign   
+[400] benign    malignant benign    benign    benign    benign    benign   
+[407] benign    benign    benign    benign    benign    benign    malignant
+[414] benign    malignant benign    malignant benign    benign    benign   
+[421] benign    malignant benign    benign    benign    malignant benign   
+[428] malignant benign    benign    benign    benign    benign    benign   
+[435] malignant malignant malignant benign    benign    benign    malignant
+[442] benign    benign    benign    benign    benign    benign    benign   
+[449] benign    malignant benign    benign    benign    malignant benign   
+[456] malignant malignant malignant benign    benign    benign    benign   
+[463] benign    benign    benign    malignant malignant malignant benign   
+[470] benign    benign    benign    benign    benign    benign    benign   
+[477] benign    benign    benign    malignant benign    benign    malignant
+[484] malignant benign    benign    benign    malignant malignant benign   
+[491] benign    malignant benign    malignant benign    benign    benign   
+[498] benign    benign    benign    benign    benign    benign    benign   
+[505] benign    benign    malignant benign    benign    benign    benign   
+[512] benign    benign    benign    malignant malignant benign    benign   
+[519] benign    malignant benign    benign    malignant malignant benign   
+[526] benign    benign    benign    benign    benign    malignant benign   
+[533] benign    benign    benign    benign    benign    benign    benign   
+[540] benign    benign    benign    benign    benign    benign    benign   
+[547] malignant benign    benign    malignant benign    benign    benign   
+[554] benign    benign    benign    benign    benign    benign    benign   
+[561] benign    benign    benign    benign    benign    malignant benign   
+[568] benign    malignant malignant malignant malignant benign    benign   
+[575] malignant benign    benign    benign    benign    benign    benign   
+[582] malignant malignant benign    benign    benign    malignant benign   
+[589] malignant benign    malignant malignant malignant benign    malignant
+[596] benign    benign    benign    benign    benign    benign    benign   
+[603] benign    malignant malignant malignant benign    benign    malignant
+[610] benign    malignant malignant malignant benign    benign    benign   
+[617] benign    benign    benign    benign    benign    benign    benign   
+[624] benign    benign    benign    malignant benign    benign    benign   
+[631] benign    benign    benign    malignant benign    benign    malignant
+[638] benign    benign    benign    benign    benign    benign    benign   
+[645] benign    benign    benign    benign    malignant benign    benign   
+[652] benign    benign    benign    benign    benign    benign    benign   
+[659] malignant benign    benign    benign    benign    benign    benign   
+[666] benign    benign    benign    malignant malignant malignant benign   
+[673] benign    benign    benign    benign    benign    benign    benign   
+[680] benign    malignant malignant benign    benign    benign    benign   
+[687] benign    benign    benign    benign    benign    malignant benign   
+[694] benign    benign    benign    malignant malignant malignant
+Levels:  benign malignant 
+> 
+> # bagging failed if only one predictor was specified
+> # by Christoph M. Friedrich <chris@uni-wh.de>, April 29th, 2002
+> 
+> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+> y <- factor(ifelse(apply(X, 1, mean) > 0, 1, 0))
+> learn <- cbind(y, X)
+> mt <- bagging(y ~ V1, data=learn)
+> mt <- bagging(y ~ V1, data=learn, method="double", coob=FALSE)
+> X <- as.data.frame(matrix(rnorm(1000), ncol=10))
+> y <- apply(X, 1, mean) + rnorm(nrow(X))
+> learn <- cbind(y, X)
+> mt <- bagging(y ~ V1, data=learn)
+> 
+> 

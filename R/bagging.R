@@ -1,4 +1,4 @@
-# $Id: bagging.R,v 1.6 2002/03/28 07:42:25 peters Exp $
+# $Id: bagging.R,v 1.8 2002/05/07 14:56:07 hothorn Exp $
 
 bagging <- function(y, ...) UseMethod("bagging")
 
@@ -7,59 +7,58 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
                             ...) {
   method <- match.arg(method)
   class <- is.factor(y)
+  if (class & coob) {
+    classlevels <- levels(y)
+    votenew <- matrix(0, nrow=length(y), ncol=length(classlevels))
+  }
+  oobsum <- 0
   if (method=="double" & !class)
       stop("Cannot compute Double Bagging for regression problems")
   if (!is.data.frame(X)) stop("X is not a data.frame")
   mt <- list()
   ldasc <- c()
-  oob <- list()
   for (i in 1:nbagg) {
     indx <- sample(1:length(y), length(y), replace=TRUE)
     if (method == "standard")
-      mt <- c(mt, list(rpart(y[indx] ~., data=X[indx,], control = control,...)))
+      mt <- c(mt, list(rpart(y[indx] ~., data=as.data.frame(X[indx,]),
+                             control = control,...)))
     if (method == "double") {
-      lmod <- lda(y[-indx] ~., data=X[-indx,]) # OOB !!!
+      lmod <- lda(y[-indx] ~., data=as.data.frame(X[-indx,])) # OOB !!!
       ldasc <- c(ldasc, list(lmod$scaling))
       mt <- c(mt, list(rpart(y[indx] ~.,
-                  data=cbind(as.matrix(X[indx,])%*%lmod$scaling, X[indx,]),
-                  control=control, ...)))
+                  data=as.data.frame(cbind(as.matrix(X[indx,])%*%lmod$scaling,
+                                           X[indx,])), control=control, ...)))
     }
     if (coob & method != "double") {
-      help <- predict.bagging(mt[[i]], X[-indx,])
-      if (any(is.na(help))) warning("NA in predict")
-      dummy <- rep(NA, length(y))
       if (class) {
-        dummy <- as.factor(dummy)
-        levels(dummy) <- levels(help)
+        pr <- predict.bagging(mt[[i]], newdata=X, type="class")
+        votenew[cbind((1:length(y))[-indx], as.integer(pr[-indx]))] <-
+          votenew[cbind((1:length(y))[-indx], as.integer(pr[-indx]))] + 1
+      } else {
+        pr <- predict.bagging(mt[[i]], newdata=X)
+        oobsum <- oobsum + pr 
       }
-      dummy[-indx] <- help
-      oob <- c(oob, list(dummy))
+      if (any(is.na(pr))) warning("NA in predict")
     }
   }
   if (coob & method == "double") {
         warning("Cannot compute out-of-bag estimate for Double-Bagging")
         err <- NA
-        oob <- NA
+        pred <- NA
   }
   if (coob & method =="standard") {
-    oob <- as.data.frame(oob)
-    names(oob) <- paste("t", 1:length(mt), sep="")
-    vfun <- function(votes) {
-      if (all(is.na(votes))) return(NA)
-      votes <- votes[!is.na(votes)]
-      votes <- as.factor(votes)
-      levels(votes)[which.max(table(votes))]
-    }
     if (class) {
-        pred <- as.factor(unlist(apply(oob, 1, vfun)))
+        pred <- apply(votenew, 1, uwhich.max) 
+        pred <- as.factor(pred)
+	levels(pred) <- classlevels
         err <- mean(y != pred, na.rm=TRUE)
     } else {
-        pred <- apply(as.data.frame(oob), 1, mean, na.rm=TRUE)
+        pred <- oobsum/nbagg
         err <- mean( (y - pred)^2, na.rm=TRUE)
     }
   } else { 
     err <- NA
-    oob <- NA
+    pred <- NA
   }
   if (method =="double")
     method <- "Double-Bagging"
@@ -69,8 +68,8 @@ bagging.default <- function(y, X=NULL, nbagg=25, method=c("standard","double"),
     method <- paste(method, "classification trees")
   else 
     method <- paste(method, "regression trees")
-  RET <- list(mt=mt, oob=oob, err=err, nbagg=nbagg, method=method)
-  if (method == "double") RET <- list(mt=mt, oob=oob, err=err, ldasc = ldasc,
+  RET <- list(mt=mt, oob=pred, err=err, nbagg=nbagg, method=method)
+  if (method == "double") RET <- list(mt=mt, oob=pred, err=err, ldasc = ldasc,
                                       nbagg=nbagg, method=method)
   class(RET) <- "bagging"
   return(RET)

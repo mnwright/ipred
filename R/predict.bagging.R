@@ -1,8 +1,14 @@
-# $Id: predict.bagging.R,v 1.4 2002/03/28 07:42:25 peters Exp $
+# $Id: predict.bagging.R,v 1.6 2002/04/12 08:17:48 hothorn Exp $
+
+uwhich.max <- function(x) {
+  wm <- which.max(x)
+  if (length(wm) > 1)
+    wm <- wm[sample(length(wm), 1)]
+  wm
+}
 
 predict.bagging <- function(object, newdata=NULL, ...) 
 {
-    a <- c()
     if (!inherits(object, "bagging")) {
         if(inherits(object,"rpart")) {
             if (object$method == "class")
@@ -12,10 +18,13 @@ predict.bagging <- function(object, newdata=NULL, ...)
         }
     } else {
         LDA <- FALSE
+        if (is.null(newdata)) stop("newdata missing")
         if (!is.null(object$mt)) mt <- object$mt
         if (!is.null(object$ldasc)) { LDA <- TRUE; ldasc <- object$ldasc; }
-        if (mt[1][[1]]$method == "class") {
-            a <- list()
+        if (mt[[1]]$method == "class") {
+            classlevels <- attr(mt[[1]], "ylevels")
+            votenew <- matrix(0, nrow=nrow(newdata),
+                                 ncol=length(classlevels))
             for (i in 1:length(mt)) {
                 if (LDA) { 
                     test <- cbind(as.matrix(newdata)%*%ldasc[i][[1]], newdata)
@@ -23,23 +32,22 @@ predict.bagging <- function(object, newdata=NULL, ...)
                 } else {
                     test <- newdata
                 }
-                a <- c(a,list(predict.rpart(mt[i][[1]], test, type="class")))
+                pr <- predict.rpart(mt[[i]], test, type="class")
+                votenew[cbind(1:nrow(votenew), as.integer(pr))] <-
+                    votenew[cbind(1:nrow(votenew), as.integer(pr))] + 1
             }
-            names(a) <- paste("t", 1:length(mt), sep="")
-            vfun <- function(votes) {
-                votes <- as.factor(votes)
-                levels(votes)[which.max(table(votes))]
-            }
-            RET <- as.factor(apply(as.data.frame(a), 1, vfun))
+            RET <- apply(votenew, 1, uwhich.max)
+            RET <- as.factor(RET)
+            levels(RET) <- classlevels
         } else {
             if (!is.null(object$mt)) mt <- object$mt
             if (!is.null(object$ldasc)) 
               stop("cannot predict with lda for regression trees!")
-            for (i in 1:length(mt))
-                a <- cbind(a,predict.rpart(mt[i][[1]], newdata))
-            RET <- apply(a, 1, mean)
+            a <- predict.rpart(mt[[1]], newdata)
+            for (i in 2:length(mt))
+                a <- a + predict.rpart(mt[[i]], newdata)
+            RET <- a/length(mt)
         }
     }  
     RET
 }
-

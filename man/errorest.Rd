@@ -3,8 +3,8 @@
 
 \title{Estimators for the Prediction Error}
 \description{
-Resampling based estimates of prediction error (misclassification or mean squared
-error). 
+Resampling based estimates of prediction error (misclassification or 
+mean squared error). 
 }
 \usage{
 errorest(formula, data, subset, na.action, model=NULL, predict=NULL,
@@ -72,7 +72,8 @@ only.
 
 \value{
  An object of class \code{errorest}, i.e. a list with arguments:
-  \item{err}{estimated misclassification error for a nominal or estimated mean squared error for a continuous response.}
+  \item{err}{estimated misclassification error for a nominal or the square
+root of the estimated mean squared error for a continuous response.}
   \item{estimator}{kind of estimator used.}
   \item{para}{additional parameters for the estimator.}
   \item{data.name}{names of the variables used.}
