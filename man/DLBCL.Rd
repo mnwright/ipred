@@ -1,6 +1,6 @@
 \name{DLBCL}
 \alias{DLBCL}
-\non_function{}
+\docType{data}
 \title{ Diffuse Large B-Cell Lymphoma }
 \usage{data(DLBCL)}
 \description{

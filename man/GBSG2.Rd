@@ -1,6 +1,6 @@
 \name{GBSG2}
 \alias{GBSG2}
-\non_function{}
+\docType{data} 
 \title{ German Breast Cancer Study Group 2 }
 \usage{data(GBSG2)}
 \description{

@@ -1,6 +1,6 @@
 \name{Smoking}
 \alias{Smoking}
-\non_function{}
+\docType{data} 
 \title{Smoking Styles}
 \usage{data(Smoking)}
 \description{

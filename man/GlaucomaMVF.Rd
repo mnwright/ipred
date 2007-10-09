@@ -1,6 +1,6 @@
 \name{GlaucomaMVF}
 \alias{GlaucomaMVF}
-\non_function{}
+\docType{data} 
 \title{ Glaucoma Database }
 \usage{data(GlaucomaMVF)}
 \description{
