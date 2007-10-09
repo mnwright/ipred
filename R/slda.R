@@ -1,4 +1,4 @@
-# $Id: slda.R,v 1.8 2005/06/29 07:17:12 peters Exp $
+# $Id: slda.R,v 1.9 2005/06/29 08:50:28 hothorn Exp $
 
 # stabilized linear discriminant analysis according to Laeuter & Kropf
 

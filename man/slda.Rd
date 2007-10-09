@@ -6,7 +6,7 @@
 \title{ Stabilised Linear Discriminant Analysis }
 \description{
   Linear discriminant analysis based on left-spherically 
-  distributed linear scores. }
+  distributed linear scores.
 }
 \usage{
 \method{slda}{formula}(formula, data, subset, na.action=na.rpart, \dots)

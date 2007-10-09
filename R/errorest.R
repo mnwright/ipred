@@ -1,4 +1,4 @@
-# $Id: errorest.R,v 1.24 2004/02/11 09:13:52 peters Exp $
+# $Id: errorest.R,v 1.25 2005/06/29 08:50:28 hothorn Exp $
 
 control.errorest <- function(k= 10, nboot = 25, strat=FALSE,
                      random=TRUE, predictions=FALSE, getmodels=FALSE, list.tindx = NULL) {

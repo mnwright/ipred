@@ -51,7 +51,7 @@ irpart <- function(formula, data=NULL, weights, subset,
 	method.int <- 4      #the fourth entry in func_table.h
 
         ## assign this to avoid garbage collection
-        keep <- rpartcallback(mlist, nobs, init)
+        keep <- rpart:::rpartcallback(mlist, nobs, init)
     }
     else {
 	method.int <- pmatch(method, c("anova", "poisson", "class", "exp"))

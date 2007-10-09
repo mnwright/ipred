@@ -1,4 +1,4 @@
-# $Id: inclass.R,v 1.30 2003/07/22 14:56:31 peters Exp $
+# $Id: inclass.R,v 1.31 2005/06/29 08:50:28 hothorn Exp $
 
 inclass <- function(formula, data, ...) UseMethod("inclass", data)
 

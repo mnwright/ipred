@@ -7,7 +7,7 @@ Predicts the class membership of new observations through indirect
 bagging.
 }
 \usage{
-predict.inbagg(object, newdata, ...)
+\method{predict}{inbagg}(object, newdata, ...)
 }
 \arguments{
   \item{object}{object of class \code{inbagg}, see \code{\link{inbagg}}.}

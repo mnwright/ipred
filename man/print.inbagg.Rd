@@ -5,7 +5,7 @@
 Print object of class \code{inbagg} in nice layout.
 }
 \usage{
-print.inbagg(x, ...)
+\method{print}{inbagg}(x, ...)
 }
 \arguments{
   \item{x}{object of class \code{inbagg}.}

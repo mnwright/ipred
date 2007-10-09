@@ -196,7 +196,7 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
 ##apply
   res <- workhorse.inbagg(object = formula.list, y = y, X = X, W = W, 
     cFUN = cFUN, w.training.set = w.training.set, y.training.set = y.training.set, 
-    bcontrol = bcontrol, control = control, ...)
+    bcontrol = bcontrol, ...)
   RET <- list(mtrees = res, y = y, W = W, X = X)
   class(RET) <- "inbagg"
   RET

@@ -9,7 +9,7 @@ classification.
 }
 
 \usage{
-predict.inclass(object, newdata, ...)
+\method{predict}{inclass}(object, newdata, ...)
 }
 
 \arguments{

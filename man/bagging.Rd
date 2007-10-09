@@ -13,12 +13,12 @@
   Bagging for classification, regression and survival trees.
 }
 \usage{
-ipredbagg.factor(y, X=NULL, nbagg=25, control=
+\method{ipredbagg}{factor}(y, X=NULL, nbagg=25, control=
                  rpart.control(minsplit=2, cp=0, xval=0), 
                  comb=NULL, coob=FALSE, ns=length(y), keepX = TRUE, \dots)
-ipredbagg.numeric(y, X=NULL, nbagg=25, control=rpart.control(xval=0), 
+\method{ipredbagg}{numeric}(y, X=NULL, nbagg=25, control=rpart.control(xval=0), 
                   comb=NULL, coob=FALSE, ns=length(y), keepX = TRUE, \dots)
-ipredbagg.Surv(y, X=NULL, nbagg=25, control=rpart.control(xval=0), 
+\method{ipredbagg}{Surv}(y, X=NULL, nbagg=25, control=rpart.control(xval=0), 
                comb=NULL, coob=FALSE, ns=dim(y)[1], keepX = TRUE, \dots)
 \method{bagging}{data.frame}(formula, data, subset, na.action=na.rpart, \dots)
 }

@@ -10,7 +10,7 @@
 }
 
 \usage{
-inbagg.data.frame(formula, data, pFUN=NULL, 
+\method{inbagg}{data.frame}(formula, data, pFUN=NULL, 
   cFUN=list(model = NULL, predict = NULL, training.set = NULL), 
   nbagg = 25, ns = 0.5, replace = FALSE, ...)
 }

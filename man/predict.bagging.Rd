@@ -7,11 +7,11 @@
   Predict the outcome of a new observation based on multiple trees.  
 }
 \usage{
-predict.classbagg(object, newdata=NULL, type=c("class", "prob"),
+\method{predict}{classbagg}(object, newdata=NULL, type=c("class", "prob"),
                             aggregation=c("majority", "average", "weighted"), \dots)
-predict.regbagg(object, newdata=NULL, aggregation=c("average",
+\method{predict}{regbagg}(object, newdata=NULL, aggregation=c("average",
                 "weighted"), \dots)
-predict.survbagg(object, newdata=NULL,\dots)
+\method{predict}{survbagg}(object, newdata=NULL,\dots)
 }
 \arguments{
   \item{object}{object of classes \code{classbagg}, \code{regbagg} or

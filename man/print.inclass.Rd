@@ -5,7 +5,7 @@
 Print object of class \code{inclass} in nice layout.
 }
 \usage{
-print.inclass(x, ...)
+\method{print}{inclass}(x, ...)
 }
 \arguments{
   \item{x}{object of class \code{inclass}.}
