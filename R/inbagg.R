@@ -105,11 +105,13 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
  cFUN=list(model = NULL, predict = NULL, training.set = NULL), 
  nbagg = 25, ns = 0.5, replace = FALSE, ...)
 {
-  if(!is.function(cFUN) && is.null(cFUN$model)) {
+  if(!is.function(cFUN)) {
+    if(is.null(cFUN$model)) {
     cFUN$model <-  function(formula, data) 
             rpart(formula, data, control = rpart.control(minsplit=2, cp=0, xval=0))
     if(is.null(cFUN$predict)) cFUN$predict <- function(object, newdata) predict(object, newdata, type = "class")
     if(is.null(cFUN$training.set))  cFUN$trainig.set <- "fitted.bag"
+    }
  }
 
 ##check formula
@@ -124,7 +126,9 @@ inbagg.data.frame <- function(formula, data, pFUN=NULL,
 
 ##editing formula
   if(length(formula[[2]])==3) {
-    if(!is.function(cFUN) && is.null(cFUN$formula)) y.formula <- as.formula(formula[[2]]) else y.formula <- cFUN$formula
+    if(!is.function(cFUN)) {
+        if (is.null(cFUN$formula)) y.formula <- as.formula(formula[[2]]) else y.formula <- cFUN$formula
+    }
   
     w.formula <- XX~YY
     w.formula[[2]] <- formula[[2]][[3]]

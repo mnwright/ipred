@@ -1,8 +1,8 @@
-# $Id: CHANGES,v 1.45 2007/10/09 12:46:37 hothorn Exp $
+# $Id: CHANGES,v 1.46 2008/07/30 08:42:59 hothorn Exp $
 
-	0.8-5 (10.10.2007)
+	0.8-6 (28.07.2008)
 
-        remove non_function entries
+        make R devel happy (<function>$<name> is no longer allowed)
 
 	0.8-4 (09.10.2007)
 

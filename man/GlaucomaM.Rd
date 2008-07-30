@@ -1,6 +1,6 @@
 \name{GlaucomaM}
 \alias{GlaucomaM}
-\docType{data} 
+\non_function{}
 \title{ Glaucoma Database }
 \usage{data(GlaucomaM)}
 \description{

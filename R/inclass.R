@@ -1,4 +1,4 @@
-# $Id: inclass.R,v 1.31 2005/06/29 08:50:28 hothorn Exp $
+# $Id: inclass.R,v 1.33 2008/08/04 08:18:41 hothorn Exp $
 
 inclass <- function(formula, data, ...) UseMethod("inclass", data)
 
@@ -22,7 +22,7 @@ inclass.data.frame <- function(formula, data, pFUN = NULL, cFUN = NULL, ...)
 ##editing formula
 ###main formula
   if(length(formula[[2]])==3) {
-    if(is.null(cFUN$formula)) y.formula <- formula[[2]] else y.formula <- cFUN$formula
+    if(is.function(cFUN)) y.formula <- formula[[2]] else y.formula <- cFUN$formula
     w.formula <- XX~YY
     w.formula[[2]] <- formula[[2]][[3]]
     w.formula[[3]] <- formula[[3]]

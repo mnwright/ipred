@@ -1,6 +1,6 @@
 \name{dystrophy}
 \alias{dystrophy}
-\docType{data} 
+\non_function{}
 \title{Detection of muscular dystrophy carriers.}
 \usage{data(dystrophy)}
 \description{
