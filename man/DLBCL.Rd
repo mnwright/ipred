@@ -47,7 +47,7 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 }
 \examples{
 data(DLBCL)
-survfit(Surv(time, cens), data=DLBCL)
+survfit(Surv(time, cens) ~ 1, data=DLBCL)
 
 }
 \keyword{datasets}

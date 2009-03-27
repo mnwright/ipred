@@ -1,6 +1,7 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -11,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > TestsEx <- TRUE
@@ -57,7 +58,7 @@ Type 'q()' to quit R.
 + ##___ Examples ___:
 + 
 + data(DLBCL)
-+ survfit(Surv(time, cens), data=DLBCL)
++ survfit(Surv(time, cens) ~ 1, data=DLBCL)
 + 
 + 
 + ## Keywords: 'datasets'.
@@ -87,7 +88,7 @@ Type 'q()' to quit R.
 + 
 + # pooled Kaplan-Meier
 + 
-+ mod <- survfit(Surv(time, cens), data=GBSG2)
++ mod <- survfit(Surv(time, cens) ~1, data=GBSG2)
 + # integrated Brier score
 + sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
 + # Brier score at 5 years
@@ -609,7 +610,7 @@ Type 'q()' to quit R.
 + data(DLBCL)
 + smod <- Surv(DLBCL$time, DLBCL$cens)
 + 
-+ KM <- survfit(smod)
++ KM <- survfit(smod ~ 1)
 + # integrated Brier score up to max(DLBCL$time)
 + sbrier(smod, KM)
 + 
@@ -650,7 +651,7 @@ Type 'q()' to quit R.
 + 
 + n <- 100
 + time <- 1:100
-+ mod <- survfit(Surv(time, cens))
++ mod <- survfit(Surv(time, cens) ~ 1)
 + a <- sbrier(Surv(time, cens), rep(list(mod), n))
 + mymin <- mod$surv * (1 - mod$surv)
 + stopifnot(all.equal(cleans(a),sum(mymin)/max(time)))
@@ -682,8 +683,8 @@ Type 'q()' to quit R.
 + 
 + # no information about the groups
 + 
-+ a <- sbrier(Surv(time, cens), survfit(Surv(time, cens)))
-+ b <- sbrier(Surv(time, cens), rep(list(survfit(Surv(time, cens))), 20))
++ a <- sbrier(Surv(time, cens), survfit(Surv(time, cens) ~ 1))
++ b <- sbrier(Surv(time, cens), rep(list(survfit(Surv(time, cens) ~ 1)), 20))
 + stopifnot(all.equal(a, b))
 + 
 + # risk groups known
@@ -789,8 +790,8 @@ Bagging classification trees with 10 bootstrap replications
 Call: bagging.data.frame(formula = Type ~ ., data = Glass, nbagg = 10, 
     coob = TRUE)
 
-Out-of-bag estimate of misclassification error:  0.3224 
+Out-of-bag estimate of misclassification error:  0.3271 
 
 [1] 0.051
 [1] 0.024
-Time elapsed:  29.31 0.27 29.89 0 0 
+Time elapsed:  20.261 0.204 20.538 0 0 

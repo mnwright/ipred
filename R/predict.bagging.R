@@ -1,4 +1,4 @@
-# $Id: predict.bagging.R,v 1.16 2003/08/08 12:13:42 hothorn Exp $
+# $Id: predict.bagging.R,v 1.17 2009/03/27 16:18:38 hothorn Exp $
 
 uwhich.max <- function(x) {
   # need to determine all maxima in order to sample from them
@@ -248,7 +248,7 @@ predict.survbagg <- function(object, newdata=NULL, ...) {
   }
   RET <- list()
   for (j in 1:N)
-    RET <- c(RET, list(survfit(Surv(agglsample[[j]], aggcens[[j]]))))
+    RET <- c(RET, list(survfit(Surv(agglsample[[j]], aggcens[[j]]) ~ 1)))
   RET
 }
 

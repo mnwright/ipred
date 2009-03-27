@@ -1,6 +1,7 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1  (2005-06-20), ISBN 3-900051-07-0
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -11,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > library(ipred)
@@ -183,7 +184,7 @@ Levels: benign malignant
 > booterr <- errorest(y ~., data=learn, model=lm,
 +                     estimator="boot",est.para=control.errorest(nboot=50))$error
 > print(trueerr/mean(cverr))
-[1] 0.949367
+[1] 0.9612632
 > print(trueerr/booterr)
-[1] 0.9148273
+[1] 0.9073771
 > 

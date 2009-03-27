@@ -1,4 +1,4 @@
-# $Id: sbrier.R,v 1.4 2003/03/31 08:44:16 peters Exp $
+# $Id: sbrier.R,v 1.5 2009/03/27 16:18:38 hothorn Exp $
 
 getsurv <- function(obj, times)
 {
@@ -98,7 +98,7 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
 
     # reverse Kaplan-Meier: estimate censoring distribution
 
-    hatcdist <- survfit(Surv(time, 1 - cens))
+    hatcdist <- survfit(Surv(time, 1 - cens) ~ 1)
     csurv <- getsurv(hatcdist, time)
     csurv[csurv == 0] <- Inf
 

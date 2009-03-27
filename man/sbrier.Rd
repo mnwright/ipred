@@ -38,7 +38,7 @@ survival data. \emph{Statistics in Medicine} \bold{18}(17-18), 2529--2545.
 data(DLBCL)
 smod <- Surv(DLBCL$time, DLBCL$cens)
 
-KM <- survfit(smod)
+KM <- survfit(smod ~ 1)
 # integrated Brier score up to max(DLBCL$time)
 sbrier(smod, KM)
 
@@ -79,7 +79,7 @@ stopifnot(all.equal(cleans(a),0.25))
 
 n <- 100
 time <- 1:100
-mod <- survfit(Surv(time, cens))
+mod <- survfit(Surv(time, cens) ~ 1)
 a <- sbrier(Surv(time, cens), rep(list(mod), n))
 mymin <- mod$surv * (1 - mod$surv)
 stopifnot(all.equal(cleans(a),sum(mymin)/max(time)))
@@ -111,8 +111,8 @@ cens <- rep(1, length(time))
 
 # no information about the groups
 
-a <- sbrier(Surv(time, cens), survfit(Surv(time, cens)))
-b <- sbrier(Surv(time, cens), rep(list(survfit(Surv(time, cens))), 20))
+a <- sbrier(Surv(time, cens), survfit(Surv(time, cens) ~ 1))
+b <- sbrier(Surv(time, cens), rep(list(survfit(Surv(time, cens) ~1)), 20))
 stopifnot(all.equal(a, b))
 
 # risk groups known

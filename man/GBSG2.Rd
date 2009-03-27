@@ -58,7 +58,7 @@ table(GBSG2$horTh)
 
 # pooled Kaplan-Meier
 
-mod <- survfit(Surv(time, cens), data=GBSG2)
+mod <- survfit(Surv(time, cens) ~ 1, data=GBSG2)
 # integrated Brier score
 sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
 # Brier score at 5 years
