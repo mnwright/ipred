@@ -88,7 +88,7 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
         survs <- pred[ot]
     }, matrix = {
         # <FIXME>
-        if (all(dim(pred) == c(length(time), N)))
+        if (all(dim(pred) == c(length(btime), N)))
             survs <- pred[,ot]
         else
             stop("wrong dimensions of pred")
