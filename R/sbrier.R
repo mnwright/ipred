@@ -34,7 +34,7 @@ getsurv <- function(obj, times)
     nsurv
 }
 
-sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
+sbrier <- function(obj, pred, btime = range(obj[,1]))
 {
     if(!inherits(obj, "Surv"))
         stop("obj is not of class Surv")
@@ -60,8 +60,12 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
     if (is.null(btime)) stop("btime not given")
     if (length(btime) < 1) stop("btime not given")
 
-    if (length(btime) == 2) btime <- time[time >= btime[1] & time <=
+    if (length(btime) == 2) {
+        if (btime[1] < min(time)) warning("btime[1] is smaller than min(time)")
+        if (btime[2] > max(time)) warning("btime[2] is larger than max(time)")
+        btime <- time[time >= btime[1] & time <=
                                           btime[2]]
+    }
 
     ptype <- class(pred)
     # <begin> S3 workaround
@@ -98,9 +102,13 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
 
     # reverse Kaplan-Meier: estimate censoring distribution
 
-    hatcdist <- survfit(Surv(time, 1 - cens) ~ 1)
-    csurv <- getsurv(hatcdist, time)
+    ### deal with ties
+    hatcdist <- prodlim(Surv(time, cens) ~ 1,reverse = TRUE)
+    csurv <- prodlim:::predictSurv(hatcdist, times = time)
     csurv[csurv == 0] <- Inf
+    # hatcdist <- survfit(Surv(time, 1 - cens) ~ 1)
+    # csurv <- getsurv(hatcdist, time)
+    # csurv[csurv == 0] <- Inf
 
     bsc <- rep(0, length(btime))
     
@@ -124,7 +132,8 @@ sbrier <- function(obj, pred, btime=c(0, max(obj[,1])))
     } else {
         help1 <- as.integer(time <= btime & cens == 1)
         help2 <- as.integer(time > btime)
-        cs <- getsurv(hatcdist, btime)
+        cs <- prodlim:::predictSurv(hatcdist, times=btime)
+        ### cs <- getsurv(hatcdist, btime)
         if (cs == 0) cs <- Inf
         RET <-  mean((0 - survs)^2*help1*(1/csurv) +
                      (1-survs)^2*help2*(1/cs))

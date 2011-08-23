@@ -1,7 +1,8 @@
 
-R version 2.9.0 alpha (2009-03-22 r48193)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.14.1 (2011-12-22)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -750,6 +751,10 @@ Loading required package: survival
 Loading required package: splines
 Loading required package: nnet
 Loading required package: class
+Loading required package: prodlim
+Loading required package: KernSmooth
+KernSmooth 2.23 loaded
+Copyright M. P. Wand 1997-2009
 
 Bagging classification trees with 25 bootstrap replications 
 
@@ -782,7 +787,7 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 +
     MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
     MGEc.10 + IPI, data = DLBCL, coob = TRUE)
 
-Out-of-bag estimate of Brier's score:  0.1925 
+Out-of-bag estimate of Brier's score:  0.1927 
 
 
 Bagging classification trees with 10 bootstrap replications 
@@ -794,4 +799,6 @@ Out-of-bag estimate of misclassification error:  0.3271
 
 [1] 0.051
 [1] 0.024
-Time elapsed:  20.261 0.204 20.538 0 0 
+Time elapsed:  11.864 0.152 12.032 0 0 
+Warning message:
+In sbrier(smod, KM, btime = c(0, 50)) : btime[1] is smaller than min(time)

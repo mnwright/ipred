@@ -1,7 +1,8 @@
 
-R version 2.9.0 alpha (2009-03-22 r48193)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.14.1 (2011-12-22)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -23,6 +24,10 @@ Loading required package: survival
 Loading required package: splines
 Loading required package: nnet
 Loading required package: class
+Loading required package: prodlim
+Loading required package: KernSmooth
+KernSmooth 2.23 loaded
+Copyright M. P. Wand 1997-2009
 > 
 > data(BreastCancer)
 > 

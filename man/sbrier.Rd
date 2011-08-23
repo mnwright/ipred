@@ -6,7 +6,7 @@
 observations.
 }
 \usage{
-sbrier(obj, pred, btime=c(0, max(obj[,1])))
+sbrier(obj, pred, btime= range(obj[,1]))
 }
 \arguments{
   \item{obj}{an object of class \code{Surv}.}
@@ -21,9 +21,17 @@ sbrier(obj, pred, btime=c(0, max(obj[,1])))
   There is no obvious criterion of model fit for censored data. The Brier
 score for censoring as well as it's integrated version were suggested by
 Graf et al (1999).
+
+The integrated Brier score is always computed over a subset of the
+interval given by the range of the time slot of the survival object \code{obj}.
+
 }
 \value{
   The (integrated) Brier score with attribute \code{time} is returned. 
+}
+\seealso{
+  More measures for the validation of predicted surival probabilities 
+  are implemented in package \code{pec}.
 }
 \references{ 
 
