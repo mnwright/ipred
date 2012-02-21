@@ -78,5 +78,6 @@ import(class)
 import(rpart)
 import(MASS)
 #import(mlbench)
-#import(survival)
+### at least is.Surv needs to be imported
+import(survival)
 import(nnet)

@@ -1,7 +1,6 @@
-a46f6dff88b9211befc9d228754e4f24 *CHANGES
 7310f9721435d34ed3b17b2ae46f00d9 *COPYRIGHTS
-f148ba3fb4a42df19a4dfa381c1f1f6f *DESCRIPTION
-e5f847e4365a17dbb71acbeef86f169f *NAMESPACE
+ace15f125539552047591b2217efb258 *DESCRIPTION
+b3b1057974826d8ddc2d755a4f8f79e7 *NAMESPACE
 b9fc1b890ea9262befc55f960ff779b2 *R/bagging.R
 c55f9e65194e69cac7b3f6a14819f7ee *R/bootest.R
 d8b949efde7413d8d639a64be6528403 *R/checkfunArgs.R
@@ -33,8 +32,9 @@ b77f49ce74f90948e4d09122c5fac724 *data/DLBCL.rda
 b07616370b51419752d4219f1f4f9f55 *data/GlaucomaMVF.rda
 1f87b4f0d914888b1be71028fef8d316 *data/Smoking.rda
 e54b730797d71b1483cc26bfb3ea552b *data/dystrophy.rda
+e2893d125afc100395891b9366dee5d7 *inst/NEWS
 66215d0fa9e1452a5e6d9fc7f0bb139d *inst/doc/ipred-examples.Rnw
-88798fa961804adfeac7eadca3b8a44d *inst/doc/ipred-examples.pdf
+ec9f1b9a263ee23538a41806c93c77d1 *inst/doc/ipred-examples.pdf
 c642c366927d8bf2522e3c078f6e34a2 *inst/doc/ipred.bib
 ffe88df7e2c1226c69246c63282778ce *man/DLBCL.Rd
 d13342c7da4e937cfbaaf3c577c1666b *man/GBSG2.Rd

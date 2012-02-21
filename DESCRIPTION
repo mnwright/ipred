@@ -1,7 +1,7 @@
 Package: ipred
 Title: Improved Predictors
-Version: 0.8-12
-Date: 2011-08-23
+Version: 0.8-13
+Date: 2012-02-21
 Author: Andrea Peters and Torsten Hothorn
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
 Description: Improved predictive models by indirect classification and
@@ -11,6 +11,6 @@ Depends: R (>= 2.10), rpart (>= 3.1-8), MASS, mlbench, survival, nnet,
         class, prodlim
 Suggests: mvtnorm
 License: GPL (>= 2)
-Packaged: 2012-02-20 11:57:11 UTC; hothorn
+Packaged: 2012-02-21 16:08:47 UTC; hothorn
 Repository: CRAN
-Date/Publication: 2012-02-20 12:54:51
+Date/Publication: 2012-02-21 16:27:30
