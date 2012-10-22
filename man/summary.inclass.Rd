@@ -22,7 +22,6 @@ none
 }
 
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 
 \seealso{\code{\link{print.summary.inclass}}}

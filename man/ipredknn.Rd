@@ -31,10 +31,10 @@ ipredknn(formula, data, subset, na.action, k=5, \dots)
   An object of class \code{ipredknn}. See \code{\link{predict.ipredknn}}.
 }
 
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 
 \examples{
 
+library("mlbench")
 learn <- as.data.frame(mlbench.twonorm(300))
 
 mypredict.knn <- function(object, newdata) 

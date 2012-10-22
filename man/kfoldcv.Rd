@@ -20,7 +20,6 @@ kfoldcv(k, N, nlevel=NULL)
 \value{
   A vector of length \code{k}.
 }
-\author{ Torsten Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \examples{
 
 # 10-fold CV with N = 91

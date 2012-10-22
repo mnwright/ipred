@@ -26,7 +26,7 @@ The vector of predicted classes is returned.
 \references{
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised classification with structured class definitions.
-\emph{Computational Statistics \& Data Analysis} \bold{36}, 
+\emph{Computational Statistics & Data Analysis} \bold{36}, 
 209--225.
 
 Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2003),
@@ -34,7 +34,6 @@ Diagnosis of glaucoma by indirect classifiers.
 \emph{Methods of Information in Medicine} \bold{1}, 99-103.
 }        
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 \seealso{\code{\link{inbagg}}}
 

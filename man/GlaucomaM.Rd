@@ -2,7 +2,7 @@
 \alias{GlaucomaM}
 \non_function{}
 \title{ Glaucoma Database }
-\usage{data(GlaucomaM)}
+\usage{data("GlaucomaM")}
 \description{
 The \code{GlaucomaM} data has 196 observations in two classes. 
 62 variables are derived from a confocal laser scanning image of the 

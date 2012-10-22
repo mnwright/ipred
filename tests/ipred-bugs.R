@@ -1,6 +1,5 @@
 library(ipred)
 
-data(BreastCancer)
 
 actversion <- paste(R.version$major, R.version$minor, sep=".")
 thisversion <- "1.7.0"
@@ -10,7 +9,7 @@ thisversion <- "1.7.0"
 #}
 set.seed(29081975)
 
-
+data("BreastCancer", package = "mlbench")
 mod <- bagging(Class ~ Cl.thickness + Cell.size
                 + Cell.shape + Marg.adhesion
                 + Epith.c.size + Bare.nuclei

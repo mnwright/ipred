@@ -2,7 +2,7 @@
 \alias{Smoking}
 \non_function{}
 \title{Smoking Styles}
-\usage{data(Smoking)}
+\usage{data("Smoking")}
 \description{
 The \code{Smoking} data frame has 55 rows and 9 columns.
 }

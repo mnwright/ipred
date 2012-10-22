@@ -43,5 +43,4 @@ order of the data should be used for sample splitting or not, defaults to
 \details{
  See \code{\link{errorest}}.
 }
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \keyword{misc}

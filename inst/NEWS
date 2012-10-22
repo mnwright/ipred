@@ -1,5 +1,11 @@
 # $Id: CHANGES,v 1.48 2009/09/09 15:40:28 hothorn Exp $
 
+        0.9-0 (22.10.2012)
+
+        Due to interface changes in rpart 3.1-55, the
+        bagging function had to be rewritten. Results of previous version are not   
+        exactly reproducible.
+
         0.8-13 (21.02.2012)
 
         import(survival)

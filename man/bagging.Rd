@@ -65,6 +65,11 @@ for some examples. Note that argument \code{method} for double-bagging is no lon
 }
 
 \details{
+
+The random forest implementations \code{\link[randomForest]{randomForest}}
+and \code{\link[party]{cforest}} are more flexible and reliable for computing
+bootstrap-aggregated trees than this function and should be used instead.
+
   Bagging for classification and regression trees were suggested by
 Breiman (1996a, 1998) in order to stabilise trees. 
 
@@ -102,6 +107,11 @@ limited out-of-bag sample size, one can use \code{\link{slda}} instead.
 See the example section for an example of double-bagging. The methodology is
 not limited to a combination with LDA: bundling (Hothorn and Lausen, 2002b) 
 can be used with arbitrary classifiers.
+
+NOTE: Up to ipred version 0.9-0, bagging was performed using a modified version 
+of the original rpart function. Due to interface changes in rpart 3.1-55, the
+bagging function had to be rewritten. Results of previous version are not 
+exactly reproducible.
 
 }
 
@@ -145,10 +155,8 @@ Torsten Hothorn and Berthold Lausen (2003), Double-Bagging: Combining
 classifiers by bootstrap aggregation. \emph{Pattern Recognition},
 \bold{36}(6), 1303--1309. 
 
-Torsten Hothorn and Berthold Lausen (2002b), Bundling Classifiers by Bagging
-Trees. \emph{submitted}.
-Preprint available from 
-\url{http://www.mathpreprints.com/math/Preprint/blausen/20021016/1}.
+Torsten Hothorn and Berthold Lausen (2005), Bundling Classifiers by Bagging
+Trees. \emph{Computational Statistics & Data Analysis}, 49, 1068--1078.
 
 Torsten Hothorn, Berthold Lausen, Axel Benner and Martin
 Radespiel-Troeger (2004), Bagging Survival Trees.
@@ -156,12 +164,11 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 
 }
 
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \examples{
 
 # Classification: Breast Cancer data
 
-data(BreastCancer)
+data("BreastCancer", package = "mlbench")
 
 # Test set error bagging (nbagg = 50): 3.7\% (Breiman, 1998, Table 5)
 
@@ -173,7 +180,7 @@ mod <- bagging(Class ~ Cl.thickness + Cell.size
 print(mod)
 
 # Test set error bagging (nbagg=50): 7.9\% (Breiman, 1996a, Table 2)
-data(Ionosphere)
+data("Ionosphere", package = "mlbench")
 Ionosphere$V2 <- NULL # constant within groups
 
 bagging(Class ~ ., data=Ionosphere, coob=TRUE)
@@ -195,13 +202,14 @@ predict(mod, Ionosphere[1:10,])
 
 # Regression:
 
-data(BostonHousing)
+data("BostonHousing", package = "mlbench")
 
 # Test set error (nbagg=25, trees pruned): 3.41 (Breiman, 1996a, Table 8)
 
 mod <- bagging(medv ~ ., data=BostonHousing, coob=TRUE)
 print(mod)
 
+library("mlbench")
 learn <- as.data.frame(mlbench.friedman1(200))
 
 # Test set error (nbagg=25, trees pruned): 2.47 (Breiman, 1996a, Table 8)
@@ -215,7 +223,7 @@ print(mod)
 # 10 times 10-fold cross-validation: 0.2 (Hothorn et al,
 # 2002)
 
-data(DLBCL)
+data("DLBCL", package = "ipred")
 mod <- bagging(Surv(time,cens) ~ MGEc.1 + MGEc.2 + MGEc.3 + MGEc.4 + MGEc.5 +
                                  MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 +
                                  MGEc.10 + IPI, data=DLBCL, coob=TRUE)

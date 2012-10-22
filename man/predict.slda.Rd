@@ -25,6 +25,5 @@ A list with components
 \item{x}{the scores of test cases.}
 }
 
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 
 \keyword{multivariate}

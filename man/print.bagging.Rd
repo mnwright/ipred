@@ -18,5 +18,4 @@
 \value{
   none
 }
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \keyword{tree}

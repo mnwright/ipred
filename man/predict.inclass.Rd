@@ -29,7 +29,7 @@ The vector of predicted classes is returned.
 \references{
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised classification with structured class definitions.
-\emph{Computational Statistics \& Data Analysis} \bold{36},
+\emph{Computational Statistics & Data Analysis} \bold{36},
 209--225.
 
 Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2003),
@@ -37,7 +37,6 @@ Diagnosis of glaucoma by indirect classifiers.
 \emph{Methods of Information in Medicine} \bold{1}, 99-103.
 }
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 \seealso{\code{\link{inclass}}}
 
@@ -66,7 +65,7 @@ fit <- inclass(formula, data = dataset, pFUN = list(list(model = lm)),
 predict(object = fit, newdata = dataset)
 
 
-data(Smoking)
+data("Smoking", package = "ipred")
 
 # explanatory variables are: TarY, NicY, COY, Sex, Age
 # intermediate variables are: TVPS, BPNL, COHB
@@ -91,7 +90,7 @@ fit <- inclass(formula, data = smoking,
 predict(object = fit, newdata = smoking)
 }
 
-data(GlaucomaMVF)
+data("GlaucomaMVF", package = "ipred")
 glaucoma <- GlaucomaMVF[,(names(GlaucomaMVF) != "tension")]
 # explanatory variables are derived by laser scanning image and intra occular pressure
 # intermediate variables are: clv, cs, lora
@@ -111,7 +110,7 @@ classify <- function (data) {
 fit <- inclass(Class~clv+lora+cs~., data = glaucoma, 
              pFUN = list(list(model = rpart)), cFUN = classify)
 
-data(GlaucomaM)
+data("GlaucomaM", package = "ipred")
 predict(object = fit, newdata = GlaucomaM)
 
 }

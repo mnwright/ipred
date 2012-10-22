@@ -24,10 +24,9 @@
 \value{
   An object of the same class as \code{tree} with the trees pruned. 
 }
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \examples{
 
-data(Glass)
+data("Glass", package = "mlbench")
 
 mod <- bagging(Type ~ ., data=Glass, nbagg=10, coob=TRUE)
 pmod <- prune(mod)

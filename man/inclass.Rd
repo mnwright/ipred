@@ -79,7 +79,7 @@ the model for each intermediate variable.}
 \references{
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised classification with structured class definitions.
-\emph{Computational Statistics \& Data Analysis} \bold{36},
+\emph{Computational Statistics & Data Analysis} \bold{36},
 209--225.
 
 Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2003),
@@ -87,12 +87,10 @@ Diagnosis of glaucoma by indirect classifiers.
 \emph{Methods of Information in Medicine} \bold{1}, 99-103.
 }
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
-
 \seealso{\code{\link{bagging}}, \code{\link{inclass}}}
 
 \examples{
-data(Smoking)
+data("Smoking", package = "ipred")
 # Set three groups of variables:
 # 1) explanatory variables are: TarY, NicY, COY, Sex, Age
 # 2) intermediate variables are: TVPS, BPNL, COHB

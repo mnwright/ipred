@@ -1,4 +1,5 @@
 library('ipred')
+library("mlbench")
 
 actversion <- paste(R.version$major, R.version$minor, sep=".")
 thisversion <- "1.7.0"
@@ -114,7 +115,7 @@ predict(modc, newdata=learn)[1:10]
 # bundling for survival
 
 while(FALSE) {
-data(GBSG2)
+data("GBSG2", package = "ipred")
 rcomb <- list(list(model=coxph, predict=predict))
 
 mods <- bagging(Surv(time,cens) ~ ., data=GBSG2, nbagg=10, 

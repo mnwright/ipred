@@ -2,7 +2,7 @@
 \alias{GBSG2}
 \non_function{}
 \title{ German Breast Cancer Study Group 2 }
-\usage{data(GBSG2)}
+\usage{data("GBSG2")}
 \description{
   A data frame containing the observations from the  GBSG2 study.
 }

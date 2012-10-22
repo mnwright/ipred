@@ -51,7 +51,6 @@ problems and the predicted Kaplan-Meier curve is returned for survival
 trees. 
 }
 
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 
 \references{ 
 
@@ -66,7 +65,7 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 
 \examples{
 
-data(Ionosphere)
+data("Ionosphere", package = "mlbench")
 Ionosphere$V2 <- NULL # constant within groups
 
 # nbagg = 10 for performance reasons here

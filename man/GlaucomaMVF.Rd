@@ -2,7 +2,7 @@
 \alias{GlaucomaMVF}
 \non_function{}
 \title{ Glaucoma Database }
-\usage{data(GlaucomaMVF)}
+\usage{data("GlaucomaMVF")}
 \description{
 The \code{GlaucomaMVF} data has 170 observations in two classes. 
 66 predictors are derived from a confocal laser scanning image of the 
@@ -101,9 +101,9 @@ to prevent for possible confounding.
 
 }
 \source{
-  Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2002), 
-  Diagnosis of glaucoma by indirect classifiers, 
-  \emph{Methods of Information in Medicine}, to appear.
+Andrea Peters, Berthold Lausen, Georg Michelson and Olaf Gefeller (2003),
+Diagnosis of glaucoma by indirect classifiers.
+\emph{Methods of Information in Medicine} \bold{1}, 99-103.
 }
 
 \note{

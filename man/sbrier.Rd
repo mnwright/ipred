@@ -43,7 +43,7 @@ survival data. \emph{Statistics in Medicine} \bold{18}(17-18), 2529--2545.
 
 \examples{
 
-data(DLBCL)
+data("DLBCL", package = "ipred")
 smod <- Surv(DLBCL$time, DLBCL$cens)
 
 KM <- survfit(smod ~ 1)

@@ -25,6 +25,5 @@ Either the predicted class or the
 the proportion of the votes for the winning class.
 }
 
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 
 \keyword{multivariate}

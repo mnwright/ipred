@@ -2,7 +2,7 @@
 \alias{DLBCL}
 \non_function{}
 \title{ Diffuse Large B-Cell Lymphoma }
-\usage{data(DLBCL)}
+\usage{data("DLBCL")}
 \description{
 A data frame with gene expression data from diffuse large B-cell
 lymphoma (DLBCL) patients.
@@ -46,7 +46,10 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 
 }
 \examples{
-data(DLBCL)
+
+set.seed(290875)
+
+data("DLBCL")
 survfit(Surv(time, cens) ~ 1, data=DLBCL)
 
 }

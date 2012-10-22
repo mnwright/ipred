@@ -45,5 +45,4 @@ corresponding to the ith bootstrap sample.}
 \details{
  See \code{\link{errorest}}.
 }
-\author{ Torsten.Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de> }
 \keyword{misc}

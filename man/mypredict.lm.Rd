@@ -19,7 +19,6 @@ mypredict.lm(object, newdata)
 Vector of predicted values.
 }
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 \note{\code{predict.lm} delivers a vector of reduced length, i.e. rows where
 explanatory variables are missing are omitted. The full length of the

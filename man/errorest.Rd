@@ -105,18 +105,16 @@ Research. \emph{International Statistical Review} \bold{68}(3), 296-310.
 
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised Classification with Structured Class Definitions.
-\emph{Computational Statistics \& Data Analysis} \bold{36},
+\emph{Computational Statistics & Data Analysis} \bold{36},
 209--225.
 
 
 }
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de> and \cr
-  Torsten Hothorn <Torsten.Hothorn@rzmail.uni-erlangen.de>}
 \examples{
 
 # Classification
 
-data(iris)
+data("iris")
 
 # force predict to return class labels only
 mypredict.lda <- function(object, newdata)
@@ -126,7 +124,7 @@ mypredict.lda <- function(object, newdata)
 errorest(Species ~ ., data=iris, model=lda, 
          estimator = "cv", predict= mypredict.lda)
 
-data(PimaIndiansDiabetes)
+data("PimaIndiansDiabetes", package = "mlbench")
 \dontrun{
 # 632+ bootstrap of LDA for Diabetes data
 errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
@@ -154,7 +152,7 @@ errorest(diabetes ~ ., data=PimaIndiansDiabetes, model=lda,
           est.para = control.errorest(list.tindx = list.tindx))
 
 }
-data(Glass)
+data("Glass", package = "mlbench")
 
 # LDA has cross-validated misclassification error of
 # 38\% (Ripley, 1996, page 98)
@@ -177,7 +175,7 @@ errorest(Type ~ ., data=Glass, model=pruneit,
 
 # compute sensitivity and specifity for stabilised LDA
 
-data(GlaucomaM)
+data("GlaucomaM", package = "ipred")
 
 error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
   predict=mypredict.lda, est.para=control.errorest(predictions=TRUE))
@@ -221,7 +219,7 @@ errorest(formula, data = smoking, model = inclass,estimator = "cv",
 
 # Regression
 
-data(BostonHousing)
+data("BostonHousing", package = "mlbench")
 
 # 10-fold cv of lm for Boston Housing data
 errorest(medv ~ ., data=BostonHousing, model=lm,
@@ -241,7 +239,7 @@ est.para=control.errorest(random=FALSE))
 
 # Survival data
 
-data(GBSG2)
+data("GBSG2", package = "ipred")
 
 # prediction is fitted Kaplan-Meier
 predict.survfit <- function(object, newdata) object

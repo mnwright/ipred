@@ -40,11 +40,10 @@ i.e. a matrix of two normalised vectors.
 \references{
 David J. Hand, Hua Gui Li, Niall M. Adams (2001),
 Supervised classification with structured class definitions.
-\emph{Computational Statistics \& Data Analysis} \bold{36},
+\emph{Computational Statistics & Data Analysis} \bold{36},
 209--225.
 }
 
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 
 \examples{
 

@@ -15,5 +15,4 @@ Print object of class \code{inclass} in nice layout.
 An object of class \code{inclass} is printed. Information about number and names of the intermediate variables, the used modelling technique and the number of
 drawn bootstrap samples is given.
 }
-\author{Andrea Peters <Peters.Andrea@imbe.imed.uni-erlangen.de>}
 \keyword{misc}
