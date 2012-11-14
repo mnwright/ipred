@@ -1,6 +1,6 @@
 45a8a599f130fd94e2bf0ccea723a290 *COPYRIGHTS
-bcd00a67f3033336e31db28d1d85dff8 *DESCRIPTION
-b3b1057974826d8ddc2d755a4f8f79e7 *NAMESPACE
+5408f47d701378bff92269898c45fe25 *DESCRIPTION
+6ec3f850bbb0619ebbbbb61a512b8654 *NAMESPACE
 b9fc1b890ea9262befc55f960ff779b2 *R/bagging.R
 c55f9e65194e69cac7b3f6a14819f7ee *R/bootest.R
 d8b949efde7413d8d639a64be6528403 *R/checkfunArgs.R
@@ -34,7 +34,7 @@ b07616370b51419752d4219f1f4f9f55 *data/GlaucomaMVF.rda
 e54b730797d71b1483cc26bfb3ea552b *data/dystrophy.rda
 74407541fa3087f64fc287894c9fc57d *inst/NEWS
 66215d0fa9e1452a5e6d9fc7f0bb139d *inst/doc/ipred-examples.Rnw
-a31345100c8246af16aea2cae3dc69fe *inst/doc/ipred-examples.pdf
+58f60eef8b3b49afbcd2633b5bb751cb *inst/doc/ipred-examples.pdf
 c642c366927d8bf2522e3c078f6e34a2 *inst/doc/ipred.bib
 49290ee4a7ce3cc6090bf31c78ac0118 *man/DLBCL.Rd
 d4f4b52c31e6d2fb86a0278d8fdf8cf7 *man/GBSG2.Rd
