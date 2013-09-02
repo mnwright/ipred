@@ -82,6 +82,7 @@ of Statistics}, \bold{26}(5) 1972--1988.
 \examples{
 
 library("mlbench")
+library("MASS")
 learn <- as.data.frame(mlbench.twonorm(100))
 test <- as.data.frame(mlbench.twonorm(1000))
 

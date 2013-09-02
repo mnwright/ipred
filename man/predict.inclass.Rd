@@ -91,6 +91,7 @@ predict(object = fit, newdata = smoking)
 }
 
 data("GlaucomaMVF", package = "ipred")
+library("rpart")
 glaucoma <- GlaucomaMVF[,(names(GlaucomaMVF) != "tension")]
 # explanatory variables are derived by laser scanning image and intra occular pressure
 # intermediate variables are: clv, cs, lora
@@ -110,7 +111,7 @@ classify <- function (data) {
 fit <- inclass(Class~clv+lora+cs~., data = glaucoma, 
              pFUN = list(list(model = rpart)), cFUN = classify)
 
-data("GlaucomaM", package = "ipred")
+data("GlaucomaM", package = "TH.data")
 predict(object = fit, newdata = GlaucomaM)
 
 }

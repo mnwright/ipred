@@ -43,6 +43,7 @@ survival data. \emph{Statistics in Medicine} \bold{18}(17-18), 2529--2545.
 
 \examples{
 
+library("survival")
 data("DLBCL", package = "ipred")
 smod <- Surv(DLBCL$time, DLBCL$cens)
 
@@ -128,6 +129,54 @@ stopifnot(all.equal(a, b))
 mod <- survfit(Surv(time, cens) ~ strata)
 b <- sbrier(Surv(time, cens), c(rep(list(mod[1]), 10), rep(list(mod[2]), 10)))
 stopifnot(a > b)
+
+### GBSG2 data
+data("GBSG2", package = "TH.data")
+
+thsum <- function(x) {
+  ret <- c(median(x), quantile(x, 0.25), quantile(x,0.75))
+  names(ret)[1] <- "Median"
+  ret
+}
+
+t(apply(GBSG2[,c("age", "tsize", "pnodes",
+                 "progrec", "estrec")], 2, thsum))
+
+table(GBSG2$menostat)
+table(GBSG2$tgrade)
+table(GBSG2$horTh)
+
+# pooled Kaplan-Meier
+
+mod <- survfit(Surv(time, cens) ~ 1, data=GBSG2)
+# integrated Brier score
+sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
+# Brier score at 5 years
+sbrier(Surv(GBSG2$time, GBSG2$cens), mod, btime=1825)
+
+# Nottingham prognostic index
+
+GBSG2 <- GBSG2[order(GBSG2$time),]
+
+NPI <- 0.2*GBSG2$tsize/10 + 1 + as.integer(GBSG2$tgrade)
+NPI[NPI < 3.4] <- 1
+NPI[NPI >= 3.4 & NPI <=5.4] <- 2
+NPI[NPI > 5.4] <- 3
+
+mod <- survfit(Surv(time, cens) ~ NPI, data=GBSG2)
+plot(mod)
+
+pred <- c()
+survs <- c()
+for (i in sort(unique(NPI)))
+    survs <- c(survs, getsurv(mod[i], 1825))
+
+for (i in 1:nrow(GBSG2))
+   pred <- c(pred, survs[NPI[i]])
+
+# Brier score of NPI at t=5 years
+sbrier(Surv(GBSG2$time, GBSG2$cens), pred, btime=1825)
+
 
 }
 \keyword{survival}

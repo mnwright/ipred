@@ -49,7 +49,8 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 
 set.seed(290875)
 
-data("DLBCL")
+data("DLBCL", package="ipred")
+library("survival")
 survfit(Surv(time, cens) ~ 1, data=DLBCL)
 
 }

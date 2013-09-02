@@ -166,6 +166,9 @@ Radespiel-Troeger (2004), Bagging Survival Trees.
 
 \examples{
 
+library("MASS")
+library("survival")
+
 # Classification: Breast Cancer data
 
 data("BreastCancer", package = "mlbench")

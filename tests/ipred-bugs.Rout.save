@@ -1,8 +1,7 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+R Under development (unstable) (2013-09-01 r63796) -- "Unsuffered Consequences"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -17,14 +16,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(ipred)
-Loading required package: rpart
-Loading required package: MASS
-Loading required package: survival
-Loading required package: splines
-Loading required package: nnet
-Loading required package: class
-Loading required package: prodlim
-Loading required package: KernSmooth
 KernSmooth 2.23 loaded
 Copyright M. P. Wand 1997-2009
 > 
@@ -193,4 +184,4 @@ Levels: benign malignant
 > 
 > proc.time()
    user  system elapsed 
-  1.936   0.116   2.046 
+  1.268   0.124   1.391 

@@ -1,5 +1,9 @@
 # $Id: CHANGES,v 1.48 2009/09/09 15:40:28 hothorn Exp $
 
+	0.9-2 (02.09.2013)
+
+	NAMESPACE issues, TH.data
+
         0.9-0 (22.10.2012)
 
         Due to interface changes in rpart 3.1-55, the

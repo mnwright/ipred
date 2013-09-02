@@ -24,7 +24,7 @@ function(formula, data, subset, na.action=na.rpart, ...)
     # just extract the data.frame, no handling of contrasts or NA's here.
     # this is done by rpart or the user supplied methods
 
-    DATA <- list(y = mf[,response], X = mf[,-response]) 
+    DATA <- list(y = mf[,response], X = mf[,-response, drop = FALSE]) 
     names(DATA) <- c("y", "X")
     y <- do.call("ipredbagg", c(DATA, list(...)))
     y$call <- cl

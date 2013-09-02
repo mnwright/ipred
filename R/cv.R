@@ -49,7 +49,7 @@ cv.factor <- function(y, formula, data, model, predict, k=10, random=TRUE,
     # determine an appropriate splitting for the sample size into
     # k roughly equally sized parts
   
-  mysplit <- ipred:::ssubset(y, k, strat=strat)
+  mysplit <- ssubset(y, k, strat=strat)
   allpred <- vector(mode="character", length=N)
   fu <- function(x) levels(x)[as.integer(x)]
   nindx <- 1:N

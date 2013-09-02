@@ -115,6 +115,7 @@ Supervised Classification with Structured Class Definitions.
 # Classification
 
 data("iris")
+library("MASS")
 
 # force predict to return class labels only
 mypredict.lda <- function(object, newdata)
@@ -167,6 +168,7 @@ errorest(Type ~ ., data=Glass, model=lda,
 mypredict.rpart <- function(object, newdata)
   predict(object, newdata = newdata,type="class")
 
+library("rpart")
 pruneit <- function(formula, ...)
   prune(rpart(formula, ...), cp =0.01)
 
@@ -175,7 +177,7 @@ errorest(Type ~ ., data=Glass, model=pruneit,
 
 # compute sensitivity and specifity for stabilised LDA
 
-data("GlaucomaM", package = "ipred")
+data("GlaucomaM", package = "TH.data")
 
 error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
   predict=mypredict.lda, est.para=control.errorest(predictions=TRUE))
@@ -239,7 +241,8 @@ est.para=control.errorest(random=FALSE))
 
 # Survival data
 
-data("GBSG2", package = "ipred")
+data("GBSG2", package = "TH.data")
+library("survival")
 
 # prediction is fitted Kaplan-Meier
 predict.survfit <- function(object, newdata) object

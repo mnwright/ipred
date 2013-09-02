@@ -1,8 +1,7 @@
 
-R Under development (unstable) (2012-10-07 r60893) -- "Unsuffered Consequences"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+R Under development (unstable) (2013-09-01 r63796) -- "Unsuffered Consequences"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -22,18 +21,10 @@ Type 'q()' to quit R.
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
 > library('ipred')
-Loading required package: rpart
-Loading required package: MASS
-Loading required package: survival
-Loading required package: splines
-Loading required package: nnet
-Loading required package: class
-Loading required package: prodlim
-Loading required package: KernSmooth
 KernSmooth 2.23 loaded
 Copyright M. P. Wand 1997-2009
 > 
-> assign(".oldSearch", search(), pos = 'CheckExEnv')
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
 > nameEx("DLBCL")
 > ### * DLBCL
@@ -50,7 +41,9 @@ Copyright M. P. Wand 1997-2009
 > 
 > set.seed(290875)
 > 
-> data("DLBCL")
+> data("DLBCL", package="ipred")
+> library("survival")
+Loading required package: splines
 > survfit(Surv(time, cens) ~ 1, data=DLBCL)
 Call: survfit(formula = Surv(time, cens) ~ 1, data = DLBCL)
 
@@ -61,137 +54,9 @@ records   n.max n.start  events  median 0.95LCL 0.95UCL
 > 
 > 
 > cleanEx()
-> nameEx("GBSG2")
-> ### * GBSG2
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: GBSG2
-> ### Title: German Breast Cancer Study Group 2
-> ### Aliases: GBSG2
-> ### Keywords: datasets
-> 
-> ### ** Examples
-> 
-> data(GBSG2)
-> 
-> thsum <- function(x) {
-+   ret <- c(median(x), quantile(x, 0.25), quantile(x,0.75))
-+   names(ret)[1] <- "Median"
-+   ret
-+ }
-> 
-> t(apply(GBSG2[,c("age", "tsize", "pnodes", 
-+                  "progrec", "estrec")], 2, thsum))
-        Median 25%    75%
-age       53.0  46  61.00
-tsize     25.0  20  35.00
-pnodes     3.0   1   7.00
-progrec   32.5   7 131.75
-estrec    36.0   8 114.00
-> 
-> table(GBSG2$menostat)
 
- Pre Post 
- 290  396 
-> table(GBSG2$tgrade)
+detaching ‘package:survival’, ‘package:splines’
 
-  I  II III 
- 81 444 161 
-> table(GBSG2$horTh)
-
- no yes 
-440 246 
-> 
-> # pooled Kaplan-Meier
-> 
-> mod <- survfit(Surv(time, cens) ~ 1, data=GBSG2)
-> # integrated Brier score
-> sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
-integrated Brier score 
-             0.1921866 
-attr(,"time")
-[1]    8 2659
-> # Brier score at 5 years
-> sbrier(Surv(GBSG2$time, GBSG2$cens), mod, btime=1825)
-Brier score 
-  0.2499984 
-attr(,"time")
-[1] 1825
-> 
-> # Nottingham prognostic index
-> 
-> GBSG2 <- GBSG2[order(GBSG2$time),]
-> 
-> NPI <- 0.2*GBSG2$tsize/10 + 1 + as.integer(GBSG2$tgrade)
-> NPI[NPI < 3.4] <- 1
-> NPI[NPI >= 3.4 & NPI <=5.4] <- 2
-> NPI[NPI > 5.4] <- 3
-> 
-> mod <- survfit(Surv(time, cens) ~ NPI, data=GBSG2)
-> plot(mod)
-> 
-> pred <- c()
-> survs <- c()
-> for (i in sort(unique(NPI)))
-+     survs <- c(survs, getsurv(mod[i], 1825))
-> 
-> for (i in 1:nrow(GBSG2))
-+    pred <- c(pred, survs[NPI[i]])
-> 
-> # Brier score of NPI at t=5 years
-> sbrier(Surv(GBSG2$time, GBSG2$cens), pred, btime=1825)
-Brier score 
-   0.233823 
-attr(,"time")
-[1] 1825
-> 
-> 
-> 
-> 
-> 
-> cleanEx()
-> nameEx("GlaucomaM")
-> ### * GlaucomaM
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: GlaucomaM
-> ### Title: Glaucoma Database
-> ### Aliases: GlaucomaM
-> ### Keywords: datasets
-> 
-> ### ** Examples
-> 
-> data(GlaucomaM)
-> errorest(Class ~ ., data=GlaucomaM, model=rpart, 
-+          predict=function(obj, newdata) 
-+                    predict(obj, newdata, type="class"), 
-+          control=rpart.control(xval=0))
-
-Call:
-errorest.data.frame(formula = Class ~ ., data = GlaucomaM, model = rpart, 
-    predict = function(obj, newdata) predict(obj, newdata, type = "class"), 
-    control = rpart.control(xval = 0))
-
-	 10-fold cross-validation estimator of misclassification error 
-
-Misclassification error:  0.2092 
-
-> glbagg <- bagging(Class ~ ., data=GlaucomaM, coob=TRUE)
-> glbagg
-
-Bagging classification trees with 25 bootstrap replications 
-
-Call: bagging.data.frame(formula = Class ~ ., data = GlaucomaM, coob = TRUE)
-
-Out-of-bag estimate of misclassification error:  0.1735 
-
-> 
-> 
-> 
-> 
-> cleanEx()
 > nameEx("GlaucomaMVF")
 > ### * GlaucomaMVF
 > 
@@ -205,7 +70,9 @@ Out-of-bag estimate of misclassification error:  0.1735
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D data(GlaucomaMVF)
+> ##D 
+> ##D data("GlaucomaMVF", package = "ipred")
+> ##D library("rpart")
 > ##D 
 > ##D response <- function (data) {
 > ##D   attach(data)
@@ -239,6 +106,10 @@ Out-of-bag estimate of misclassification error:  0.1735
 > 
 > ### ** Examples
 > 
+> 
+> library("MASS")
+> library("survival")
+Loading required package: splines
 > 
 > # Classification: Breast Cancer data
 > 
@@ -307,7 +178,7 @@ Bagging regression trees with 25 bootstrap replications
 Call: bagging.data.frame(formula = medv ~ ., data = BostonHousing, 
     coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  4.1029 
+Out-of-bag estimate of root mean squared error:  4.0618 
 
 > 
 > library("mlbench")
@@ -322,7 +193,7 @@ Bagging regression trees with 25 bootstrap replications
 
 Call: bagging.data.frame(formula = y ~ ., data = learn, coob = TRUE)
 
-Out-of-bag estimate of root mean squared error:  2.8485 
+Out-of-bag estimate of root mean squared error:  2.8532 
 
 > 
 > # Survival data
@@ -344,7 +215,7 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 +
     MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
     MGEc.10 + IPI, data = DLBCL, coob = TRUE)
 
-Out-of-bag estimate of Brier's score:  0.1854 
+Out-of-bag estimate of Brier's score:  0.2003 
 
 > 
 > 
@@ -353,7 +224,8 @@ Out-of-bag estimate of Brier's score:  0.1854
 > 
 > cleanEx()
 
-detaching ‘package:mlbench’
+detaching ‘package:mlbench’, ‘package:survival’, ‘package:splines’,
+  ‘package:MASS’
 
 > nameEx("dystrophy")
 > ### * dystrophy
@@ -368,7 +240,9 @@ detaching ‘package:mlbench’
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D data(dystrophy)
+> ##D 
+> ##D data("dystrophy")
+> ##D library("rpart")
 > ##D errorest(Class~CK+H~AGE+PK+LD, data = dystrophy, model = inbagg, 
 > ##D pFUN = list(list(model = lm, predict = mypredict.lm), list(model = rpart)), 
 > ##D ns = 0.75, estimator = "cv")
@@ -393,6 +267,7 @@ detaching ‘package:mlbench’
 > # Classification
 > 
 > data("iris")
+> library("MASS")
 > 
 > # force predict to return class labels only
 > mypredict.lda <- function(object, newdata)
@@ -472,6 +347,7 @@ Misclassification error:  0.3785
 > mypredict.rpart <- function(object, newdata)
 +   predict(object, newdata = newdata,type="class")
 > 
+> library("rpart")
 > pruneit <- function(formula, ...)
 +   prune(rpart(formula, ...), cp =0.01)
 > 
@@ -489,7 +365,7 @@ Misclassification error:  0.3178
 > 
 > # compute sensitivity and specifity for stabilised LDA
 > 
-> data("GlaucomaM", package = "ipred")
+> data("GlaucomaM", package = "TH.data")
 > 
 > error <- errorest(Class ~ ., data=GlaucomaM, model=slda,
 +   predict=mypredict.lda, est.para=control.errorest(predictions=TRUE))
@@ -573,7 +449,9 @@ Root mean squared error:  5.877
 > 
 > # Survival data
 > 
-> data("GBSG2", package = "ipred")
+> data("GBSG2", package = "TH.data")
+> library("survival")
+Loading required package: splines
 > 
 > # prediction is fitted Kaplan-Meier
 > predict.survfit <- function(object, newdata) object
@@ -596,6 +474,10 @@ Brier's score:  0.1885
 > 
 > 
 > cleanEx()
+
+detaching ‘package:survival’, ‘package:splines’, ‘package:rpart’,
+  ‘package:MASS’
+
 > nameEx("inbagg")
 > ### * inbagg
 > 
@@ -608,6 +490,9 @@ Brier's score:  0.1885
 > 
 > ### ** Examples
 > 
+> 
+> library("MASS")
+> library("rpart")
 > y <- as.factor(sample(1:2, 100, replace = TRUE))
 > W <- mvrnorm(n = 200, mu = rep(0, 3), Sigma = diag(3))
 > X <- mvrnorm(n = 200, mu = rep(2, 3), Sigma = diag(3))
@@ -627,6 +512,9 @@ Brier's score:  0.1885
 > 
 > 
 > cleanEx()
+
+detaching ‘package:rpart’, ‘package:MASS’
+
 > nameEx("inclass")
 > ### * inclass
 > 
@@ -799,7 +687,9 @@ Levels: bad good
 > 
 > ### ** Examples
 > 
-> library(mvtnorm)
+> 
+> library("MASS")
+> library("rpart")
 > y <- as.factor(sample(1:2, 100, replace = TRUE))
 > W <- mvrnorm(n = 200, mu = rep(0, 3), Sigma = diag(3)) 
 > X <- mvrnorm(n = 200, mu = rep(2, 3), Sigma = diag(3))
@@ -824,7 +714,7 @@ Levels: 1 2
 > 
 > cleanEx()
 
-detaching ‘package:mvtnorm’
+detaching ‘package:rpart’, ‘package:MASS’
 
 > nameEx("predict.inclass")
 > ### * predict.inclass
@@ -888,6 +778,7 @@ detaching ‘package:mvtnorm’
 > ## End(Not run)
 > 
 > data("GlaucomaMVF", package = "ipred")
+> library("rpart")
 > glaucoma <- GlaucomaMVF[,(names(GlaucomaMVF) != "tension")]
 > # explanatory variables are derived by laser scanning image and intra occular pressure
 > # intermediate variables are: clv, cs, lora
@@ -907,7 +798,7 @@ detaching ‘package:mvtnorm’
 > fit <- inclass(Class~clv+lora+cs~., data = glaucoma, 
 +              pFUN = list(list(model = rpart)), cFUN = classify)
 > 
-> data("GlaucomaM", package = "ipred")
+> data("GlaucomaM", package = "TH.data")
 > predict(object = fit, newdata = GlaucomaM)
   [1] normal   normal   normal   normal   glaucoma glaucoma normal   normal  
   [9] normal   normal   normal   normal   glaucoma normal   normal   normal  
@@ -940,6 +831,9 @@ Levels: glaucoma normal
 > 
 > 
 > cleanEx()
+
+detaching ‘package:rpart’
+
 > nameEx("prune.bagging")
 > ### * prune.bagging
 > 
@@ -954,6 +848,7 @@ Levels: glaucoma normal
 > 
 > 
 > data("Glass", package = "mlbench")
+> library("rpart")
 > 
 > mod <- bagging(Type ~ ., data=Glass, nbagg=10, coob=TRUE)
 > pmod <- prune(mod)
@@ -972,6 +867,9 @@ Out-of-bag estimate of misclassification error:  0.285
 > 
 > 
 > cleanEx()
+
+detaching ‘package:rpart’
+
 > nameEx("rsurv")
 > ### * rsurv
 > 
@@ -985,6 +883,8 @@ Out-of-bag estimate of misclassification error:  0.285
 > ### ** Examples
 > 
 > 
+> library("survival")
+Loading required package: splines
 > # 3*X1 + X2
 > simdat <- rsurv(500, model="C")
 > coxph(Surv(time, cens) ~ ., data=simdat)
@@ -1005,6 +905,9 @@ Likelihood ratio test=289  on 5 df, p=0  n= 500, number of events= 500
 > 
 > 
 > cleanEx()
+
+detaching ‘package:survival’, ‘package:splines’
+
 > nameEx("sbrier")
 > ### * sbrier
 > 
@@ -1018,6 +921,8 @@ Likelihood ratio test=289  on 5 df, p=0  n= 500, number of events= 500
 > ### ** Examples
 > 
 > 
+> library("survival")
+Loading required package: splines
 > data("DLBCL", package = "ipred")
 > smod <- Surv(DLBCL$time, DLBCL$cens)
 > 
@@ -1126,10 +1031,88 @@ attr(,"time")
 > b <- sbrier(Surv(time, cens), c(rep(list(mod[1]), 10), rep(list(mod[2]), 10)))
 > stopifnot(a > b)
 > 
+> ### GBSG2 data
+> data("GBSG2", package = "TH.data")
+> 
+> thsum <- function(x) {
++   ret <- c(median(x), quantile(x, 0.25), quantile(x,0.75))
++   names(ret)[1] <- "Median"
++   ret
++ }
+> 
+> t(apply(GBSG2[,c("age", "tsize", "pnodes",
++                  "progrec", "estrec")], 2, thsum))
+        Median 25%    75%
+age       53.0  46  61.00
+tsize     25.0  20  35.00
+pnodes     3.0   1   7.00
+progrec   32.5   7 131.75
+estrec    36.0   8 114.00
+> 
+> table(GBSG2$menostat)
+
+ Pre Post 
+ 290  396 
+> table(GBSG2$tgrade)
+
+  I  II III 
+ 81 444 161 
+> table(GBSG2$horTh)
+
+ no yes 
+440 246 
+> 
+> # pooled Kaplan-Meier
+> 
+> mod <- survfit(Surv(time, cens) ~ 1, data=GBSG2)
+> # integrated Brier score
+> sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
+integrated Brier score 
+             0.1921866 
+attr(,"time")
+[1]    8 2659
+> # Brier score at 5 years
+> sbrier(Surv(GBSG2$time, GBSG2$cens), mod, btime=1825)
+Brier score 
+  0.2499984 
+attr(,"time")
+[1] 1825
+> 
+> # Nottingham prognostic index
+> 
+> GBSG2 <- GBSG2[order(GBSG2$time),]
+> 
+> NPI <- 0.2*GBSG2$tsize/10 + 1 + as.integer(GBSG2$tgrade)
+> NPI[NPI < 3.4] <- 1
+> NPI[NPI >= 3.4 & NPI <=5.4] <- 2
+> NPI[NPI > 5.4] <- 3
+> 
+> mod <- survfit(Surv(time, cens) ~ NPI, data=GBSG2)
+> plot(mod)
+> 
+> pred <- c()
+> survs <- c()
+> for (i in sort(unique(NPI)))
++     survs <- c(survs, getsurv(mod[i], 1825))
+> 
+> for (i in 1:nrow(GBSG2))
++    pred <- c(pred, survs[NPI[i]])
+> 
+> # Brier score of NPI at t=5 years
+> sbrier(Surv(GBSG2$time, GBSG2$cens), pred, btime=1825)
+Brier score 
+   0.233823 
+attr(,"time")
+[1] 1825
+> 
+> 
 > 
 > 
 > 
 > cleanEx()
+
+detaching ‘package:survival’, ‘package:splines’
+
 > nameEx("slda")
 > ### * slda
 > 
@@ -1144,6 +1127,7 @@ attr(,"time")
 > 
 > 
 > library("mlbench")
+> library("MASS")
 > learn <- as.data.frame(mlbench.twonorm(100))
 > test <- as.data.frame(mlbench.twonorm(1000))
 > 
@@ -1160,7 +1144,7 @@ attr(,"time")
 > 
 > cleanEx()
 
-detaching ‘package:mlbench’
+detaching ‘package:MASS’, ‘package:mlbench’
 
 > nameEx("varset")
 > ### * varset
@@ -1187,8 +1171,9 @@ detaching ‘package:mlbench’
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > ### * <FOOTER>
 > ###
-> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  12.98 0.304 13.308 0 0 
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  8.016 0.148 8.179 0 0 
 > grDevices::dev.off()
 null device 
           1 

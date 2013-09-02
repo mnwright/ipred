@@ -104,7 +104,7 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
 
     ### deal with ties
     hatcdist <- prodlim(Surv(time, cens) ~ 1,reverse = TRUE)
-    csurv <- prodlim:::predictSurv(hatcdist, times = time)
+    csurv <- predict(hatcdist, times = time, type = "surv")
     csurv[csurv == 0] <- Inf
     # hatcdist <- survfit(Surv(time, 1 - cens) ~ 1)
     # csurv <- getsurv(hatcdist, time)
@@ -132,7 +132,7 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
     } else {
         help1 <- as.integer(time <= btime & cens == 1)
         help2 <- as.integer(time > btime)
-        cs <- prodlim:::predictSurv(hatcdist, times=btime)
+        cs <- predict(hatcdist, times=btime, type = "surv")
         ### cs <- getsurv(hatcdist, btime)
         if (cs == 0) cs <- Inf
         RET <-  mean((0 - survs)^2*help1*(1/csurv) +

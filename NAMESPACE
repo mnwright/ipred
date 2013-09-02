@@ -75,9 +75,8 @@ S3method(predict, slda)
 
 ##imported functions
 importFrom(class, knn)
-importFrom(rpart, rpart, prune)
+importFrom(rpart, rpart, prune, na.rpart, rpart.control)
 importFrom(MASS, lda)
-#import(mlbench)
-### at least is.Surv needs to be imported
-importFrom(survival, Surv, is.Surv)
+importFrom(survival, Surv, is.Surv, survfit)
 importFrom(nnet, multinom)
+importFrom(prodlim, prodlim)

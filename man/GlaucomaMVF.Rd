@@ -107,12 +107,14 @@ Diagnosis of glaucoma by indirect classifiers.
 }
 
 \note{
- \code{GLaucomMVF} overlaps in some parts with \code{\link{GlaucomaM}}.
+ \code{GLaucomMVF} overlaps in some parts with \code{\link[TH.data]{GlaucomaM}}.
 }
 
 \examples{
 \dontrun{
-data(GlaucomaMVF)
+
+data("GlaucomaMVF", package = "ipred")
+library("rpart")
 
 response <- function (data) {
   attach(data)

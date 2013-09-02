@@ -27,6 +27,7 @@
 \examples{
 
 data("Glass", package = "mlbench")
+library("rpart")
 
 mod <- bagging(Type ~ ., data=Glass, nbagg=10, coob=TRUE)
 pmod <- prune(mod)

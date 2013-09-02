@@ -46,6 +46,7 @@ rates.
 }
 \examples{
 
+library("survival")
 # 3*X1 + X2
 simdat <- rsurv(500, model="C")
 coxph(Surv(time, cens) ~ ., data=simdat)

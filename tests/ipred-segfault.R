@@ -1,5 +1,7 @@
-library('ipred')
+library("ipred")
 library("mlbench")
+library("MASS")
+library("survival")
 
 actversion <- paste(R.version$major, R.version$minor, sep=".")
 thisversion <- "1.7.0"
