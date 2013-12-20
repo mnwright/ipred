@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2013-09-01 r63796) -- "Unsuffered Consequences"
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -374,7 +374,7 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 
 	 2-fold cross-validation estimator of Brier's score
 
-Brier's score:  0.0746 
+Brier's score:  0.0874 
 
 > errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
 +          estimator="boot", nbagg=5, est.para=control.errorest(nboot=5))
@@ -387,7 +387,7 @@ errorest.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 	 Bootstrap estimator of Brier's score
 	 with 5 bootstrap replications
 
-Brier's score:  0.0824 
+Brier's score:  0.0956 
 
 > 
 > #lapply(errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
@@ -447,4 +447,4 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 > 
 > proc.time()
    user  system elapsed 
-  4.480   0.124   4.610 
+  4.620   0.056   4.676 

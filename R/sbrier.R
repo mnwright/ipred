@@ -121,9 +121,16 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
             bsc[j] <-  mean((0 - survs[j,])^2*help1*(1/csurv) +
                             (1-survs[j,])^2*help2*(1/csurv[j]))
         }
-        diffs <- c(btime[1], btime[2:length(btime)] -
-                             btime[1:(length(btime)-1)])
-        RET <- sum(diffs*bsc)/max(btime)
+
+        ### apply trapezoid rule
+        idx <- 2:length(btime)
+        RET <- diff(btime) %*% ((bsc[idx - 1] + bsc[idx]) / 2)
+        RET <- RET / diff(range(btime))
+
+        ### previously was
+        #diffs <- c(btime[1], btime[2:length(btime)] -
+        #                     btime[1:(length(btime)-1)])
+        #RET <- sum(diffs*bsc)/max(btime)
         names(RET) <- "integrated Brier score"
         attr(RET, "time") <- range(btime)
 

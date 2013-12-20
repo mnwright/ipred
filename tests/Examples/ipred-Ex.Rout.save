@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2013-09-01 r63796) -- "Unsuffered Consequences"
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -215,7 +215,7 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ MGEc.1 + MGEc.2 +
     MGEc.3 + MGEc.4 + MGEc.5 + MGEc.6 + MGEc.7 + MGEc.8 + MGEc.9 + 
     MGEc.10 + IPI, data = DLBCL, coob = TRUE)
 
-Out-of-bag estimate of Brier's score:  0.2003 
+Out-of-bag estimate of Brier's score:  0.2098 
 
 > 
 > 
@@ -466,7 +466,7 @@ errorest.data.frame(formula = Surv(time, cens) ~ 1, data = GBSG2,
 
 	 5-fold cross-validation estimator of Brier's score
 
-Brier's score:  0.1885 
+Brier's score:  0.1927 
 
 > 
 > 
@@ -929,8 +929,10 @@ Loading required package: splines
 > KM <- survfit(smod ~ 1)
 > # integrated Brier score up to max(DLBCL$time)
 > sbrier(smod, KM)
-integrated Brier score 
-             0.2079667 
+          [,1]
+[1,] 0.2237226
+attr(,"names")
+[1] "integrated Brier score"
 attr(,"time")
 [1]   1.3 129.9
 > 
@@ -938,8 +940,10 @@ attr(,"time")
 > sbrier(smod, KM, btime=c(0, 50))
 Warning in sbrier(smod, KM, btime = c(0, 50)) :
   btime[1] is smaller than min(time)
-integrated Brier score 
-             0.2141826 
+          [,1]
+[1,] 0.2174081
+attr(,"names")
+[1] "integrated Brier score"
 attr(,"time")
 [1]  1.3 39.6
 > 
@@ -960,8 +964,10 @@ attr(,"time")
 > 
 > # integrated Brier score up to max(time)
 > sbrier(smod, pred)
-integrated Brier score 
-             0.1409052 
+          [,1]
+[1,] 0.1442559
+attr(,"names")
+[1] "integrated Brier score"
 attr(,"time")
 [1]   1.3 129.9
 > 
@@ -992,7 +998,11 @@ attr(,"time")
 > mod <- survfit(Surv(time, cens) ~ 1)
 > a <- sbrier(Surv(time, cens), rep(list(mod), n))
 > mymin <- mod$surv * (1 - mod$surv)
-> stopifnot(all.equal(cleans(a),sum(mymin)/max(time)))
+> cleans(a)
+          [,1]
+[1,] 0.1682833
+> sum(mymin)/diff(range(time))
+[1] 0.1683333
 > 
 > # independent of ordering
 > rand <- sample(1:100)
@@ -1067,8 +1077,10 @@ estrec    36.0   8 114.00
 > mod <- survfit(Surv(time, cens) ~ 1, data=GBSG2)
 > # integrated Brier score
 > sbrier(Surv(GBSG2$time, GBSG2$cens), mod)
-integrated Brier score 
-             0.1921866 
+          [,1]
+[1,] 0.1939366
+attr(,"names")
+[1] "integrated Brier score"
 attr(,"time")
 [1]    8 2659
 > # Brier score at 5 years
@@ -1173,7 +1185,7 @@ detaching ‘package:MASS’, ‘package:mlbench’
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  8.016 0.148 8.179 0 0 
+Time elapsed:  7.604 0.152 7.768 0 0 
 > grDevices::dev.off()
 null device 
           1 
