@@ -1,6 +1,6 @@
 
-R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R Under development (unstable) (2015-02-20 r67856) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +16,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library("ipred")
-KernSmooth 2.23 loaded
-Copyright M. P. Wand 1997-2009
 > library("mlbench")
 > library("MASS")
 > library("survival")
@@ -447,4 +445,4 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 > 
 > proc.time()
    user  system elapsed 
-  4.620   0.056   4.676 
+  5.640   0.104   5.898 

@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2013-09-01 r63796) -- "Unsuffered Consequences"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R Under development (unstable) (2015-02-20 r67856) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -16,8 +16,6 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(ipred)
-KernSmooth 2.23 loaded
-Copyright M. P. Wand 1997-2009
 > 
 > 
 > actversion <- paste(R.version$major, R.version$minor, sep=".")
@@ -184,4 +182,4 @@ Levels: benign malignant
 > 
 > proc.time()
    user  system elapsed 
-  1.268   0.124   1.391 
+  1.660   0.076   1.723 

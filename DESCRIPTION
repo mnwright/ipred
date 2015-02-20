@@ -1,7 +1,7 @@
 Package: ipred
 Title: Improved Predictors
-Version: 0.9-3
-Date: 2013-12-20
+Version: 0.9-4
+Date: 2015-02-20
 Authors@R: c(person("Andrea", "Peters", role = "aut"),
              person("Torsten", "Hothorn", role = c("aut", "cre"),
                     email = "Torsten.Hothorn@R-project.org"),
@@ -15,7 +15,7 @@ Depends: R (>= 2.10)
 Imports: rpart (>= 3.1-8), MASS, survival, nnet, class, prodlim
 Suggests: mvtnorm, mlbench, TH.data
 License: GPL (>= 2)
-Packaged: 2013-12-20 14:42:15 UTC; hothorn
+Packaged: 2015-02-21 15:09:01 UTC; hothorn
 Author: Andrea Peters [aut],
   Torsten Hothorn [aut, cre],
   Brian D. Ripley [ctb],
@@ -24,4 +24,4 @@ Author: Andrea Peters [aut],
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2013-12-20 17:01:20
+Date/Publication: 2015-02-21 18:14:48

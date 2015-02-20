@@ -68,7 +68,7 @@ S3method(predict, classbagg)
 S3method(predict, regbagg)
 S3method(predict, survbagg)  
 S3method(predict, slda)
-#S3method(predict, ipredknn) 
+S3method(predict, ipredknn) 
 #S3method(predict, sclass)
 #S3method(predict, sreg)
 

@@ -1,5 +1,9 @@
 # $Id: CHANGES,v 1.48 2009/09/09 15:40:28 hothorn Exp $
 
+	0.9-4 (20.02.2015)
+
+        register predict.ipredknn
+
 	0.9-3 (20.12.2013)
 
 	use trapezoid rule to compute integrated Brier score in sbrier

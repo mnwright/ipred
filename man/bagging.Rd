@@ -143,7 +143,7 @@ Leo Breiman (1996a), Bagging Predictors. \emph{Machine Learning}
 \bold{24}(2), 123--140.
 
 Leo Breiman (1996b), Out-Of-Bag Estimation. \emph{Technical Report}
-\url{ftp://ftp.stat.berkeley.edu/pub/users/breiman/OOBestimation.ps.Z}.
+\url{http://www.stat.berkeley.edu/~breiman/OOBestimation.pdf}.
 
 Leo Breiman (1998), Arcing Classifiers. \emph{The Annals of Statistics}
 \bold{26}(3), 801--824.
