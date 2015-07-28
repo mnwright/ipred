@@ -16,6 +16,12 @@ predict.ipredknn,
 kfoldcv, mypredict.lm, rsurv, sbrier, varset,
 slda)
 
+importFrom("stats", "as.formula", "complete.cases", "cov",
+     "delete.response", "model.extract", "model.frame",
+     "model.matrix", "na.omit", "naresid", "predict", "rexp",
+     "rnorm", "runif", "terms")
+importFrom("utils", "data", "getFromNamespace")
+
 ### register S3 methods
 #S3method(print, bagging) 
 S3method(slda, default)

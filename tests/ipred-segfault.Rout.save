@@ -1,7 +1,7 @@
 
-R Under development (unstable) (2015-02-20 r67856) -- "Unsuffered Consequences"
+R Under development (unstable) (2015-07-25 r68745) -- "Unsuffered Consequences"
 Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-unknown-linux-gnu (64-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,7 +19,6 @@ Type 'q()' to quit R.
 > library("mlbench")
 > library("MASS")
 > library("survival")
-Loading required package: splines
 > 
 > actversion <- paste(R.version$major, R.version$minor, sep=".")
 > thisversion <- "1.7.0"
@@ -299,62 +298,62 @@ Call: bagging.data.frame(formula = Surv(time, cens) ~ ., data = learn,
 [[1]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
- records    n.max  n.start   events   median  0.95LCL  0.95UCL 
-117.0000 117.0000 117.0000 117.0000   0.0751   0.0640   0.1227 
+       n   events   median  0.95LCL  0.95UCL 
+117.0000 117.0000   0.0751   0.0640   0.1227 
 
 [[2]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
- records    n.max  n.start   events   median  0.95LCL  0.95UCL 
-134.0000 134.0000 134.0000 134.0000   0.0280   0.0247   0.0321 
+       n   events   median  0.95LCL  0.95UCL 
+134.0000 134.0000   0.0280   0.0247   0.0321 
 
 [[3]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
-records   n.max n.start  events  median 0.95LCL 0.95UCL 
-142.000 142.000 142.000 142.000   0.215   0.179   0.241 
+      n  events  median 0.95LCL 0.95UCL 
+142.000 142.000   0.215   0.179   0.241 
 
 [[4]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
- records    n.max  n.start   events   median  0.95LCL  0.95UCL 
-131.0000 131.0000 131.0000 131.0000   0.0216   0.0205   0.0280 
+       n   events   median  0.95LCL  0.95UCL 
+131.0000 131.0000   0.0216   0.0205   0.0280 
 
 [[5]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
-records   n.max n.start  events  median 0.95LCL 0.95UCL 
-145.000 145.000 145.000 145.000   0.217   0.168   0.251 
+      n  events  median 0.95LCL 0.95UCL 
+145.000 145.000   0.217   0.168   0.251 
 
 [[6]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
- records    n.max  n.start   events   median  0.95LCL  0.95UCL 
-105.0000 105.0000 105.0000 105.0000   0.0476   0.0421   0.0496 
+       n   events   median  0.95LCL  0.95UCL 
+105.0000 105.0000   0.0476   0.0421   0.0496 
 
 [[7]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
-records   n.max n.start  events  median 0.95LCL 0.95UCL 
-125.000 125.000 125.000 125.000   0.181   0.156   0.218 
+      n  events  median 0.95LCL 0.95UCL 
+125.000 125.000   0.181   0.156   0.218 
 
 [[8]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
-records   n.max n.start  events  median 0.95LCL 0.95UCL 
-139.000 139.000 139.000 139.000   0.179   0.156   0.217 
+      n  events  median 0.95LCL 0.95UCL 
+139.000 139.000   0.179   0.156   0.217 
 
 [[9]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
-records   n.max n.start  events  median 0.95LCL 0.95UCL 
-131.000 131.000 131.000 131.000   0.181   0.179   0.251 
+      n  events  median 0.95LCL 0.95UCL 
+131.000 131.000   0.181   0.179   0.251 
 
 [[10]]
 Call: survfit(formula = Surv(agglsample[[j]], aggcens[[j]]) ~ 1)
 
- records    n.max  n.start   events   median  0.95LCL  0.95UCL 
-120.0000 120.0000 120.0000 120.0000   0.0280   0.0247   0.0395 
+       n   events   median  0.95LCL  0.95UCL 
+120.0000 120.0000   0.0280   0.0247   0.0395 
 
 > 
 > #errorest(Surv(time, cens) ~ ., data=learn, model=bagging, 
@@ -445,4 +444,4 @@ Call: bagging.data.frame(formula = y ~ ., data = learn, nbagg = 10,
 > 
 > proc.time()
    user  system elapsed 
-  5.640   0.104   5.898 
+  4.900   0.047   4.933 
