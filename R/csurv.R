@@ -33,9 +33,9 @@ csurv <- function(newdata, pred, minprob=0, window=0.0001) {
       thisprob  <- predprob
       thistimes <- times
     }
-    error[i] <- .Call("SdiffKM", as.double(c(0,thistimes)), 
+    error[i] <- .Call(SdiffKM, as.double(c(0,thistimes)), 
                        as.double(c(1,thisprob)),
-                       as.double(c(hazards[i], window)), PACKAGE="ipred")
+                       as.double(c(hazards[i], window)))
     # adjust for time scale by last event
     error[i] <- error[i]/max(thistimes)
     if (length(unique(hazards)) == 1) {

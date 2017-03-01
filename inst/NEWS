@@ -1,5 +1,9 @@
 # $Id: CHANGES,v 1.48 2009/09/09 15:40:28 hothorn Exp $
 
+	0.9-6 (01.03.2017)
+
+	register C routines
+
 	0.9-5 (28.07.2015)
 
 	fix NAMESPACE
