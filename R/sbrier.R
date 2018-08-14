@@ -113,6 +113,7 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
     # conditional survival for new timepoints
     csurv_btime <- predict(hatcdist, times = btime, type = "surv")
     csurv_btime[is.na(csurv_btime)] <- min(csurv_btime, na.rm = TRUE)
+    csurv_btime[csurv_btime == 0] <- Inf
 
     bsc <- rep(0, length(btime))
     
