@@ -109,6 +109,10 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
     # hatcdist <- survfit(Surv(time, 1 - cens) ~ 1)
     # csurv <- getsurv(hatcdist, time)
     # csurv[csurv == 0] <- Inf
+    
+    # conditional survival for new timepoints
+    csurv_btime <- predict(hatcdist, times = btime, type = "surv")
+    csurv_btime[is.na(csurv_btime)] <- min(csurv_btime, na.rm = TRUE)
 
     bsc <- rep(0, length(btime))
     
@@ -119,7 +123,7 @@ sbrier <- function(obj, pred, btime = range(obj[,1]))
             help1 <- as.integer(time <= btime[j] & cens == 1)
             help2 <- as.integer(time > btime[j])
             bsc[j] <-  mean((0 - survs[j,])^2*help1*(1/csurv) +
-                            (1-survs[j,])^2*help2*(1/csurv[j]))
+                            (1-survs[j,])^2*help2*(1/csurv_btime[j]))
         }
 
         ### apply trapezoid rule
